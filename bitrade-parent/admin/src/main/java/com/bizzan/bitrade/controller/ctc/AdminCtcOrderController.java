@@ -40,7 +40,7 @@ import com.bizzan.bitrade.service.MemberWalletService;
 import com.bizzan.bitrade.util.DateUtil;
 import com.bizzan.bitrade.util.MessageResult;
 import com.bizzan.bitrade.vendor.provider.SMSProvider;
-import com.sparkframework.security.Encrypt;
+import com.bizzan.bitrade.security.Encrypt;
 /**
  * @author Shaoxianjun
  * @description otc币种

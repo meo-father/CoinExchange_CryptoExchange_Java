@@ -30,7 +30,7 @@ import com.bizzan.bitrade.service.CtcAcceptorService;
 import com.bizzan.bitrade.service.LocaleMessageSourceService;
 import com.bizzan.bitrade.util.DateUtil;
 import com.bizzan.bitrade.util.MessageResult;
-import com.sparkframework.security.Encrypt;
+import com.bizzan.bitrade.security.Encrypt;
 /**
  * @author Shaoxianjun
  * @description otc承兑商

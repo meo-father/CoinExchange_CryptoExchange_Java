@@ -13,9 +13,7 @@ import com.bizzan.bitrade.entity.MemberInviteStasticRank;
 public interface MemberInviteStasticRankDao extends  BaseDao<MemberInviteStasticRank> {
 
 	MemberInviteStasticRank findByMemberId(Long memberId);
-	
-	MemberInviteStasticRank findById(Long id);
-	
+
 	/**
 	 * 获取最新排名
 	 * @param type 0:日榜  1：周榜  2：月榜

@@ -14,6 +14,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.nio.entity.NStringEntity;
 import org.apache.http.util.EntityUtils;
+import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -45,8 +47,10 @@ public class ESClient {
                 }).build();
         try {
             HttpEntity httpEntity = new NStringEntity(params.toJSONString(), ContentType.APPLICATION_JSON);
-
-            Response response = restClient.performRequest(method, endPoint,Collections.singletonMap("pretty", "true"),httpEntity);
+            Request request = new Request(method,endPoint);
+            request.setEntity(httpEntity);
+            request.addParameters(Collections.singletonMap("pretty", "true"));
+            Response response = restClient.performRequest(request);
             log.info("======response:"+response);
 
             int statusCode = response.getStatusLine().getStatusCode();

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.Optional;
 
 
 @Service
@@ -28,7 +29,7 @@ public class LegalWalletWithdrawService extends TopBaseService<LegalWalletWithdr
     }
 
     public LegalWalletWithdraw findOne(Long id) {
-        return legalWalletWithdrawDao.findOne(id);
+        return legalWalletWithdrawDao.getById(id);
     }
 
     //审核通过
@@ -41,7 +42,12 @@ public class LegalWalletWithdrawService extends TopBaseService<LegalWalletWithdr
     public LegalWalletWithdraw findDetailWeb(Long id, Long memberId) {
         BooleanExpression and = QLegalWalletWithdraw.legalWalletWithdraw.id.eq(id)
                 .and(QLegalWalletWithdraw.legalWalletWithdraw.member.id.eq(memberId));
-        return legalWalletWithdrawDao.findOne(and);
+        Optional<LegalWalletWithdraw> option = legalWalletWithdrawDao.findOne(and);
+        if (option.isPresent()) {
+            return option.get();
+        }else {
+            return null;
+        }
     }
 
     //提现

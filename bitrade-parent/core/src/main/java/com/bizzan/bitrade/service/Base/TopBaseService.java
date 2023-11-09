@@ -6,20 +6,8 @@ import com.bizzan.bitrade.ability.UpdateAbility;
 import com.bizzan.bitrade.constant.PageModel;
 import com.bizzan.bitrade.dao.base.BaseDao;
 import com.bizzan.bitrade.dto.Pagenation;
-import com.bizzan.bitrade.pagination.PageListMapResult;
-import com.bizzan.bitrade.pagination.QueryDslContext;
-import com.bizzan.bitrade.vo.RegisterPromotionVO;
 import com.querydsl.core.types.Predicate;
-
 import lombok.Setter;
-import org.hibernate.SQLQuery;
-import org.hibernate.transform.ResultTransformer;
-import org.hibernate.transform.Transformers;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
-import org.aspectj.lang.annotation.Aspect;
-import org.hibernate.SQLQuery;
-import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class TopBaseService<E, D extends BaseDao> {
 
@@ -43,7 +28,7 @@ public class TopBaseService<E, D extends BaseDao> {
 
 
     public E findById(Serializable id) {
-        return (E) dao.findOne(id);
+        return (E) dao.getById(id);
     }
 
     public List<E> findAll() {
@@ -112,8 +97,9 @@ public class TopBaseService<E, D extends BaseDao> {
      * @return
      */
     public Pagenation<E> pageQuery(Pagenation pagenation, Predicate predicate) {
-        Sort sort = new Sort(pagenation.getPageParam().getDirection(), pagenation.getPageParam().getOrders());
-        Pageable pageable = new PageRequest(pagenation.getPageParam().getPageNo() - 1, pagenation.getPageParam().getPageSize(), sort);
+        List<String> arrayStr = pagenation.getPageParam().getOrders();
+        Sort sort = Sort.by(pagenation.getPageParam().getDirection(),arrayStr.toArray(new String[arrayStr.size()]));
+        Pageable pageable = PageRequest.of(pagenation.getPageParam().getPageNo() - 1, pagenation.getPageParam().getPageSize(), sort);
         Page<E> page = dao.findAll(predicate, pageable);
         return pagenation.setData(page.getContent(), page.getTotalElements(), page.getTotalPages());
     }
@@ -123,10 +109,10 @@ public class TopBaseService<E, D extends BaseDao> {
      * @param countSql
      * @param sql
      * @param pageModel
-     * @param result  映射的对象 （Map 或者 Class）
+     * @param targetClass
      * @return
      */
-    public Page createNativePageQuery(StringBuilder countSql , StringBuilder sql , PageModel pageModel,ResultTransformer result){
+    public <T> Page<T> createNativePageQuery(StringBuilder countSql , StringBuilder sql , PageModel pageModel,Class targetClass){
         Query query1 = entityManager.createNativeQuery(countSql.toString());
         long count =((BigInteger) query1.getSingleResult()).longValue() ;
         if(pageModel.getProperty()!=null && pageModel.getProperty().size()>0 && pageModel.getDirection().size() == pageModel.getProperty().size()){
@@ -139,10 +125,11 @@ public class TopBaseService<E, D extends BaseDao> {
             }
         }
         sql.append(" limit "+pageModel.getPageSize()*(pageModel.getPageNo()-1)+" , "+pageModel.getPageSize());
-        javax.persistence.Query query2 = entityManager.createNativeQuery(sql.toString());
-        query2.unwrap(SQLQuery.class).setResultTransformer(result);
-        List list = query2.getResultList() ;
-        return new PageImpl<>(list,pageModel.getPageable(),count);
+        Query nativeQuery = entityManager.createNativeQuery(sql.toString());
+
+        List list = nativeQuery.getResultList();
+
+        return new PageImpl<>(list, pageModel.getPageable(), count);
     }
 
 }

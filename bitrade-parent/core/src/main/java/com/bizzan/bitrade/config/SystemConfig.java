@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.bizzan.bitrade.util.IdWorkByTwitter;
-import com.sparkframework.sql.DB;
+import com.bizzan.bitrade.sql.DB;
 
 /**
  * @author GS

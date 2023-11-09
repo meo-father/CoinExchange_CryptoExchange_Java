@@ -15,7 +15,7 @@ import com.querydsl.core.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +45,7 @@ public class RewardActivitySettingService extends TopBaseService<RewardActivityS
     }
 
    /* public List<RewardActivitySetting> page(Predicate predicate){
-        Pageable pageable = new PageRequest()
+        Pageable pageable = PageRequest.of()
         Iterable<RewardActivitySetting> iterable = rewardActivitySettingDao.findAll(predicate, QRewardActivitySetting.rewardActivitySetting.updateTime.desc());
         return (List<RewardActivitySetting>) iterable ;
     }*/

@@ -58,7 +58,7 @@ public class BusinessCancelApplyService extends TopBaseService<BusinessCancelApp
     }
 
     public Long getAdvertiserNum(Long memberId) {
-        Member member = memberDao.findOne(memberId);
+        Member member = memberDao.getById(memberId);
         return advertiseDao.getAdvertiseNum(member);
     }
 

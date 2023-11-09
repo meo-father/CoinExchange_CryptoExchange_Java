@@ -1,15 +1,11 @@
 package com.bizzan.bitrade.config;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.bizzan.bitrade.vendor.provider.SMSProvider;
-import com.bizzan.bitrade.vendor.provider.support.ChuangRuiSMSProvider;
 import com.bizzan.bitrade.vendor.provider.support.DiyiSMSProvider;
-import com.bizzan.bitrade.vendor.provider.support.EmaySMSProvider;
-import com.bizzan.bitrade.vendor.provider.support.HuaXinSMSProvider;
 
 @Configuration
 public class SmsProviderConfig {

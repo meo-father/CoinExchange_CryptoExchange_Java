@@ -47,12 +47,12 @@ public class DepartmentService extends BaseService {
     }
 
     public Department findOne(Long departmentId) {
-        return departmentDao.findOne(departmentId);
+        return departmentDao.getById(departmentId);
     }
 
 
     public Department getDepartmentDetail(Long departmentId) {
-        Department department = departmentDao.findOne(departmentId);
+        Department department = departmentDao.getById(departmentId);
         Assert.notNull(department, "该部门不存在");
         return department;
     }
@@ -64,13 +64,13 @@ public class DepartmentService extends BaseService {
 
     @Transactional(rollbackFor = Exception.class)
     public MessageResult deletes(Long id) {
-        Department department = departmentDao.findOne(id);
+        Department department = departmentDao.getById(id);
         List<Admin> list = adminDao.findAllByDepartment(department);
         if (list != null && list.size() > 0) {
             MessageResult result = MessageResult.error("请先删除该部门下的所有用户");
             return result;
         }
-        departmentDao.delete(id);
+        departmentDao.deleteById(id);
         return MessageResult.success("删除成功");
     }
 

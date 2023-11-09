@@ -1,16 +1,15 @@
 package com.bizzan.bitrade.service;
 
-import org.hibernate.SQLQuery;
+import com.bizzan.bitrade.dao.AdminDao;
+import com.bizzan.bitrade.entity.Admin;
+import com.bizzan.bitrade.service.Base.TopBaseService;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.bizzan.bitrade.dao.AdminDao;
-import com.bizzan.bitrade.entity.Admin;
-import com.bizzan.bitrade.service.Base.TopBaseService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -47,7 +46,7 @@ public class AdminService extends TopBaseService<Admin, AdminDao> {
     }
 
     public Admin findOne(Long id) {
-        return dao.findOne(id);
+        return dao.getById(id);
     }
 
     public Map findAdminDetail(Long id) {
@@ -55,7 +54,6 @@ public class AdminService extends TopBaseService<Admin, AdminDao> {
                 "d.name as 'departmentName',r.role from admin a LEFT join department d on a.department_id=d.id LEFT JOIN admin_role r on a.role_id=r.id WHERE a.id=:adminId ";
         Query query = em.createNativeQuery(sql);
         //设置结果转成Map类型
-        query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         Object object = query.setParameter("adminId", id).getSingleResult();
         Map map = (HashMap) object;
         return map;

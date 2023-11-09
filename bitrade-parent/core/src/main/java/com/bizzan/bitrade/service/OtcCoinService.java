@@ -1,8 +1,10 @@
 package com.bizzan.bitrade.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.bizzan.bitrade.sql.model.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +24,6 @@ import com.bizzan.bitrade.service.Base.BaseService;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
-import com.sparkframework.sql.model.Model;
 
 /**
  * @author GS
@@ -68,7 +69,7 @@ public class OtcCoinService extends BaseService {
     }
 
     public OtcCoin findOne(Long id) {
-        return otcCoinDao.findOne(id);
+        return otcCoinDao.getById(id);
     }
 
     public OtcCoin findByUnit(String unit) {
@@ -95,7 +96,7 @@ public class OtcCoinService extends BaseService {
         //排序方式
         Sort orders = Criteria.sortStatic("sort");
         //分页参数
-        PageRequest pageRequest = new PageRequest(pageNo, pageSize, orders);
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, orders);
         //查询条件
         Criteria<OtcCoin> specification = new Criteria<OtcCoin>();
         specification.add(Restrictions.like("name", name, false));
@@ -106,17 +107,15 @@ public class OtcCoinService extends BaseService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deletes(Long[] ids) {
-        for (long id : ids) {
-            otcCoinDao.delete(id);
-        }
+        otcCoinDao.deleteAllById(Arrays.asList(ids));
     }
 
     public Page<OtcCoin> findAll(Predicate predicate, Pageable pageable) {
         return otcCoinDao.findAll(predicate, pageable);
     }
 
-    public List<String> findAllUnits(){
+    public List<String> findAllUnits() {
         List<String> list = otcCoinDao.findAllUnits();
-        return  list ;
+        return list;
     }
 }

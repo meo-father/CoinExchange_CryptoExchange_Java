@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import com.bizzan.bitrade.sql.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,6 @@ import com.bizzan.bitrade.entity.OtcCoin;
 import com.bizzan.bitrade.exception.InformationExpiredException;
 import com.bizzan.bitrade.service.AdvertiseService;
 import com.bizzan.bitrade.service.OtcCoinService;
-import com.sparkframework.sql.DataException;
 
 import lombok.extern.slf4j.Slf4j;
 

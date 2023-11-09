@@ -25,7 +25,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.SQLQuery;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -119,7 +119,7 @@ public class OrderService extends BaseService {
     }
 
     public Order findOne(Long id) {
-        return orderDao.findOne(id);
+        return orderDao.getById(id);
     }
 
     public Order findOneByOrderSn(String orderSn) {
@@ -168,7 +168,7 @@ public class OrderService extends BaseService {
 
     public Page<Order> pageQuery(int pageNo, Integer pageSize, OrderStatus status, long id, String orderSn) {
         Sort orders = Criteria.sortStatic("id.desc");
-        PageRequest pageRequest = new PageRequest(pageNo, pageSize, orders);
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, orders);
         Criteria<Order> specification = new Criteria<Order>();
         specification.add(Restrictions.or(Restrictions.eq("memberId", id, false), Restrictions.eq("customerId", id, false)));
         specification.add(Restrictions.eq("status", status, false));
@@ -183,7 +183,6 @@ public class OrderService extends BaseService {
         String sql = "select o.*,m.real_name from otc_order o  join member m on o.customer_id=m.id and o.member_id=:memberId and o.order_sn =:orderSn ";
         Query query = em.createNativeQuery(sql);
         //设置结果转成Map类型
-        query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         Object object = query.setParameter("memberId", memberId).setParameter("orderSn", orderSn).getSingleResult();
         Map map = (HashMap) object;
         return map;

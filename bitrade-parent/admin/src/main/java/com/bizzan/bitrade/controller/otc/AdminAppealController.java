@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static com.bizzan.bitrade.util.BigDecimalUtils.add;
 import static org.springframework.util.Assert.isTrue;
@@ -124,7 +125,7 @@ public class AdminAppealController extends BaseAdminController {
             endSql.append(" and b.status = "+screen.getStatus().getOrdinal());
         }
 
-        Page page = appealService.createNativePageQuery(countHead.append(endSql),headSqlBuilder.append(endSql),pageModel, Transformers.ALIAS_TO_ENTITY_MAP);
+        Page page = appealService.createNativePageQuery(countHead.append(endSql),headSqlBuilder.append(endSql),pageModel, null);
 
         return success("获取成功",page);
     }

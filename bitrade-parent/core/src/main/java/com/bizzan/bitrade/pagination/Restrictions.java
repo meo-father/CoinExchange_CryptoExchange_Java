@@ -1,5 +1,4 @@
 package com.bizzan.bitrade.pagination;
-import org.hibernate.criterion.MatchMode;
 
 import org.springframework.util.StringUtils;
 
@@ -64,22 +63,6 @@ public class Restrictions {
             return null;
         }
         return new SimpleExpression (fieldName, value, Criterion.Operator.LIKE);
-    }
-
-    /**
-     *
-     * @param fieldName
-     * @param value
-     * @param matchMode
-     * @param ignoreNull
-     * @return
-     */
-    public static SimpleExpression like(String fieldName, String value,
-                                        MatchMode matchMode, boolean ignoreNull) {
-        if(StringUtils.isEmpty(value)) {
-            return null;
-        }
-        return null;
     }
 
     /**

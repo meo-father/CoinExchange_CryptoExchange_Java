@@ -9,7 +9,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +30,11 @@ import com.bizzan.bitrade.service.MemberWalletService;
 import com.bizzan.bitrade.system.CoinExchangeFactory;
 import com.bizzan.bitrade.util.DateUtil;
 import com.bizzan.bitrade.util.MessageResult;
-import com.sparkframework.lang.Convert;
+import com.bizzan.bitrade.lang.Convert;
 
 import lombok.extern.slf4j.Slf4j;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/asset")

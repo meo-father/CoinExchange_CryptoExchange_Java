@@ -1,9 +1,6 @@
 package com.bizzan.bitrade.vendor.provider;
 
 
-import lombok.extern.slf4j.Slf4j;
-import org.dom4j.DocumentException;
-
 import com.bizzan.bitrade.util.MessageResult;
 
 import java.io.IOException;
@@ -67,7 +64,7 @@ public interface SMSProvider {
      * @param phone
      * @return
      */
-    default MessageResult sendInternationalMessage(String content, String phone) throws IOException, DocumentException {
+    default MessageResult sendInternationalMessage(String content, String phone) throws IOException {
         return null;
     }
 }
