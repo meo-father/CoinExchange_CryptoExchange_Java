@@ -30,7 +30,7 @@ services:
     volumes:
       - kafka_vol:/kafka
     depends_on:
-      - zookeeper-test
+      - zookeeper
     container_name: kafka
   mysql:
     image: my_mysql:5.7 # 自己的mysql 镜像，包含了初始化SQL
