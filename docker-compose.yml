@@ -60,7 +60,7 @@ services:
       - "7000:7000"
     container_name: cloud
   admin:
-    image: admin
+    image: admin:1.0
     ports:
       - "6010:6010"
     container_name: admin
