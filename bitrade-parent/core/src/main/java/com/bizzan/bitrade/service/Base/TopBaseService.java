@@ -8,11 +8,11 @@ import com.bizzan.bitrade.dao.base.BaseDao;
 import com.bizzan.bitrade.dto.Pagenation;
 import com.querydsl.core.types.Predicate;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class TopBaseService<E, D extends BaseDao> {
 
-    @Autowired
+    @PersistenceContext
     protected EntityManager entityManager ;
 
     @Setter

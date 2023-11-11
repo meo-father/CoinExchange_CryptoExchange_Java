@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -50,10 +51,12 @@ public class MemberWalletService extends BaseService {
 	@Autowired
     private MemberDao memberDao;
     @Autowired
+    @Lazy
     private MemberWalletDao memberWalletDao;
     @Autowired
     private CoinDao coinDao;
     @Autowired
+    @Lazy
     private MemberTransactionService transactionService;
     @Autowired
     private MemberDepositDao depositDao;

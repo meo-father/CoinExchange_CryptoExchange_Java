@@ -43,7 +43,7 @@ public class SmsController {
     private RedisTemplate redisTemplate;
     @Autowired
     private MemberService memberService;
-    @Resource
+    @Autowired
     private LocaleMessageSourceService localeMessageSourceService;
     @Autowired
     private CountryService countryService;

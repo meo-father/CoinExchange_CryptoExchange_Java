@@ -88,7 +88,7 @@ public class EmployeeController extends BaseAdminController {
 
     @Autowired
     private DepartmentService departmentService;
-    @Resource
+    @Autowired
     private SysPermissionService sysPermissionService;
 
     @Autowired

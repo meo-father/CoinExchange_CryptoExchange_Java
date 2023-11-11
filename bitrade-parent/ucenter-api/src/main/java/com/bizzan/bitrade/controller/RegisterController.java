@@ -93,7 +93,7 @@ public class RegisterController {
     @Autowired
     private GeetestController gtestCon ;
 
-    @Resource
+    @Autowired
     private LocaleMessageSourceService localeMessageSourceService;
 
     private String userNameFormat = "U%06d";

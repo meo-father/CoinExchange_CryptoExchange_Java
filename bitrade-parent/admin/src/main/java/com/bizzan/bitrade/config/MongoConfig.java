@@ -29,16 +29,17 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
         return template;
     }
     @Bean
-    public MongoDatabaseFactory mongoDatabaseFactory(){
+    @Override
+    public MongoDatabaseFactory mongoDbFactory(){
         return new SimpleMongoClientDatabaseFactory(uri);
     }
     @Bean
     @Override
-    public MappingMongoConverter mappingMongoConverter(MongoDatabaseFactory databaseFactory, MongoCustomConversions customConversions, MongoMappingContext mappingContext) {
-        DbRefResolver dbRefResolver = new DefaultDbRefResolver(databaseFactory);
+    public MappingMongoConverter mappingMongoConverter(MongoDatabaseFactory mongoDatabaseFactory, MongoCustomConversions customConversions, MongoMappingContext mappingContext) {
+        DbRefResolver dbRefResolver = new DefaultDbRefResolver(mongoDatabaseFactory);
         MappingMongoConverter converter = new MappingMongoConverter(dbRefResolver, mappingContext);
         converter.setCustomConversions(customConversions);
-        converter.setCodecRegistryProvider(databaseFactory);
+        converter.setCodecRegistryProvider(mongoDatabaseFactory);
         return converter;
     }
     @Bean

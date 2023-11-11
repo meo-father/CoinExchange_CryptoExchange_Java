@@ -66,6 +66,10 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
         <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
@@ -106,10 +110,23 @@
     </dependencies>
     <profiles>
         <profile>
-            <id>dev</id>
+            <id>local</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources/local</directory>
+                    </resource>
+                </resources>
+            </build>
+            <!--<properties>
+                <project.profile>application</project.profile>
+            </properties>-->
+        </profile>
+        <profile>
+            <id>dev</id>
             <build>
                 <resources>
                     <resource>
@@ -123,9 +140,6 @@
         </profile>
         <profile>
             <id>test</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <build>
                 <resources>
                     <resource>
@@ -142,9 +156,6 @@
             <!--<properties>
                 <project.profile>application-prod</project.profile>
             </properties>-->
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <build>
                 <resources>
                     <resource>
@@ -187,6 +198,7 @@
 				    <includeSystemScope>true</includeSystemScope>
 				</configuration>
             </plugin>
+
         </plugins>
     </build>
 </project>

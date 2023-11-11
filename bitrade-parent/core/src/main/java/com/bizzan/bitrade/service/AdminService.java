@@ -3,16 +3,12 @@ package com.bizzan.bitrade.service;
 import com.bizzan.bitrade.dao.AdminDao;
 import com.bizzan.bitrade.entity.Admin;
 import com.bizzan.bitrade.service.Base.TopBaseService;
-import org.hibernate.query.NativeQuery;
-import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,8 +21,6 @@ import java.util.Map;
 @Service
 public class AdminService extends TopBaseService<Admin, AdminDao> {
 
-    @PersistenceContext
-    private EntityManager em;
 
     @Override
     @Autowired
@@ -52,7 +46,7 @@ public class AdminService extends TopBaseService<Admin, AdminDao> {
     public Map findAdminDetail(Long id) {
         String sql = "select a.id,a.role_id roleId,a.department_id departmentId,a.real_name realName,a.avatar,a.email,a.enable,a.mobile_phone mobilePhone,a.qq,a.username, " +
                 "d.name as 'departmentName',r.role from admin a LEFT join department d on a.department_id=d.id LEFT JOIN admin_role r on a.role_id=r.id WHERE a.id=:adminId ";
-        Query query = em.createNativeQuery(sql);
+        Query query = super.entityManager.createNativeQuery(sql);
         //设置结果转成Map类型
         Object object = query.setParameter("adminId", id).getSingleResult();
         Map map = (HashMap) object;

@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 public class AntiAttackAspect {
     @Autowired
     private RedisTemplate redisTemplate;
-    @Resource
+    @Autowired
     private LocaleMessageSourceService localeMessageSourceService;
 
     private ThreadLocal<Long> startTime = new ThreadLocal<>();

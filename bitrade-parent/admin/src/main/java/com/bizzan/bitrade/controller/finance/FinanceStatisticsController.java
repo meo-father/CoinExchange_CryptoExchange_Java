@@ -31,7 +31,7 @@ public class FinanceStatisticsController {
 
     private static final Logger logger = LoggerFactory.getLogger(FinanceStatisticsController.class);
 
-    @Resource(name = "newMongoTemplate")
+    @Autowired
     private MongoTemplate mongoTemplate;
     @Autowired
     private LocaleMessageSourceService messageSource;

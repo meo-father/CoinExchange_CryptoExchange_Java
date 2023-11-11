@@ -24,7 +24,6 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import javax.annotation.Resource;
 import java.time.Duration;
 
 /**
@@ -60,7 +59,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
         // 最大连接数
         jedisPoolConfig.setMaxTotal(maxActive);
         // 当池内没有可用连接时，最大等待时间
-        jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
+        jedisPoolConfig.setMaxWait(Duration.ofMillis(maxWaitMillis));
         // 最大空闲连接数
         jedisPoolConfig.setMinIdle(maxIdle);
         // 最小空闲连接数

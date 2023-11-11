@@ -1,5 +1,6 @@
 package com.bizzan.bitrade.config;
 
+import com.bizzan.bitrade.core.AdminRealm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.codec.Base64;
@@ -7,19 +8,13 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
-import org.apache.shiro.web.filter.mgt.DefaultFilter;
-import org.apache.shiro.web.filter.mgt.DefaultFilterChainManager;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.web.filter.DelegatingFilterProxy;
-
-import com.bizzan.bitrade.core.AdminRealm;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -71,6 +66,7 @@ public class ShiroConfig {
     @Bean(name = "lifecycleBeanPostProcessor")
     public LifecycleBeanPostProcessor lifecycleBeanPostProcessor(){
         LifecycleBeanPostProcessor lifecycleBeanPostProcessor = new LifecycleBeanPostProcessor();
+        log.info(" lifecycleBeanPostProcessor 被执行中。。。");
         return lifecycleBeanPostProcessor;
     }
 
@@ -88,21 +84,8 @@ public class ShiroConfig {
         log.info("ShiroConfiguration.getEhCacheManager()");
         EhCacheManager cacheManager = new EhCacheManager();
         cacheManager.setCacheManagerConfigFile("classpath:ehcache-shiro.xml");
+        log.info(" ehCacheManager 被执行中。。。");
         return cacheManager;
-    }
-
-    @Bean(name="adminRealm")
-    @DependsOn("lifecycleBeanPostProcessor")
-    public AdminRealm adminRealm(EhCacheManager ehCacheManager) {
-        AdminRealm adminRealm = new AdminRealm() ;
-        //为确保密码安全，可以定义hash算法，（此处未做任何hash，直接用密码匹配）
-        /*HashedCredentialsMatcher matcher = new HashedCredentialsMatcher();
-        matcher.setHashAlgorithmName("SHA-1");
-        matcher.setHashIterations(2);
-        matcher.setStoredCredentialsHexEncoded(true);
-        adminRealm.setCredentialsMatcher(matcher);*/
-        adminRealm.setCacheManager(ehCacheManager);
-        return adminRealm;
     }
 
     /**
@@ -115,6 +98,7 @@ public class ShiroConfig {
         simpleCookie.setName("rememberMe");
         simpleCookie.setHttpOnly(true);
         simpleCookie.setMaxAge(7*24*60*60);
+        log.info(" simpleCookie 被执行中。。。");
         return simpleCookie ;
     }
 
@@ -146,10 +130,12 @@ public class ShiroConfig {
     @DependsOn({"adminRealm","ehCacheManager","cookieRememberMeManager"})
     public DefaultWebSecurityManager getDefaultWebSecurityManager(AdminRealm realm, EhCacheManager ehCacheManager,CookieRememberMeManager cookieRememberMeManager) {
         DefaultWebSecurityManager defaultWebSecurityManager = new DefaultWebSecurityManager();
+        realm.setCacheManager(ehCacheManager);
         //设置realm.
         defaultWebSecurityManager.setRealm(realm);
         defaultWebSecurityManager.setCacheManager(ehCacheManager);
         defaultWebSecurityManager.setRememberMeManager(cookieRememberMeManager);
+        log.info(" securityManager 被执行中。。。");
         return defaultWebSecurityManager;
     }
 

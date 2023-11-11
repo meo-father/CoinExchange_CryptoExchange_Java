@@ -23,8 +23,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("finance/exchange-transaction")
 public class ExchangeTransactionController extends BaseController {
-
-    @Resource(name = "newMongoTemplate")
+    @Autowired
     private MongoTemplate mongoTemplate;
 
     @Autowired

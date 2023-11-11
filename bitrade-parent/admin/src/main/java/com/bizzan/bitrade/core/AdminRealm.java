@@ -14,6 +14,7 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
@@ -39,15 +40,20 @@ import java.util.List;
  * @date 2018年12月18日
  */
 @Slf4j
-@Component(value = "realm")
+@Component
+@DependsOn("lifecycleBeanPostProcessor")
 public class AdminRealm extends AuthorizingRealm {
 
-    @Resource
+    @Autowired
     private SysRoleService sysRoleService;
-    @Resource
+    @Autowired
     private AdminService adminService;
-    @Resource
+    @Autowired
     private SysPermissionService sysPermissionService;
+
+    public AdminRealm() {
+        log.info("AdminRealm 被执行中");
+    }
 
     /**
      * 授权

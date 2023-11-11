@@ -92,7 +92,7 @@ public class RedEnvelopeController extends BaseController{
     @Autowired
     private MemberTransactionService memberTransactionService;
     
-    @Resource
+    @Autowired
     private LocaleMessageSourceService localeMessageSourceService;
     
     @Autowired
