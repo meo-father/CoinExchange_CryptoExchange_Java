@@ -52,6 +52,8 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: asdef323332
     container_name: mongodb
+    ports:
+      - "27017:27017"
     volumes:
       - mongoDB_vol:/data/db
   could:
