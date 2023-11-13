@@ -1,14 +1,12 @@
 package com.bizzan.bitrade.service;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.bizzan.bitrade.dao.ExchangeOrderDetailRepository;
 import com.bizzan.bitrade.dao.ExchangeOrderRepository;
 import com.bizzan.bitrade.dao.OrderDetailAggregationRepository;
 import com.bizzan.bitrade.entity.ExchangeOrderDetail;
-import com.bizzan.bitrade.service.MemberService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
