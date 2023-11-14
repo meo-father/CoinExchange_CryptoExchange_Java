@@ -109,7 +109,9 @@
     <profiles>
         <profile>
             <id>local</id>
-
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <resources>
                     <resource>
@@ -123,9 +125,7 @@
         </profile>
         <profile>
             <id>dev</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
+
             <build>
                 <resources>
                     <resource>

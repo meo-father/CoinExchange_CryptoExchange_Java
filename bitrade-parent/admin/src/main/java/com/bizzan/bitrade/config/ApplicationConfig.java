@@ -1,5 +1,9 @@
 package com.bizzan.bitrade.config;
 
+import com.bizzan.bitrade.ext.OrdinalToEnumConverterFactory;
+import com.bizzan.bitrade.interceptor.LogInterceptor;
+import com.bizzan.bitrade.interceptor.OutExcelInterceptor;
+import com.bizzan.bitrade.interceptor.SessionInterceptor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,20 +12,17 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import com.bizzan.bitrade.ext.OrdinalToEnumConverterFactory;
-import com.bizzan.bitrade.interceptor.LogInterceptor;
-import com.bizzan.bitrade.interceptor.OutExcelInterceptor;
-import com.bizzan.bitrade.interceptor.SessionInterceptor;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * @author Administrator
  */
 @Configuration
-public class ApplicationConfig extends WebMvcConfigurerAdapter {
+public class ApplicationConfig implements WebMvcConfigurer {
+
 
     @Bean(name = "messageSource")
     public ResourceBundleMessageSource getMessageSource() {
@@ -32,29 +33,23 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
         return resourceBundleMessageSource;
     }
 
-    @Bean
-    public FilterRegistrationBean corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*");
-        config.setAllowCredentials(true);
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/**", config);
-        FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
-        bean.setOrder(0);
-        return bean;
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOriginPatterns("*") // SpringBoot2.X.0 [allowedOriginPatterns]代替[allowedOrigins]
+                .allowedMethods("*")
+                .maxAge(3600)
+                .allowCredentials(true);
     }
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/asset/**").addResourceLocations("classpath:/asset/");
-        super.addResourceHandlers(registry);
     }
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverterFactory(new OrdinalToEnumConverterFactory());
-        super.addFormatters(registry);
     }
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -62,10 +57,11 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
                 .excludePathPatterns("/code/sms-provider/**","/captcha","/system/employee/sign/in",
                         "/system/employee/check","/system/employee/logout",
                         "/noauth/exchange-coin/detail",
+                        "/error",
+                        "/index/statistics/exception",
                         "/noauth/exchange-coin/modify-limit");
         registry.addInterceptor(new LogInterceptor()).addPathPatterns("/**");
         registry.addInterceptor(new OutExcelInterceptor()).addPathPatterns("/**/out-excel");
-        super.addInterceptors(registry);
     }
 
 }

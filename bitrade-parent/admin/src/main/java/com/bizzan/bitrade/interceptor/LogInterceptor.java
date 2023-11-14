@@ -15,6 +15,7 @@ import com.bizzan.bitrade.constant.SysConstant;
 import com.bizzan.bitrade.entity.Admin;
 import com.bizzan.bitrade.entity.AdminAccessLog;
 import com.bizzan.bitrade.service.AdminAccessLogService;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,27 +35,29 @@ public class LogInterceptor implements HandlerInterceptor, AfterReturningAdvice 
         String uri = request.getRequestURI().substring(index);
         String method = request.getMethod();
         String ip = remoteIp(request);
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        AccessLog al = handlerMethod.getMethodAnnotation(AccessLog.class);
-        if (al != null) {
-            AdminModule module = al.module();
-            String operation = al.operation();
-            log.info("module={},operation={}", module, operation);
-            int dotIndex = uri.lastIndexOf(".");
-            String accessRuleUri = dotIndex > 0 ? uri.substring(0, dotIndex) : uri;
-            Admin admin = (Admin) request.getSession().getAttribute(SysConstant.SESSION_ADMIN);
-            long adminUid = admin == null ? -1 : admin.getId();
-            AdminAccessLog adminAccessLog = new AdminAccessLog();
-            adminAccessLog.setAdminId(adminUid);
-            adminAccessLog.setAccessIp(ip);
-            adminAccessLog.setAccessMethod(method);
-            adminAccessLog.setOperation(operation);
-            adminAccessLog.setModule(module);
-            adminAccessLog.setUri(accessRuleUri);
-            //解决service为null无法注入问题
-            BeanFactory factory = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getServletContext());
-            AdminAccessLogService logService = (AdminAccessLogService) factory.getBean("adminAccessLogService");
-            logService.saveLog(adminAccessLog);
+        if(handler instanceof HandlerMethod) {
+            HandlerMethod handlerMethod = (HandlerMethod) handler;
+            AccessLog al = handlerMethod.getMethodAnnotation(AccessLog.class);
+            if (al != null) {
+                AdminModule module = al.module();
+                String operation = al.operation();
+                log.info("module={},operation={}", module, operation);
+                int dotIndex = uri.lastIndexOf(".");
+                String accessRuleUri = dotIndex > 0 ? uri.substring(0, dotIndex) : uri;
+                Admin admin = (Admin) request.getSession().getAttribute(SysConstant.SESSION_ADMIN);
+                long adminUid = admin == null ? -1 : admin.getId();
+                AdminAccessLog adminAccessLog = new AdminAccessLog();
+                adminAccessLog.setAdminId(adminUid);
+                adminAccessLog.setAccessIp(ip);
+                adminAccessLog.setAccessMethod(method);
+                adminAccessLog.setOperation(operation);
+                adminAccessLog.setModule(module);
+                adminAccessLog.setUri(accessRuleUri);
+                //解决service为null无法注入问题
+                BeanFactory factory = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getServletContext());
+                AdminAccessLogService logService = (AdminAccessLogService) factory.getBean("adminAccessLogService");
+                logService.saveLog(adminAccessLog);
+            }
         }
 
         return true;

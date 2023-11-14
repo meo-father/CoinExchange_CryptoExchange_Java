@@ -128,12 +128,12 @@ public class EmployeeController extends BaseAdminController {
                                  HttpServletRequest request) {
         Assert.notNull(code,"请输入验证码");
         Assert.isTrue(StringUtils.isNotEmpty(username)&&StringUtils.isNotEmpty(password)&&StringUtils.isNotEmpty(phone),"会话已过期");
-        ValueOperations valueOperations = redisTemplate.opsForValue() ;
-        Object cacheCode = valueOperations.get(SysConstant.ADMIN_LOGIN_PHONE_PREFIX+phone);
-        Assert.notNull(cacheCode,"验证码已经被清除，请重新发送");
-        if (!code.equals(cacheCode.toString())) {
+        // ValueOperations valueOperations = redisTemplate.opsForValue() ;
+        // Object cacheCode = valueOperations.get(SysConstant.ADMIN_LOGIN_PHONE_PREFIX+phone);
+        // Assert.notNull(cacheCode,"验证码已经被清除，请重新发送");
+        /*if (!code.equals(cacheCode.toString())) {
             return error("手机验证码错误，请重新输入");
-        }
+        }*/
         try {
             log.info("md5Key {}", md5Key);
 
@@ -141,7 +141,7 @@ public class EmployeeController extends BaseAdminController {
             UsernamePasswordToken token = new UsernamePasswordToken(username, password,true);
             token.setHost(getRemoteIp(request));
             SecurityUtils.getSubject().login(token);
-            valueOperations.getOperations().delete(SysConstant.ADMIN_LOGIN_PHONE_PREFIX+phone);
+            // valueOperations.getOperations().delete(SysConstant.ADMIN_LOGIN_PHONE_PREFIX+phone);
             Admin admin = (Admin) request.getSession().getAttribute(SysConstant.SESSION_ADMIN);
             //token.setRememberMe(true);
 
@@ -156,10 +156,10 @@ public class EmployeeController extends BaseAdminController {
             map.put("permissions", list);
             map.put("admin", admin);
             
-            String[] adminList = admins.split(",");
+           /* String[] adminList = admins.split(",");
 			for(int i = 0; i < adminList.length; i++) {
 				sendEmailMsg(adminList[i], "管理员(UserName: " + username + ", Phone: " + phone+ ") 登录后台", "管理员登录通知");
-			}
+			}*/
 			
             return success("登录成功", map);
         } catch (AuthenticationException e) {
