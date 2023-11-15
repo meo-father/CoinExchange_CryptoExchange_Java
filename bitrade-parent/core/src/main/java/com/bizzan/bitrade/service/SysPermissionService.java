@@ -24,7 +24,6 @@ public class SysPermissionService extends BaseService<SysPermission> {
     public void setDao(SysPermissionDao dao) {
         super.setDao(dao);
     }
-
     @Autowired
     private SysPermissionDao sysPermissionDao;
 
@@ -50,7 +49,4 @@ public class SysPermissionService extends BaseService<SysPermission> {
         }
     }
 
-    public Page<SysPermission> findAll(Predicate predicate, Pageable pageable) {
-        return sysPermissionDao.findAll(predicate, pageable);
-    }
 }

@@ -3,6 +3,7 @@ package com.bizzan.bitrade.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.bizzan.bitrade.dao.base.BaseDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +25,7 @@ import com.bizzan.bitrade.util.MessageResult;
 import com.querydsl.core.types.Predicate;
 
 @Service
-public class ActivityOrderService extends BaseService {
+public class ActivityOrderService extends BaseService<ActivityOrder> {
 	@Autowired
     private ActivityOrderDao activityOrderDao;
 	
@@ -49,11 +50,7 @@ public class ActivityOrderService extends BaseService {
     public ActivityOrder findById(Long id) {
         return activityOrderDao.getById(id);
     }
-    
-    public Page<ActivityOrder> findAll(Predicate predicate, Pageable pageable){
-    	return activityOrderDao.findAll(predicate, pageable);
-    }
-    
+
     public Page<ActivityOrder> finaAllByMemberId(Long memberId, int pageNo, int pageSize){
     	Sort orders = Criteria.sortStatic("createTime.desc");
         //分页参数
@@ -127,4 +124,5 @@ public class ActivityOrderService extends BaseService {
             return MessageResult.error(500, "error");
         }
 	}
+
 }

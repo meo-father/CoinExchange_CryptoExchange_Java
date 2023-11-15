@@ -12,10 +12,14 @@ import com.bizzan.bitrade.pagination.Criteria;
 import com.bizzan.bitrade.service.Base.BaseService;
 
 @Service
-public class InitPlateService extends BaseService {
+public class InitPlateService extends BaseService<InitPlate> {
 
     @Autowired
     private InitPlateDao initPlateDao ;
+    @Autowired
+    public void setDao(InitPlateDao dao) {
+        super.setDao(dao);
+    }
     public InitPlate findInitPlateBySymbol(String symbol) {
         return initPlateDao.findInitPlateBySymbol(symbol);
     }

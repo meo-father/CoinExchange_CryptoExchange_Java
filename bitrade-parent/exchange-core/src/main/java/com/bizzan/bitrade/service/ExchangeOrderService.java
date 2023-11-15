@@ -69,10 +69,6 @@ public class ExchangeOrderService extends BaseService {
 
     @Autowired
     private LocaleMessageSourceService msService;
-    public Page<ExchangeOrder> findAll(Predicate predicate, Pageable pageable) {
-        return exchangeOrderRepository.findAll(predicate, pageable);
-    }
-
 
     /**
      * 添加委托订单

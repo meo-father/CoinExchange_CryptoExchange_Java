@@ -52,4 +52,9 @@ public class Encrypt {
 
         return sBuffer.toString();
     }
+
+    public static void main(String[] args) {
+        String key = "XehGyeyrVgOV4P8Uf70REVpIw332iVNwNs";
+        System.out.println(Encrypt.MD5("123456" + key));
+    }
 }

@@ -12,8 +12,10 @@ import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,11 +30,13 @@ import java.util.Map;
  * @date 2018/1/18 10:29
  */
 @Component
-public class BaseService<T> extends TopBaseService {
+@Slf4j
+public abstract class BaseService<T> extends TopBaseService {
 
     //JPA查询工厂
     @Autowired
     protected JPAQueryFactory queryFactory;
+
 
     /**
      * 查询列表
@@ -139,5 +143,16 @@ public class BaseService<T> extends TopBaseService {
         }
         PageListMapResult pageListMapResult = new PageListMapResult(list, pageNo, pageSize, jpaQuery.fetchCount());//分页封装
         return pageListMapResult;
+    }
+
+    public Page<T> findAll(Predicate predicate, Pageable pageable) {
+        if(null != predicate) {
+            return dao.findAll(predicate, pageable);
+        }else {
+            return dao.findAll(pageable);
+        }
+    }
+    public void setDao(BaseDao dao){
+        super.dao = dao;
     }
 }

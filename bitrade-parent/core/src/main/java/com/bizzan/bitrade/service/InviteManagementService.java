@@ -19,10 +19,13 @@ import java.util.*;
 
 @Slf4j
 @Service
-public class InviteManagementService extends BaseService{
+public class InviteManagementService extends BaseService<Member>{
     @Autowired
     private MemberDao dao;
-
+    @Autowired
+    public void setDao(MemberDao dao) {
+        super.setDao(dao);
+    }
     /**
      * 默认查询所有的用户
      * @return

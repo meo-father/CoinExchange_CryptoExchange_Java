@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @date 2017/12/29 14:50
  */
 @Service
-public class CoinService extends BaseService {
+public class CoinService extends BaseService<Coin> {
     @Autowired
     private CoinDao coinDao;
     @Autowired
@@ -154,10 +154,6 @@ public class CoinService extends BaseService {
      */
     public List<Coin> findLegalAll() {
         return (List<Coin>) coinDao.findAll(QCoin.coin.hasLegal.eq(true));
-    }
-
-    public Page<Coin> findAll(Predicate predicate, Pageable pageable) {
-        return coinDao.findAll(predicate, pageable);
     }
 
     public Page findLegalCoinPage(PageModel pageModel) {

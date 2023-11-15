@@ -24,7 +24,7 @@ import java.util.List;
  * @date 2017年12月19日
  */
 @Service
-public class DepartmentService extends BaseService {
+public class DepartmentService extends BaseService<Department> {
 
     @PersistenceContext
     private EntityManager em;
@@ -35,7 +35,10 @@ public class DepartmentService extends BaseService {
     @Autowired
     private AdminDao adminDao;
 
-
+    @Autowired
+    public void setDao(DepartmentDao dao) {
+        super.setDao(dao);
+    }
     /**
      * 添加或更新部门
      *
@@ -47,24 +50,19 @@ public class DepartmentService extends BaseService {
     }
 
     public Department findOne(Long departmentId) {
-        return departmentDao.getById(departmentId);
+        return departmentDao.getReferenceById(departmentId);
     }
 
 
     public Department getDepartmentDetail(Long departmentId) {
-        Department department = departmentDao.getById(departmentId);
+        Department department = departmentDao.getReferenceById(departmentId);
         Assert.notNull(department, "该部门不存在");
         return department;
     }
 
-
-    public Page<Department> findAll(Predicate predicate, Pageable pageable) {
-        return departmentDao.findAll(predicate, pageable);
-    }
-
     @Transactional(rollbackFor = Exception.class)
     public MessageResult deletes(Long id) {
-        Department department = departmentDao.getById(id);
+        Department department = departmentDao.getReferenceById(id);
         List<Admin> list = adminDao.findAllByDepartment(department);
         if (list != null && list.size() > 0) {
             MessageResult result = MessageResult.error("请先删除该部门下的所有用户");

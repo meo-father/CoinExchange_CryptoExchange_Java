@@ -26,7 +26,7 @@ import java.util.List;
  * @date 2017年12月19日
  */
 @Service
-public class AdminAccessLogService extends BaseService {
+public class AdminAccessLogService extends BaseService<AdminAccessLog> {
 
     @Autowired
     private AdminAccessLogDao adminAccessLogDao;
@@ -77,5 +77,9 @@ public class AdminAccessLogService extends BaseService {
         query.offset(pageModel.getPageSize()*(pageModel.getPageNo()-1)).limit(pageModel.getPageSize());
         List<AdminAccessLog> list = query.fetch() ;
         return new PageImpl<AdminAccessLog>(list,pageModel.getPageable(),total);
+    }
+    @Autowired
+    public void setDao(AdminAccessLogDao dao) {
+        super.setDao(dao);
     }
 }

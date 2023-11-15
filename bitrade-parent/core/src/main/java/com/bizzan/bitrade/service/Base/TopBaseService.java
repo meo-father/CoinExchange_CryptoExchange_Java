@@ -77,7 +77,11 @@ public class TopBaseService<E, D extends BaseDao> {
      */
     @Transactional(readOnly = true)
     public Page<E> findAll(Predicate predicate, PageModel pageModel) {
-        return dao.findAll(predicate, pageModel.getPageable());
+        if(null!=predicate) {
+            return dao.findAll(predicate, pageModel.getPageable());
+        }else {
+            return dao.findAll(pageModel.getPageable());
+        }
     }
 
     /**

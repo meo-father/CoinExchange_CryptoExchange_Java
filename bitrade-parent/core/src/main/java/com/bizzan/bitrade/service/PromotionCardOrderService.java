@@ -13,11 +13,14 @@ import com.bizzan.bitrade.service.Base.BaseService;
 import com.querydsl.core.types.Predicate;
 
 @Service
-public class PromotionCardOrderService extends BaseService {
+public class PromotionCardOrderService extends BaseService<PromotionCardOrder> {
 	
 	@Autowired
 	private PromotionCardOrderDao promotionCardOrderDao;
-
+	@Autowired
+	public void setDao(PromotionCardOrderDao dao) {
+		super.setDao(dao);
+	}
 	public List<PromotionCardOrder> findByCardIdAndMemberId(Long cardId, Long memberId){
 		return promotionCardOrderDao.findAllByCardIdAndMemberId(cardId, memberId);
 	}
@@ -40,10 +43,6 @@ public class PromotionCardOrderService extends BaseService {
     
     public PromotionCardOrder findById(Long id) {
         return promotionCardOrderDao.getById(id);
-    }
-    
-    public Page<PromotionCardOrder> findAll(Predicate predicate, Pageable pageable){
-    	return promotionCardOrderDao.findAll(predicate, pageable);
     }
 
 	public List<PromotionCardOrder> findAllByMemberIdAndIsFree(long memberId, int isFree) {

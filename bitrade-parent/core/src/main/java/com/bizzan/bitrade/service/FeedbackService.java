@@ -12,10 +12,13 @@ import com.bizzan.bitrade.service.Base.BaseService;
  * @date 2018年03月19日
  */
 @Service
-public class FeedbackService extends BaseService {
+public class FeedbackService extends BaseService<Feedback> {
     @Autowired
     private FeedbackDao feedbackDao;
-
+    @Autowired
+    public void setDao(FeedbackDao dao) {
+        super.setDao(dao);
+    }
     public Feedback save(Feedback feedback){
         return feedbackDao.save(feedback);
     }

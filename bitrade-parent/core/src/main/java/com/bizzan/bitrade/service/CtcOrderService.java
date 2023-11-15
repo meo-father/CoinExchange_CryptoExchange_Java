@@ -24,10 +24,13 @@ import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
 
 @Service
-public class CtcOrderService extends BaseService {
+public class CtcOrderService extends BaseService<CtcOrder> {
 	@Autowired
     private CtcOrderDao ctcOrderDao;
-	
+    @Autowired
+    public void setDao(CtcOrderDao dao) {
+        super.setDao(dao);
+    }
 	public CtcOrder findOne(Long id) {
 		return ctcOrderDao.getById(id);
 	}
@@ -55,10 +58,7 @@ public class CtcOrderService extends BaseService {
     public List<CtcOrder> findAllByIdAndMember(Long id, Member member) {
     	return ctcOrderDao.findAllByIdAndMember(id, member);
     }
-    
-    public Page<CtcOrder> findAll(Predicate predicate, Pageable pageable){
-    	return ctcOrderDao.findAll(predicate, pageable);
-    }
+
     
     public Page<CtcOrder> queryByMember(Member member, Integer pageNo, Integer pageSize){
     	//排序方式 (需要倒序 这样    Criteria.sort("id","createTime.desc") ) //参数实体类为字段名

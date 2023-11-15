@@ -67,7 +67,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class AdvertiseService extends BaseService {
+public class AdvertiseService extends BaseService<Advertise> {
 
     @Autowired
     private AdvertiseDao advertiseDao;
@@ -76,9 +76,10 @@ public class AdvertiseService extends BaseService {
     @Autowired
     private MemberWalletService memberWalletService;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
+    @Autowired
+    public void setDao(AdvertiseDao dao) {
+        super.setDao(dao);
+    }
     /**
      * 条件查询对象 pageNo pageSize 同时传时分页
      *
@@ -539,10 +540,6 @@ public class AdvertiseService extends BaseService {
 
     public List<Advertise> getAllPutOnAdvertis(Long memberId) {
         return advertiseDao.findAllByMemberIdAndStatus(memberId, AdvertiseControlStatus.PUT_ON_SHELVES);
-    }
-
-    public Page<Advertise> findAll(com.querydsl.core.types.Predicate predicate, Pageable pageable) {
-        return advertiseDao.findAll(predicate, pageable);
     }
 
     public Special<ScanAdvertise> getLatestAdvertise() throws SQLException, DataException {

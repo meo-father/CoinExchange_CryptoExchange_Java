@@ -2,6 +2,7 @@ package com.bizzan.bitrade.service;
 
 import com.bizzan.bitrade.constant.CommonStatus;
 import com.bizzan.bitrade.constant.SysAdvertiseLocation;
+import com.bizzan.bitrade.dao.RedEnvelopeDao;
 import com.bizzan.bitrade.dao.SysAdvertiseDao;
 import com.bizzan.bitrade.entity.SysAdvertise;
 import com.bizzan.bitrade.pagination.PageResult;
@@ -27,9 +28,10 @@ import java.util.List;
  * @date 2018/1/6 16:45
  */
 @Service
-public class SysAdvertiseService extends BaseService {
+public class SysAdvertiseService extends BaseService<SysAdvertise> {
     @Autowired
     SysAdvertiseDao sysAdvertiseDao;
+
 
     /**
      * 条件查询对象 pageNo pageSize 同时传时分页
@@ -116,9 +118,6 @@ public class SysAdvertiseService extends BaseService {
         return list;
     }
 
-    public Page<SysAdvertise> findAll(Predicate predicate, Pageable pageable) {
-        return sysAdvertiseDao.findAll(predicate, pageable);
-    }
 
 
 }

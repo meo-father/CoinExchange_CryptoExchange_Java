@@ -29,10 +29,13 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class BusinessAuthApplyService extends BaseService{
+public class BusinessAuthApplyService extends BaseService<BusinessAuthApply>{
     @Autowired
     private BusinessAuthApplyDao businessAuthApplyDao;
-
+    @Autowired
+    public void setDao(BusinessAuthApplyDao dao) {
+        super.setDao(dao);
+    }
     public Page<BusinessAuthApply> page(Predicate predicate, PageModel pageModel){
         return businessAuthApplyDao.findAll(predicate,pageModel.getPageable());
     }

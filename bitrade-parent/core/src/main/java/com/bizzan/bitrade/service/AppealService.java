@@ -31,12 +31,17 @@ import com.querydsl.jpa.impl.JPAQuery;
  * @date 2018年01月23日
  */
 @Service
-public class AppealService extends BaseService {
+public class AppealService extends BaseService<Appeal> {
     @Autowired
     private AppealDao appealDao;
 
     @Autowired
     private MemberDao memberDao;
+
+    @Autowired
+    public void setDao(AppealDao dao) {
+        super.setDao(dao);
+    }
 
     public Appeal findOne(Long id) {
         Appeal appeal = appealDao.getById(id);
@@ -134,10 +139,6 @@ public class AppealService extends BaseService {
         vo.setDealTime(appeal.getDealWithTime());
         vo.setRemark(appeal.getRemark());
         return vo ;
-    }
-
-    public Page<Appeal> findAll(com.querydsl.core.types.Predicate predicate, Pageable pageable) {
-        return appealDao.findAll(predicate, pageable);
     }
 
     public long countAuditing(){

@@ -1,5 +1,7 @@
 package com.bizzan.bitrade.service;
 
+import com.bizzan.bitrade.dao.AdminDao;
+import com.bizzan.bitrade.dao.base.BaseDao;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.domain.Page;
@@ -16,7 +18,7 @@ import com.bizzan.bitrade.service.Base.BaseService;
 import com.querydsl.core.types.Predicate;
 
 @Service
-public class ActivityService extends BaseService {
+public class ActivityService extends BaseService<Activity> {
 	
 	@Autowired
     private ActivityDao activityDao;
@@ -34,12 +36,9 @@ public class ActivityService extends BaseService {
     }
     
     public Activity findById(Long id) {
-        return activityDao.getById(id);
+        return activityDao.getReferenceById(id);
     }
-    
-    public Page<Activity> findAll(Predicate predicate, Pageable pageable){
-    	return activityDao.findAll(predicate, pageable);
-    }
+
 
 	public Page<Activity> queryByStep(int pageNo, int pageSize, int step) {
         Sort orders = Criteria.sortStatic("createTime.desc");
@@ -53,4 +52,9 @@ public class ActivityService extends BaseService {
         specification.add(Restrictions.eq("status", 1, false));
         return activityDao.findAll(specification, pageRequest);
 	}
+
+    @Autowired
+    public void setDao(ActivityDao dao) {
+        super.setDao(dao);
+    }
 }

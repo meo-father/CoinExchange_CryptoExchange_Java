@@ -18,10 +18,13 @@ import com.bizzan.bitrade.service.Base.BaseService;
 import com.querydsl.core.types.Predicate;
 
 @Service
-public class RedEnvelopeDetailService extends BaseService{
+public class RedEnvelopeDetailService extends BaseService<RedEnvelopeDetail>{
 	@Autowired
 	private RedEnvelopeDetailDao redEnvelopeDetailDao;
-	
+    @Autowired
+    public void setDao(RedEnvelopeDetailDao dao) {
+        super.setDao(dao);
+    }
 
 	public List<RedEnvelopeDetail> findByEnvelopeIdAndMemberId(Long envelopeId, Long memberId){
 		return redEnvelopeDetailDao.findAllByEnvelopeIdAndMemberId(envelopeId, memberId);
@@ -46,11 +49,7 @@ public class RedEnvelopeDetailService extends BaseService{
     public RedEnvelopeDetail findById(Long id) {
         return redEnvelopeDetailDao.getById(id);
     }
-    
-    public Page<RedEnvelopeDetail> findAll(Predicate predicate, Pageable pageable){
-    	return redEnvelopeDetailDao.findAll(predicate, pageable);
-    }
-    
+
     public Page<RedEnvelopeDetail> findByEnvelope(Long envelopeId, int pageNo, int pageSize){
     	//排序方式 (需要倒序 这样    Criteria.sort("id","createTime.desc") ) //参数实体类为字段名
         Sort orders = Criteria.sortStatic("createTime.desc");

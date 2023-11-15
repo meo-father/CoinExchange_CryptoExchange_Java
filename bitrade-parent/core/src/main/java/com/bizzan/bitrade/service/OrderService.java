@@ -48,7 +48,7 @@ import java.util.Map;
  * @date 2017年12月11日
  */
 @Service
-public class OrderService extends BaseService {
+public class OrderService extends BaseService<Order> {
 
     @PersistenceContext
     private EntityManager em;
@@ -56,7 +56,10 @@ public class OrderService extends BaseService {
     @Autowired
     private OrderDao orderDao;
 
-
+    @Autowired
+    public void setDao(OrderDao dao) {
+        super.setDao(dao);
+    }
     @Autowired
     private IdWorkByTwitter idWorkByTwitter;
     @Autowired
@@ -224,9 +227,6 @@ public class OrderService extends BaseService {
 
     public Order findOneByOrderId(String orderId) {
         return orderDao.getOrderByOrderSn(orderId);
-    }
-    public Page<Order> findAll(com.querydsl.core.types.Predicate predicate, Pageable pageable) {
-        return orderDao.findAll(predicate, pageable);
     }
 
     public Page<OtcOrderVO> outExcel(List<Predicate> predicates , PageModel pageModel){

@@ -17,10 +17,13 @@ import com.bizzan.bitrade.pagination.Restrictions;
 import com.bizzan.bitrade.service.Base.BaseService;
 import com.querydsl.core.types.Predicate;
 @Service
-public class MiningOrderService extends BaseService {
+public class MiningOrderService extends BaseService<MiningOrder> {
 	@Autowired
 	private MiningOrderDao miningOrderDao;
-	
+	@Autowired
+	public void setDao(MiningOrderDao dao) {
+		super.setDao(dao);
+	}
 	public MiningOrder findOne(Long id) {
 		return miningOrderDao.getById(id);
 	}
@@ -32,11 +35,7 @@ public class MiningOrderService extends BaseService {
     public MiningOrder saveAndFlush(MiningOrder miningOrder) {
         return miningOrderDao.saveAndFlush(miningOrder);
     }
-    
-    public Page<MiningOrder> findAll(Predicate predicate, Pageable pageable){
-    	return miningOrderDao.findAll(predicate, pageable);
-    }
-    
+
 	public List<MiningOrder> findAllByMemberId(Long memberId){
 		return miningOrderDao.findAllByMemberId(memberId);
 	}

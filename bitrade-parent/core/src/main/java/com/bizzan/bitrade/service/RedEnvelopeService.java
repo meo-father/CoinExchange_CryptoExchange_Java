@@ -19,12 +19,16 @@ import com.bizzan.bitrade.service.Base.BaseService;
 import com.querydsl.core.types.Predicate;
 
 @Service
-public class RedEnvelopeService extends BaseService {
+public class RedEnvelopeService extends BaseService<RedEnvelope> {
 	
 	@Autowired
 	private RedEnvelopeDao redEnvelopeDao;
-	
-	@Autowired
+    @Autowired
+    public void setDao(RedEnvelopeDao dao) {
+        super.setDao(dao);
+    }
+
+    @Autowired
 	private RedEnvelopeDetailDao redEnvelopeDetailDao;
 	
 	public RedEnvelope findByEnvelopeNo(String envelopeNo) {
@@ -52,10 +56,7 @@ public class RedEnvelopeService extends BaseService {
     public RedEnvelope findById(Long id) {
         return redEnvelopeDao.getById(id);
     }
-    
-    public Page<RedEnvelope> findAll(Predicate predicate, Pageable pageable){
-    	return redEnvelopeDao.findAll(predicate, pageable);
-    }
+
     
     public Page<RedEnvelope> findByMember(Long memberId, int pageNo, int pageSize){
         Sort orders = Criteria.sortStatic("createTime.desc");

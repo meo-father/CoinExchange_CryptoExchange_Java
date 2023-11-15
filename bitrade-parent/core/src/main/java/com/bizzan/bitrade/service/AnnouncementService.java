@@ -22,6 +22,10 @@ import java.util.List;
 @Service
 public class AnnouncementService extends BaseService<Announcement> {
     @Autowired
+    public void setDao(AnnouncementDao dao) {
+        super.setDao(dao);
+    }
+    @Autowired
     private AnnouncementDao announcementDao;
 
     public Announcement save(Announcement announcement) {
@@ -52,10 +56,6 @@ public class AnnouncementService extends BaseService<Announcement> {
 
     public int getMaxSort(){
         return announcementDao.findMaxSort();
-    }
-
-    public Page<Announcement> findAll(Predicate predicate, Pageable pageable) {
-        return announcementDao.findAll(predicate, pageable);
     }
 
 

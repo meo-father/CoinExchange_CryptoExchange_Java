@@ -31,7 +31,7 @@ import static com.bizzan.bitrade.constant.TransactionType.ACTIVITY_AWARD;
 import java.util.List;
 
 @Service
-public class MemberService extends BaseService {
+public class MemberService extends BaseService<Member> {
 
     @Autowired
     private MemberDao memberDao;
@@ -42,6 +42,10 @@ public class MemberService extends BaseService {
     @Autowired
     private MemberTransactionDao transactionDao;
 
+    @Autowired
+    public void setDao(MemberDao dao) {
+        super.setDao(dao);
+    }
     /**
      * 条件查询对象 pageNo pageSize 同时传时分页
      *
@@ -177,9 +181,6 @@ public class MemberService extends BaseService {
         return memberDao.findMemberByMobilePhone(phone);
     }
 
-    public Page<Member> findAll(Predicate predicate, Pageable pageable) {
-        return memberDao.findAll(predicate, pageable);
-    }
 
     public String findUserNameById(long id) {
         return memberDao.findUserNameById(id);

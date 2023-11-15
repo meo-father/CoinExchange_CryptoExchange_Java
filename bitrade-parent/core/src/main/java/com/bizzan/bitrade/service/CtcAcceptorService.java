@@ -14,10 +14,13 @@ import com.bizzan.bitrade.service.Base.BaseService;
 import com.querydsl.core.types.Predicate;
 
 @Service
-public class CtcAcceptorService extends BaseService {
+public class CtcAcceptorService extends BaseService<CtcAcceptor> {
 	@Autowired
     private CtcAcceptorDao ctcAcceptorDao;
-	
+    @Autowired
+    public void setDao(CtcAcceptorDao dao) {
+        super.setDao(dao);
+    }
 	public CtcAcceptor findOne(Long id) {
 		return ctcAcceptorDao.getById(id);
 	}
@@ -36,10 +39,6 @@ public class CtcAcceptorService extends BaseService {
     
     public List<CtcAcceptor> findByStatus(int status) {
         return ctcAcceptorDao.findAllByStatus(status);
-    }
-    
-    public Page<CtcAcceptor> findAll(Predicate predicate, Pageable pageable){
-    	return ctcAcceptorDao.findAll(predicate, pageable);
     }
 
 	public List<CtcAcceptor> findByMember(Member acceptor) {

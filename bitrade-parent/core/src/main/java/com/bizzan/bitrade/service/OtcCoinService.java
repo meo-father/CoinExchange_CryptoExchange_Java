@@ -31,10 +31,13 @@ import com.querydsl.jpa.impl.JPAQuery;
  * @date 2018/1/11 13:45
  */
 @Service
-public class OtcCoinService extends BaseService {
+public class OtcCoinService extends BaseService<OtcCoin> {
     @Autowired
     private OtcCoinDao otcCoinDao;
-
+    @Autowired
+    public void setDao(OtcCoinDao dao) {
+        super.setDao(dao);
+    }
     /**
      * 条件查询对象 pageNo pageSize 同时传时分页
      *
@@ -108,10 +111,6 @@ public class OtcCoinService extends BaseService {
     @Transactional(rollbackFor = Exception.class)
     public void deletes(Long[] ids) {
         otcCoinDao.deleteAllById(Arrays.asList(ids));
-    }
-
-    public Page<OtcCoin> findAll(Predicate predicate, Pageable pageable) {
-        return otcCoinDao.findAll(predicate, pageable);
     }
 
     public List<String> findAllUnits() {

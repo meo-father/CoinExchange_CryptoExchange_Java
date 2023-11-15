@@ -28,12 +28,15 @@ import java.util.Map;
  * @date 2018年01月26日
  */
 @Service
-public class MemberAddressService extends BaseService {
+public class MemberAddressService extends BaseService<MemberAddress> {
     @Autowired
     private MemberAddressDao memberAddressDao;
     @Autowired
     private CoinDao coinDao;
-
+    @Autowired
+    public void setDao(MemberAddressDao dao) {
+        super.setDao(dao);
+    }
     public MessageResult addMemberAddress(Long memberId, String address, String unit, String remark) {
         Coin coin = coinDao.findByUnit(unit);
         if (coin == null || coin.getCanWithdraw().equals(BooleanEnum.IS_FALSE)) {

@@ -38,10 +38,13 @@ import java.util.List;
  * @date 2018/1/9 10:00
  */
 @Service
-public class SysHelpService extends BaseService {
+public class SysHelpService extends BaseService<SysHelp> {
     @Autowired
     private SysHelpDao sysHelpDao;
-
+    @Autowired
+    public void setDao(SysHelpDao dao) {
+        super.setDao(dao);
+    }
     public SysHelp save(SysHelp sysHelp) {
         return sysHelpDao.save(sysHelp);
     }
@@ -87,10 +90,6 @@ public class SysHelpService extends BaseService {
         long count = jpaQuery.fetchCount();
         PageResult<SysHelp> page = new PageResult<>(list, pageNo, pageSize, count);
         return page;
-    }
-
-    public Page<SysHelp> findAll(Predicate predicate, Pageable pageable) {
-        return sysHelpDao.findAll(predicate, pageable);
     }
 
     /**

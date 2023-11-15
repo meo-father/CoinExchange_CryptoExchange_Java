@@ -19,10 +19,13 @@ import java.util.List;
  * @date 2019/5/7
  */
 @Service
-public class DepositRecordService extends BaseService {
+public class DepositRecordService extends BaseService<DepositRecord> {
     @Autowired
     private DepositRecordDao depositRecordDao;
-
+    @Autowired
+    public void setDao(DepositRecordDao dao) {
+        super.setDao(dao);
+    }
     public List<DepositRecord> getAll(){
         return depositRecordDao.findAll();
     }

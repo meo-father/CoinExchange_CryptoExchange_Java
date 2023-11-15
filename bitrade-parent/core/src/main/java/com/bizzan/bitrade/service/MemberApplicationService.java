@@ -12,24 +12,21 @@ import com.bizzan.bitrade.util.BigDecimalUtils;
 import com.bizzan.bitrade.vendor.provider.SMSProvider;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 import static com.bizzan.bitrade.constant.AuditStatus.AUDIT_DEFEATED;
 import static com.bizzan.bitrade.constant.AuditStatus.AUDIT_SUCCESS;
 import static com.bizzan.bitrade.constant.RealNameStatus.NOT_CERTIFIED;
 import static com.bizzan.bitrade.constant.RealNameStatus.VERIFIED;
 import static com.bizzan.bitrade.entity.QMemberApplication.memberApplication;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author GS
@@ -42,7 +39,10 @@ public class MemberApplicationService extends BaseService {
 
     @Autowired
     private MemberApplicationDao memberApplicationDao;
-
+    @Autowired
+    public void setDao(MemberApplicationDao dao) {
+        super.setDao(dao);
+    }
     @Value("${commission.need.real-name:1}")
     private int needRealName ;
     
@@ -79,9 +79,6 @@ public class MemberApplicationService extends BaseService {
         return memberApplicationDao.findAll();
     }
 
-    public Page<MemberApplication> findAll(Predicate predicate, Pageable pageable) {
-        return memberApplicationDao.findAll(predicate, pageable);
-    }
 
     public MemberApplication findOne(Long id) {
         return memberApplicationDao.getById(id);

@@ -19,10 +19,13 @@ import java.util.List;
  * @date 2019/5/5
  */
 @Service
-public class BusinessAuthDepositService extends BaseService {
+public class BusinessAuthDepositService extends BaseService<BusinessAuthDeposit> {
     @Autowired
     private BusinessAuthDepositDao businessAuthDepositDao;
-
+    @Autowired
+    public void setDao(BusinessAuthDepositDao dao) {
+        super.setDao(dao);
+    }
     @Override
     public Page<BusinessAuthDeposit> findAll(Predicate predicate, PageModel pageModel) {
         return businessAuthDepositDao.findAll(predicate, pageModel.getPageable());
