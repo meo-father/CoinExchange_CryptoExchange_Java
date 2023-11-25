@@ -5,8 +5,8 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- * @author GS
- * @date 2018年01月16日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月16日
  */
 @Data
 public class BindBank {

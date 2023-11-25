@@ -3,8 +3,8 @@ package com.bizzan.bitrade.util;
 import org.springframework.validation.BindingResult;
 
 /**
- * @author GS
- * @date 2017年12月08日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月08日
  */
 public class BindingResultUtil {
     public static MessageResult validate(BindingResult bindingResult){

@@ -1,13 +1,12 @@
 package com.bizzan.bitrade.model.create;
 
+import com.bizzan.bitrade.ability.CreateAbility;
+import com.bizzan.bitrade.entity.DataDictionary;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.bizzan.bitrade.ability.CreateAbility;
-import com.bizzan.bitrade.entity.DataDictionary;
-
 /**
- * @author Shaoxianjun
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @Title: ${file_name}
  * @Description:
  * @date 2019/4/1214:24

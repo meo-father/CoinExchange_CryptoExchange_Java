@@ -3,7 +3,6 @@ package com.bizzan.bitrade.model.screen;
 import com.bizzan.bitrade.constant.CertifiedBusinessStatus;
 import com.bizzan.bitrade.constant.CommonStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 
 import java.util.Date;
@@ -28,4 +27,9 @@ public class MemberScreen extends AccountScreen{
      * 01(正常/非法)
      */
     private CommonStatus commonStatus ;
+
+    /**
+     * 代理商：0不是，1是
+     */
+    private String superPartner="0";
 }

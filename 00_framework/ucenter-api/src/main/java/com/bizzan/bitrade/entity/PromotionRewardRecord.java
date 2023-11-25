@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * @author GS
- * @date 2018年03月20日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年03月20日
  */
 @Data
 @Builder

@@ -1,5 +1,6 @@
 package com.bizzan.bitrade.service;
 
+import com.alibaba.fastjson.JSON;
 import com.bizzan.bitrade.constant.CertifiedBusinessStatus;
 import com.bizzan.bitrade.constant.CommonStatus;
 import com.bizzan.bitrade.dao.MemberDao;
@@ -12,11 +13,13 @@ import com.bizzan.bitrade.pagination.PageResult;
 import com.bizzan.bitrade.pagination.Restrictions;
 import com.bizzan.bitrade.service.Base.BaseService;
 import com.bizzan.bitrade.util.BigDecimalUtils;
+import com.bizzan.bitrade.util.GoogleAuthenticatorUtil;
 import com.bizzan.bitrade.util.Md5;
+import com.bizzan.bitrade.util.ValidateUtil;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,10 +29,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static com.bizzan.bitrade.constant.TransactionType.ACTIVITY_AWARD;
 
-import java.util.List;
-
+@Slf4j
 @Service
 public class MemberService extends BaseService {
 
@@ -41,6 +48,19 @@ public class MemberService extends BaseService {
 
     @Autowired
     private MemberTransactionDao transactionDao;
+    @Autowired
+    private LocaleMessageSourceService messageSourceService;
+
+    public Map<Long, Member> mapByMemberIds(List<Long> memberIds) {
+
+        Map<Long, Member> map = new HashMap<>();
+        List<Member> allByIdIn = memberDao.findAllByIdIn(memberIds);
+        allByIdIn.forEach(v -> {
+            map.put(v.getId(), v);
+        });
+
+        return map;
+    }
 
     /**
      * 条件查询对象 pageNo pageSize 同时传时分页
@@ -85,28 +105,59 @@ public class MemberService extends BaseService {
     public Member login(String username, String password) throws Exception {
         Member member = memberDao.findMemberByMobilePhoneOrEmail(username, username);
         if (member == null) {
+            throw new AuthenticationException(messageSourceService.getMessage("USER_PASSWORD_ERROR"));
+        } else if (!Md5.md5Digest(password + member.getSalt()).toLowerCase().equals(member.getPassword())) {
+            throw new AuthenticationException(messageSourceService.getMessage("USER_PASSWORD_ERROR"));
+        } else if (member.getStatus().equals(CommonStatus.ILLEGAL)) {
+            throw new AuthenticationException("ACCOUNT_ACTIVATION_DISABLED");
+        }
+        return member;
+    }
+
+    public Member loginWithCode(String username, String password,Long code,String country) throws Exception {
+
+        Member member = memberDao.findMemberByMobilePhoneOrEmail(username, username);
+        log.info("country::{},username:{},member:{}",country,username, JSON.toJSONString(member));
+        if(!ValidateUtil.isEmail(username)){
+            if(!StringUtils.isEmpty(country) && member!=null){
+                if(!member.getCountry().getZhName().equals(country)){
+                    log.info("oooo!!!!!");
+                    throw new AuthenticationException("账号或密码错误");
+                }
+            }
+        }
+        if (member == null) {
             throw new AuthenticationException("账号或密码错误");
         } else if (!Md5.md5Digest(password + member.getSalt()).toLowerCase().equals(member.getPassword())) {
             throw new AuthenticationException("账号或密码错误");
         } else if (member.getStatus().equals(CommonStatus.ILLEGAL)) {
             throw new AuthenticationException("该帐号处于未激活/禁用状态，请联系客服");
+        }else if(member.getGoogleState()!=null && member.getGoogleState().intValue()==1){
+            //需要验证
+            long t = System.currentTimeMillis();
+            GoogleAuthenticatorUtil ga = new GoogleAuthenticatorUtil();
+            //  ga.setWindowSize(0); // should give 5 * 30 seconds of grace...
+            boolean r = ga.check_code(member.getGoogleKey(), code, t);
+            System.out.println("rrrr="+r);
+            if(!r){
+                throw new AuthenticationException("Google验证码错误");
+            }
         }
         return member;
     }
-
     /**
-     * @author GS
+     * @author Hevin  E-mail:bizzanhevin@gmail.com
      * @description
-     * @date 2017/12/25 18:42
+     * @date 2019/12/25 18:42
      */
     public Member findOne(Long id) {
         return memberDao.findOne(id);
     }
 
     /**
-     * @author GS
+     * @author Hevin  E-mail:bizzanhevin@gmail.com
      * @description 查询所有会员
-     * @date 2017/12/25 18:43
+     * @date 2019/12/25 18:43
      */
     @Override
     public List<Member> findAll() {
@@ -116,7 +167,7 @@ public class MemberService extends BaseService {
     public List<Member> findPromotionMember(Long id) {
         return memberDao.findAllByInviterId(id);
     }
-    
+
     public Page<Member> findPromotionMemberPage(Integer pageNo, Integer pageSize,Long id){
         Sort orders = Criteria.sortStatic("id");
         PageRequest pageRequest = new PageRequest(pageNo, pageSize, orders);
@@ -127,9 +178,9 @@ public class MemberService extends BaseService {
     }
 
     /**
-     * @author GS
+     * @author Hevin  E-mail:bizzanhevin@gmail.com
      * @description 分页
-     * @date 2018/1/12 15:35
+     * @date 2019/1/12 15:35
      */
     public Page<Member> page(Integer pageNo, Integer pageSize, CommonStatus status) {
         //排序方式 (需要倒序 这样    Criteria.sort("id","createTime.desc") ) //参数实体类为字段名
@@ -141,7 +192,7 @@ public class MemberService extends BaseService {
         specification.add(Restrictions.eq("status", status, false));
         return memberDao.findAll(specification, pageRequest);
     }
-    
+
     public Page<Member> findByPage(Integer pageNo, Integer pageSize) {
         //排序方式 (需要倒序 这样    Criteria.sort("id","createTime.desc") ) //参数实体类为字段名
         Sort orders = Criteria.sortStatic("id");
@@ -219,7 +270,7 @@ public class MemberService extends BaseService {
     public boolean userPromotionCodeIsExist(String promotion) {
         return memberDao.getAllByPromotionCodeEquals(promotion).size() > 0 ? true : false;
     }
-    
+
     public Long getMaxId() {
     	return memberDao.getMaxId();
     }
@@ -227,4 +278,29 @@ public class MemberService extends BaseService {
 	public Member findMemberByPromotionCode(String code) {
 		return memberDao.findMemberByPromotionCode(code);
 	}
+
+    public List<Member> findSuperPartnerMembersByIds(String uppers) {
+        String[] idss = uppers.split(",");
+        List<Long> ids = new ArrayList<>();
+        for(String id:idss){
+            ids.add(Long.parseLong(id));
+        }
+        return memberDao.findSuperPartnerMembersByIds(ids);
+    }
+    public List<Member> findAllByIds(String uppers) {
+        String[] idss = uppers.split(",");
+        List<Long> ids = new ArrayList<>();
+        for(String id:idss){
+            ids.add(Long.parseLong(id));
+        }
+        return memberDao.findAllByIds(ids);
+    }
+
+    public List<Member> findByInviterId(Long userId) {
+        return memberDao.findByInviterId(userId);
+    }
+
+    public void updatePromotionCode(Long id, String promotionCode) {
+        memberDao.updatePromotionCode(id,promotionCode);
+    }
 }

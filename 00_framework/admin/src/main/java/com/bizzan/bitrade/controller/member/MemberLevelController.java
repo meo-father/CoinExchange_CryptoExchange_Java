@@ -1,5 +1,12 @@
 package com.bizzan.bitrade.controller.member;
 
+import com.bizzan.bitrade.annotation.AccessLog;
+import com.bizzan.bitrade.constant.AdminModule;
+import com.bizzan.bitrade.controller.common.BaseAdminController;
+import com.bizzan.bitrade.entity.MemberLevel;
+import com.bizzan.bitrade.service.MemberLevelService;
+import com.bizzan.bitrade.util.BindingResultUtil;
+import com.bizzan.bitrade.util.MessageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,21 +16,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bizzan.bitrade.annotation.AccessLog;
-import com.bizzan.bitrade.constant.AdminModule;
-import com.bizzan.bitrade.controller.common.BaseAdminController;
-import com.bizzan.bitrade.entity.MemberLevel;
-import com.bizzan.bitrade.service.MemberLevelService;
-import com.bizzan.bitrade.util.BindingResultUtil;
-import com.bizzan.bitrade.util.MessageResult;
-
 import javax.validation.Valid;
 import java.util.List;
 
 /**
- * @author Shaoxianjun
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description 会员等级管理类
- * @date 2018/12/27 10:16
+ * @date 2019/12/27 10:16
  */
 @RestController
 @Slf4j

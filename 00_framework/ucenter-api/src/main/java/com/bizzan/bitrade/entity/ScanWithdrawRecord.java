@@ -2,9 +2,7 @@ package com.bizzan.bitrade.entity;
 
 import com.bizzan.bitrade.constant.BooleanEnum;
 import com.bizzan.bitrade.constant.WithdrawStatus;
-import com.bizzan.bitrade.entity.WithdrawRecord;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,8 +10,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * @author GS
- * @date 2018年03月01日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年03月01日
  */
 @Builder
 @Data

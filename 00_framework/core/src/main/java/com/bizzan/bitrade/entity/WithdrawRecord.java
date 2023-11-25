@@ -1,23 +1,20 @@
 package com.bizzan.bitrade.entity;
 
-import com.bizzan.bitrade.constant.AuditStatus;
 import com.bizzan.bitrade.constant.BooleanEnum;
 import com.bizzan.bitrade.constant.WithdrawStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import javax.security.auth.message.AuthStatus;
 import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * 提币申请
  *
- * @author GS
- * @date 2018年01月29日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月29日
  */
 @Entity
 @Data

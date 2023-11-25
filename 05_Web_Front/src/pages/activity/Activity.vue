@@ -16,6 +16,8 @@
                   <div class="activity-type" v-if="item.type==2">{{$t('activity.activitytype2')}}</div>
                   <div class="activity-type" v-if="item.type==3">{{$t('activity.activitytype3')}}</div>
                   <div class="activity-type" v-if="item.type==4">{{$t('activity.activitytype4')}}</div>
+                  <div class="activity-type" v-if="item.type==5">{{$t('activity.activitytype5')}}</div>
+                  <div class="activity-type" v-if="item.type==6">{{$t('activity.activitytype6')}}</div>
                   <Row>
                       <Col :xs="24" :sm="24" :md="4" :lg="4"><img :src="item.smallImageUrl"></img></Col>
                       <Col :xs="24" :sm="24" :md="20" :lg="20">
@@ -76,6 +78,8 @@
                   <div class="activity-type" v-if="item.type==2">{{$t('activity.activitytype2')}}</div>
                   <div class="activity-type" v-if="item.type==3">{{$t('activity.activitytype3')}}</div>
                   <div class="activity-type" v-if="item.type==4">{{$t('activity.activitytype4')}}</div>
+                  <div class="activity-type" v-if="item.type==5">{{$t('activity.activitytype5')}}</div>
+                  <div class="activity-type" v-if="item.type==6">{{$t('activity.activitytype6')}}</div>
                   <Row>
                       <Col :xs="24" :sm="24" :md="4" :lg="4"><img :src="item.smallImageUrl"></img></Col>
                       <Col :xs="24" :sm="24" :md="20" :lg="20">
@@ -136,6 +140,8 @@
                   <div class="activity-type" v-if="item.type==2">{{$t('activity.activitytype2')}}</div>
                   <div class="activity-type" v-if="item.type==3">{{$t('activity.activitytype3')}}</div>
                   <div class="activity-type" v-if="item.type==4">{{$t('activity.activitytype4')}}</div>
+                  <div class="activity-type" v-if="item.type==5">{{$t('activity.activitytype5')}}</div>
+                  <div class="activity-type" v-if="item.type==6">{{$t('activity.activitytype6')}}</div>
                   <Row>
                       <Col :xs="24" :sm="24" :md="4" :lg="4"><img :src="item.smallImageUrl"></img></Col>
                       <Col :xs="24" :sm="24" :md="20" :lg="20">
@@ -196,6 +202,8 @@
                   <div class="activity-type" v-if="item.type==2">{{$t('activity.activitytype2')}}</div>
                   <div class="activity-type" v-if="item.type==3">{{$t('activity.activitytype3')}}</div>
                   <div class="activity-type" v-if="item.type==4">{{$t('activity.activitytype4')}}</div>
+                  <div class="activity-type" v-if="item.type==5">{{$t('activity.activitytype5')}}</div>
+                  <div class="activity-type" v-if="item.type==6">{{$t('activity.activitytype6')}}</div>
                   <Row>
                       <Col :xs="24" :sm="24" :md="4" :lg="4"><img :src="item.smallImageUrl"></img></Col>
                       <Col :xs="24" :sm="24" :md="20" :lg="20">
@@ -256,6 +264,8 @@
                   <div class="activity-type" v-if="item.type==2">{{$t('activity.activitytype2')}}</div>
                   <div class="activity-type" v-if="item.type==3">{{$t('activity.activitytype3')}}</div>
                   <div class="activity-type" v-if="item.type==4">{{$t('activity.activitytype4')}}</div>
+                  <div class="activity-type" v-if="item.type==5">{{$t('activity.activitytype5')}}</div>
+                  <div class="activity-type" v-if="item.type==6">{{$t('activity.activitytype6')}}</div>
                   <Row>
                       <Col :xs="24" :sm="24" :md="4" :lg="4"><img :src="item.smallImageUrl"></img></Col>
                       <Col :xs="24" :sm="24" :md="20" :lg="20">
@@ -383,13 +393,7 @@ export default {
       return this.$store.state.lang;
     },
     langPram(){
-      if(this.$store.state.lang == "简体中文"){
-        return "CN";
-      }
-      if(this.$store.state.lang == "English"){
-        return "EN";
-      }
-      return "CN";
+        return this.$store.state.lang;
     }
   },
   methods: {

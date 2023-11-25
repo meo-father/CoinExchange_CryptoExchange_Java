@@ -6,8 +6,8 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
- * @author GS
- * @date 2018年01月22日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月22日
  */
 @Data
 public class AppealApply {

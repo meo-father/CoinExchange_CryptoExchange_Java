@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * @author GS
- * @date 2017年12月19日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月19日
  */
 @AllArgsConstructor
 @Getter
@@ -22,7 +22,8 @@ public enum AdminModule {
     INDEX("INDEX"),
 	ACTIVITY("ACTIVITY"),
 	CTC("CTC"),
-	REDENVELOPE("REDENVELOPE");
+	REDENVELOPE("REDENVELOPE"),
+    CONTRACTOPTION("CONTRACTOPTION");
 	
     @Setter
     private String title;

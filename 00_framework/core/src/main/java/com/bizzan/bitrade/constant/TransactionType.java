@@ -2,7 +2,6 @@ package com.bizzan.bitrade.constant;
 
 import com.bizzan.bitrade.core.BaseEnum;
 import com.fasterxml.jackson.annotation.JsonValue;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -21,11 +20,39 @@ public enum TransactionType implements BaseEnum {
     VOTE("投票"),
     ADMIN_RECHARGE("人工充值"),
     MATCH("配对"),
-	ACTIVITY_BUY("活动兑换"),
-	CTC_BUY("CTC买入"),
-	CTC_SELL("CTC卖出"),
-	RED_OUT("红包发出"),
-	RED_IN("红包领取");
+    ACTIVITY_BUY("活动兑换"),
+    CTC_BUY("CTC买入"),
+    CTC_SELL("CTC卖出"),
+    RED_OUT("红包发出"),
+    RED_IN("红包领取"),
+    WITHDRAWCODE_OUT("提现码提现"),
+    WITHDRAWCODE_IN("提现码充值"),
+    CONTRACT_FEE("永续合约手续费"),
+    CONTRACT_PROFIT("永续合约盈利"),
+    CONTRACT_LOSS("永续合约亏损"),
+    OPTION_FAIL("期权合约失败"),
+    OPTION_FEE("期权合约手续费"),
+    OPTION_REWARD("期权合约奖金"),
+    CONTRACT_AWARD("合约返佣"),
+    LEVEL_AWARD("平级奖励"),
+    PLATFORM_FEE_AWARD("平台手续费收入"),
+    SECOND_FAIL("秒合约失败"),
+    SECOND_REWARD("秒合约奖金"),
+    FINANCE_REWARD("理财利息"),
+    PAY_CHARGE_FEE("支出资金费用"),
+    GET_CHARGE_FEE("获得资金费用"),
+    AUTO_INVEST_BUY("定投买入"),
+    AUTO_INVEST_SELL("定投卖出"),
+    LOCKED_SAVING_BUY("购买定期"),
+    LOCKED_SAVING_SELL("定期赎回"),
+    TRANSFER_IN_COIN("币本位合约划转转入"),
+    TRANSFER_OUT_COIN("币本位合约划转转出"),
+    TRANSFER_IN_USDT("U本位合约划转转入"),
+    TRANSFER_OUT_USDT("U本位合约划转转入"),
+    TRANSFER_IN_SECOND("秒合约划转转入"),
+    TRANSFER_OUT_SECOND("秒合约划转转入"),
+    TRANSFER_IN("币币划转转入"),
+    TRANSFER_OUT("币币划转转出");
 
     private String cnName;
     @Override
@@ -53,6 +80,34 @@ public enum TransactionType implements BaseEnum {
             case 14:return CTC_SELL;
             case 15:return RED_OUT;
             case 16:return RED_IN;
+            case 17:return WITHDRAWCODE_OUT;
+            case 18:return WITHDRAWCODE_IN;
+            case 19:return CONTRACT_FEE;
+            case 20:return CONTRACT_PROFIT;
+            case 21:return CONTRACT_LOSS;
+            case 22:return OPTION_FAIL;
+            case 23:return OPTION_FEE;
+            case 24:return OPTION_REWARD;
+            case 25:return CONTRACT_AWARD;
+            case 26:return LEVEL_AWARD;
+            case 27:return PLATFORM_FEE_AWARD;
+            case 28:return SECOND_FAIL;
+            case 29:return SECOND_REWARD;
+            case 30:return FINANCE_REWARD;
+            case 31:return PAY_CHARGE_FEE;
+            case 32:return GET_CHARGE_FEE;
+            case 33:return AUTO_INVEST_BUY;
+            case 34:return AUTO_INVEST_SELL;
+            case 35:return LOCKED_SAVING_BUY;
+            case 36:return LOCKED_SAVING_SELL;
+            case 37:return TRANSFER_IN_COIN;
+            case 38:return TRANSFER_OUT_COIN;
+            case 39:return TRANSFER_IN_USDT;
+            case 40:return TRANSFER_OUT_USDT;
+            case 41:return TRANSFER_IN_SECOND;
+            case 42:return TRANSFER_OUT_SECOND;
+            case 43:return TRANSFER_IN;
+            case 44:return TRANSFER_OUT;
             default:return null;
         }
     }
@@ -91,8 +146,64 @@ public enum TransactionType implements BaseEnum {
             return 15;
         }else if (TransactionType.RED_IN.equals(ordinal)) {
             return 16;
-        }else {
+        }else if (TransactionType.WITHDRAWCODE_OUT.equals(ordinal)){
+            return 17;
+        }else if (TransactionType.WITHDRAWCODE_IN.equals(ordinal)){
+            return 18;
+        }else if(TransactionType.CONTRACT_FEE.equals(ordinal)){
+            return 19;
+        }else if(TransactionType.CONTRACT_PROFIT.equals(ordinal)){
             return 20;
+        }else if(TransactionType.CONTRACT_LOSS.equals(ordinal)){
+            return 21;
+        }else if(TransactionType.OPTION_FAIL.equals(ordinal)){
+            return 22;
+        }else if(TransactionType.OPTION_FEE.equals(ordinal)){
+            return 23;
+        }else if(TransactionType.OPTION_REWARD.equals(ordinal)){
+            return 24;
+        }else if(TransactionType.CONTRACT_AWARD.equals(ordinal)){
+            return 25;
+        }else if(TransactionType.LEVEL_AWARD.equals(ordinal)){
+            return 26;
+        }else if(TransactionType.PLATFORM_FEE_AWARD.equals(ordinal)){
+            return 27;
+        }else if(TransactionType.SECOND_FAIL.equals(ordinal)){
+            return 28;
+        }else if(TransactionType.SECOND_REWARD.equals(ordinal)){
+            return 29;
+        }else if(TransactionType.FINANCE_REWARD.equals(ordinal)) {
+            return 30;
+        }else if(TransactionType.PAY_CHARGE_FEE.equals(ordinal)){
+            return 31;
+        }else if(TransactionType.GET_CHARGE_FEE.equals(ordinal)){
+            return 32;
+        }else if(TransactionType.AUTO_INVEST_BUY.equals(ordinal)){
+            return 33;
+        }else if(TransactionType.AUTO_INVEST_SELL.equals(ordinal)){
+            return 34;
+        }else if(TransactionType.LOCKED_SAVING_BUY.equals(ordinal)){
+            return 35;
+        }else if(TransactionType.LOCKED_SAVING_SELL.equals(ordinal)){
+            return 36;
+        }else if(TransactionType.TRANSFER_IN_COIN.equals(ordinal)){
+            return 37;
+        }else if(TransactionType.TRANSFER_OUT_COIN.equals(ordinal)){
+            return 38;
+        }else if(TransactionType.TRANSFER_IN_USDT.equals(ordinal)){
+            return 39;
+        }else if(TransactionType.TRANSFER_OUT_USDT.equals(ordinal)){
+            return 40;
+        }else if(TransactionType.TRANSFER_IN_SECOND.equals(ordinal)){
+            return 41;
+        }else if(TransactionType.TRANSFER_OUT_SECOND.equals(ordinal)){
+            return 42;
+        }else if(TransactionType.TRANSFER_IN.equals(ordinal)){
+            return 43;
+        }else if(TransactionType.TRANSFER_OUT.equals(ordinal)){
+            return 44;
+        }else {
+            return 45;
         }
     }
 

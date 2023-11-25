@@ -3,7 +3,6 @@ package com.bizzan.bitrade.vo;
 import com.bizzan.bitrade.constant.BooleanEnum;
 import com.bizzan.bitrade.constant.WithdrawStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -27,6 +26,8 @@ public class WithdrawRecordVO {
     private String transactionNumber ;
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime ;
+    private Long addtime;
+    private Long processtime;
     private String address ;
     private WithdrawStatus status ;
     private String remark ;

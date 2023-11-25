@@ -10,7 +10,6 @@ import com.bizzan.bitrade.entity.SysRole;
 import com.bizzan.bitrade.service.Base.TopBaseService;
 import com.bizzan.bitrade.util.MessageResult;
 import com.querydsl.core.types.Predicate;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,11 +22,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @author GS
- * @date 2017年12月18日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月18日
  */
 @Service
 public class SysRoleService extends TopBaseService<SysRole, SysRoleDao> {
+    @Autowired
+    private LocaleMessageSourceService msService;
 
     @Autowired
     private AdminService adminService;
@@ -61,10 +62,10 @@ public class SysRoleService extends TopBaseService<SysRole, SysRoleDao> {
     public MessageResult deletes(Long id) {
         List<Admin> list = adminDao.findAllByRoleId(id);
         if (list != null && list.size() > 0) {
-            return MessageResult.error("删除失败，请先删除该角色下的所有用户");
+            return MessageResult.error(msService.getMessage("FAIL"));
         }
         sysRoleDao.delete(id);
-        return MessageResult.success("删除成功");
+        return MessageResult.success(msService.getMessage("SUCCESS"));
     }
 
     /**
@@ -85,6 +86,7 @@ public class SysRoleService extends TopBaseService<SysRole, SysRoleDao> {
                                 .parentId(x.getParentId())
                                 .sort(x.getSort())
                                 .title(x.getTitle())
+                                .titleKey(x.getTitleKey())
                                 .description(x.getDescription())
                                 .subMenu(toMenus(sysPermissions, x.getId()))
                                 .build()

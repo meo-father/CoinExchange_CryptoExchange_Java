@@ -2,7 +2,6 @@ package com.bizzan.bitrade.constant;
 
 import com.bizzan.bitrade.core.BaseEnum;
 import com.fasterxml.jackson.annotation.JsonValue;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,8 +9,8 @@ import lombok.Setter;
 /**
  * 广告类型
  *
- * @author GS
- * @date 2017年12月07日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月07日
  */
 @AllArgsConstructor
 @Getter

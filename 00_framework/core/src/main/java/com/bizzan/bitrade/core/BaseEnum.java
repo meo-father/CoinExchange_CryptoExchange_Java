@@ -1,8 +1,8 @@
 package com.bizzan.bitrade.core;
 
 /**
- * @author GS
- * @date 2017年12月12日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月12日
  */
 public interface BaseEnum {
 

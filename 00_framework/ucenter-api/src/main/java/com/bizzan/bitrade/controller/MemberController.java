@@ -1,7 +1,13 @@
 package com.bizzan.bitrade.controller;
 
-import static com.bizzan.bitrade.constant.SysConstant.SESSION_MEMBER;
-
+import com.bizzan.bitrade.constant.BooleanEnum;
+import com.bizzan.bitrade.constant.CommonStatus;
+import com.bizzan.bitrade.entity.*;
+import com.bizzan.bitrade.entity.transform.AuthMember;
+import com.bizzan.bitrade.service.MemberService;
+import com.bizzan.bitrade.service.MemberWalletService;
+import com.bizzan.bitrade.service.SignService;
+import com.bizzan.bitrade.util.MessageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
@@ -10,24 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
-import com.bizzan.bitrade.constant.BooleanEnum;
-import com.bizzan.bitrade.constant.CommonStatus;
-import com.bizzan.bitrade.controller.BaseController;
-import com.bizzan.bitrade.entity.Coin;
-import com.bizzan.bitrade.entity.LoginInfo;
-import com.bizzan.bitrade.entity.Member;
-import com.bizzan.bitrade.entity.MemberWallet;
-import com.bizzan.bitrade.entity.Sign;
-import com.bizzan.bitrade.entity.transform.AuthMember;
-import com.bizzan.bitrade.service.MemberService;
-import com.bizzan.bitrade.service.MemberWalletService;
-import com.bizzan.bitrade.service.SignService;
-import com.bizzan.bitrade.util.MessageResult;
+import static com.bizzan.bitrade.constant.SysConstant.SESSION_MEMBER;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @Description:
- * @date 2018/5/49:30
+ * @date 2019/5/49:30
  */
 @RestController
 @RequestMapping("member")
@@ -80,7 +74,7 @@ public class MemberController extends BaseController {
 
         Member member = memberService.findOne(user.getId());
         Assert.notNull(member, "登录信息错误!");
-        
+
         Sign sign = signService.fetchUnderway();
         LoginInfo loginInfo;
         if (sign == null) {

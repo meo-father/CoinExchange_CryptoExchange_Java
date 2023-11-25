@@ -6,8 +6,8 @@ import java.util.List;
 
 /**
  *
- * @author wqx
- * @date 2018-5-14 12:30:47
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2019-5-14 12:30:47
  */
 @Data
 public class Special<E> {

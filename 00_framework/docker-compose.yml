@@ -1,0 +1,140 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:1.19.0
+    container_name: nginx
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+  redis:
+    image: redis:6.0.2-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - '6379:6379'
+    # command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - /docker/data/redis:/data
+  zookeeper:
+    image: bitnami/zookeeper:3.5.5
+    ports:
+      - "2181:2181"
+    volumes:
+      - /docker/data/zookeeper:/data
+      - /docker/data/zookeeper:/datalog
+      - /docker/data/zookeeper:/logs
+    container_name: zookeeper
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+  kafka:
+    image: bitnami/kafka:2.2.1
+    ports:
+      - "9092:9092"
+    environment:
+      # KAFKA_ADVERTISED_HOST_NAME: "localhost"
+      # advertised_host_name: "localhost"
+      # KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://172.31.32.91:9092
+      KAFKA_CFG_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_BROKER_ID: 0
+    volumes:
+      - /docker/data/kafka:/kafka
+      # - /docker/data/kafka/server.properties:/opt/bitnami/kafka/conf/server.properties
+    depends_on:
+      - zookeeper
+    container_name: kafka
+  mysql:
+    image: mysql:5.7 # 自己的mysql 镜像，包含了初始化SQL
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "a123456"
+      MYSQL_DATABASE: bizzan
+    restart: on-failure
+    privileged: true
+    container_name: mysql
+    volumes:
+      - /docker/data/mysql:/etc/conf.d
+      - /docker/data/mysql:/var/lib/mysql
+  mongoDB:
+    image: mongo:5.0.22
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: asdef323332
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - /docker/data/mongodb:/data/db
+  cloud:
+    image: bitrade-parent/cloud:1.0
+    ports:
+      - "7000:7000"
+    container_name: cloud
+  admin:
+    image: bitrade-parent/admin:1.0
+    ports:
+      - "6010:6010"
+    container_name: admin
+    depends_on:
+      - mysql
+      - redis
+      - mongoDB
+      - kafka
+      - zookeeper
+      - cloud
+  market:
+    image: bitrade-parent/market:1.0
+    ports:
+      - "6004:6004"
+    container_name: market
+    depends_on:
+      - cloud
+      - exchange
+  exchange:
+    image: bitrade-parent/exchange:1.0
+    ports:
+      - "6005:6005"
+    depends_on:
+      - cloud
+    container_name: exchange
+  exchange-api:
+    image: bitrade-parent/exchange-api:1.0
+    ports:
+      - "6003:6003"
+    container_name: exchange-api
+    depends_on:
+      - cloud
+  otc-api:
+    image: bitrade-parent/otc-api:1.0
+    ports:
+      - "6006:6006"
+    container_name: otc-api
+    depends_on:
+      - cloud
+  ucenter-api:
+    image: bitrade-parent/ucenter-api:1.0
+    ports:
+      - "6001:6001"
+    container_name: ucenter-api
+    depends_on:
+      - cloud
+  wallet:
+    image: bitrade-parent/wallet:1.0
+    ports:
+      - "6009:6009"
+    container_name: wallet
+    depends_on:
+      - cloud
+  chat:
+    image: bitrade-parent/chat:1.0
+    ports:
+      - "6008:6008"
+    container_name: chat
+    depends_on:
+      - cloud
+
+
+

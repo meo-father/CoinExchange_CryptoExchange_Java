@@ -1,17 +1,16 @@
 package com.bizzan.bitrade.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.bizzan.bitrade.constant.SignStatus;
 import com.bizzan.bitrade.dao.SignDao;
 import com.bizzan.bitrade.entity.Sign;
 import com.bizzan.bitrade.service.Base.TopBaseService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @Description:
- * @date 2018/5/311:11
+ * @date 2019/5/311:11
  */
 @Service
 public class SignService extends TopBaseService<Sign, SignDao> {

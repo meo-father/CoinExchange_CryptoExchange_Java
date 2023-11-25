@@ -1,20 +1,19 @@
 package com.bizzan.bitrade.entity;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.bizzan.bitrade.constant.BooleanEnum;
+import com.bizzan.bitrade.constant.CommonStatus;
 import lombok.Data;
 import lombok.ToString;
 import org.hibernate.validator.constraints.NotBlank;
-
-import com.bizzan.bitrade.constant.BooleanEnum;
-import com.bizzan.bitrade.constant.CommonStatus;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description
- * @date 2017/12/29 14:14
+ * @date 2021/12/29 14:14
  */
 @Entity
 @Data
@@ -37,6 +36,11 @@ public class Coin {
     @Excel(name = "单位", orderNum = "1", width = 20)
     @NotBlank(message = "单位不得为空")
     private String unit;
+    /**
+     *  logo图url
+     */
+    @Excel(name = "logo图url", orderNum = "1", width = 20)
+    private String iconUrl;
     /**
      * 状态
      */
@@ -138,7 +142,7 @@ public class Coin {
 
     @Transient
     private BigDecimal hotAllBalance ;
-    
+
     @Transient
     private Long blockHeight ;
 
@@ -150,23 +154,23 @@ public class Coin {
 
     @Column(columnDefinition = "int default 4 comment '提币精度'")
     private int withdrawScale;
-    
+
     /**
      * 币种资料链接
      */
     private String infolink;
-    
+
     /**
      * 币种简介
      */
     private String information ;
-    
+
     /**
      * 账户类型：0：默认  1：EOS类型
      */
     @Column(columnDefinition = "int default 0 comment '币种账户类型'")
-    private int accountType;
-    
+    private Integer accountType;
+
     /**
      * 充值地址（仅账户类型为EOS类型有效）
      */

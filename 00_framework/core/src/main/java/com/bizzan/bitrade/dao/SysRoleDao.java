@@ -1,17 +1,15 @@
 package com.bizzan.bitrade.dao;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-
 import com.bizzan.bitrade.dao.base.BaseDao;
 import com.bizzan.bitrade.entity.SysRole;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
 /**
- * @author GS
- * @date 2017年12月18日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月18日
  */
 public interface SysRoleDao extends BaseDao<SysRole> {
 

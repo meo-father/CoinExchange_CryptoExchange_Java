@@ -1,18 +1,17 @@
 package com.bizzan.bitrade.config;
 
-import javax.sql.DataSource;
-
+import com.bizzan.bitrade.core.DB;
+import com.bizzan.bitrade.util.IdWorkByTwitter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.bizzan.bitrade.util.IdWorkByTwitter;
-import com.sparkframework.sql.DB;
+import javax.sql.DataSource;
 
 /**
- * @author GS
- * @date 2017年12月22日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月22日
  */
 @Configuration
 public class SystemConfig {

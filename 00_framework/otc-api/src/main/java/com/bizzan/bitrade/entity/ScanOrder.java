@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * @author GS
- * @date 2018年01月19日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月19日
  */
 @Builder
 @Data
@@ -30,9 +30,10 @@ public class ScanOrder {
     private BigDecimal amount;
     private OrderStatus status;
     private Long memberId;
+    private String currency;
     private String avatar;
 
-    public static ScanOrder toScanOrder(Order order, Long id) {
+    public static ScanOrder toScanOrder(Order order, Long id,String currency) {
         return ScanOrder.builder().orderSn(order.getOrderSn())
                 .createTime(order.getCreateTime())
                 .unit(order.getCoin().getUnit())
@@ -40,6 +41,7 @@ public class ScanOrder {
                 .amount(order.getNumber())
                 .money(order.getMoney())
                 .status(order.getStatus())
+                .currency(currency)
                 .commission(id.equals(order.getMemberId())?order.getCommission():BigDecimal.ZERO)
                 .name(order.getCustomerId().equals(id) ? order.getMemberName() : order.getCustomerName())
                 .memberId(order.getCustomerId().equals(id) ? order.getMemberId():order.getCustomerId())

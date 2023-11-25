@@ -1,17 +1,7 @@
 package com.bizzan.bitrade.service;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.bizzan.bitrade.constant.CommonStatus;
+import com.bizzan.bitrade.core.Model;
 import com.bizzan.bitrade.dao.OtcCoinDao;
 import com.bizzan.bitrade.entity.OtcCoin;
 import com.bizzan.bitrade.entity.QOtcCoin;
@@ -22,12 +12,21 @@ import com.bizzan.bitrade.service.Base.BaseService;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
-import com.sparkframework.sql.model.Model;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description
- * @date 2018/1/11 13:45
+ * @date 2019/1/11 13:45
  */
 @Service
 public class OtcCoinService extends BaseService {
@@ -87,9 +86,9 @@ public class OtcCoinService extends BaseService {
     }
 
     /**
-     * @author GS
+     * @author Hevin  E-mail:bizzanhevin@gmail.com
      * @description 分页请求
-     * @date 2018/1/11 15:04
+     * @date 2019/1/11 15:04
      */
     public Page<OtcCoin> pageQuery(Integer pageNo, Integer pageSize, String name, String nameCn) {
         //排序方式

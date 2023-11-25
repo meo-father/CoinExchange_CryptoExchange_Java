@@ -7,7 +7,6 @@ import com.bizzan.bitrade.entity.Department;
 import com.bizzan.bitrade.service.Base.BaseService;
 import com.bizzan.bitrade.util.MessageResult;
 import com.querydsl.core.types.Predicate;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +19,13 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 /**
- * @author GS
- * @date 2017年12月19日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月19日
  */
 @Service
 public class DepartmentService extends BaseService {
+    @Autowired
+    private LocaleMessageSourceService msService;
 
     @PersistenceContext
     private EntityManager em;
@@ -53,7 +54,7 @@ public class DepartmentService extends BaseService {
 
     public Department getDepartmentDetail(Long departmentId) {
         Department department = departmentDao.findOne(departmentId);
-        Assert.notNull(department, "该部门不存在");
+        Assert.notNull(department, msService.getMessage("DEPARTMENT_DOES_NOT_EXIST"));
         return department;
     }
 
@@ -67,14 +68,10 @@ public class DepartmentService extends BaseService {
         Department department = departmentDao.findOne(id);
         List<Admin> list = adminDao.findAllByDepartment(department);
         if (list != null && list.size() > 0) {
-            MessageResult result = MessageResult.error("请先删除该部门下的所有用户");
+            MessageResult result = MessageResult.error(msService.getMessage("DELETE_ALL_USERS_IN_THIS_DEPARTMENT"));
             return result;
         }
         departmentDao.delete(id);
-        return MessageResult.success("删除成功");
+        return MessageResult.success(msService.getMessage("SUCCESS"));
     }
-
-
-
-
 }

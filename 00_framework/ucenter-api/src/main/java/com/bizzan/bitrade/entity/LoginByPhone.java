@@ -7,8 +7,8 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
- * @author GS
- * @date 2018年01月08日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月08日
  */
 @Data
 public class LoginByPhone {
@@ -26,11 +26,11 @@ public class LoginByPhone {
     private String phone;
 
     @NotBlank(message = "{LoginByPhone.password.null}")
-    @Length(min = 6, max = 20, message = "{LoginByPhone.password.length}")
+    @Length(min = 6, max = 40, message = "{LoginByPhone.password.length}")
     private String password;
 
     @NotBlank(message = "{LoginByPhone.username.null}")
-    @Length(min = 3, max = 20, message = "{LoginByPhone.username.length}")
+//    @Length(min = 3, max = 20, message = "{LoginByPhone.username.length}")
     private String username;
 
     @NotBlank(message = "{LoginByPhone.country.null}")

@@ -4,19 +4,44 @@
       <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
         <FormItem style="text-align:center;">
           <ButtonGroup>
-            <!-- <Button v-for="(list,index) in buttonLists" :key="list.text" :class="{ active:changeActive == index}" @click="actives(index)">{{list.text}}</Button> -->
-            <div class="tel-title">{{$t('uc.login.getlostpwd')}}</div>
+            <Button
+                v-for="(list, index) in buttonLists"
+                :key="list.text"
+                :class="{ active: changeActive == index }"
+                @click="actives(index)"
+            >{{ list.text }}</Button
+            >
           </ButtonGroup>
         </FormItem>
         <FormItem prop="user">
-          <Input type="text" v-model="formInline.user" :placeholder="$t('uc.login.usertip')">
+          <Input type="text" v-model="formInline.user" :placeholder="key" v-if="changeActive == 0">
+            <Select v-model="country" slot="prepend" style="width: 92px;border-bottom: 1px solid #27313e;" @on-select="changeImage">
+              <template #prefix>
+                <Avatar :src="countryImage" size="14" />
+              </template>
+              <Option v-for="item in areas" :value="item.zhName" :label="'+'+item.areaCode" :key="item"
+              ><img style="width: 12px" :src="item.countryImageUrl"></img><span style="margin-left:10px;color:#ccc">{{ item.name }}</span>  <span>{{ '  +'+item.areaCode }}</span></Option
+              >
+            </Select>
           </Input>
+          <Input type="text" v-model="formInline.user" :placeholder="key" v-if="changeActive == 1"> </Input>
         </FormItem>
+<!--        <FormItem prop="user">-->
+<!--          <Input type="text" v-model="formInline.user" :placeholder="$t('uc.login.usertip')">-->
+<!--            <Select v-model="country" slot="prepend" style="width: 92px;border-bottom: 1px solid #27313e;" @on-select="changeImage">-->
+<!--              <template #prefix>-->
+<!--                <Avatar :src="countryImage" size="14" />-->
+<!--              </template>-->
+<!--              <Option v-for="item in areas" :value="item.zhName" :label="'+'+item.areaCode"-->
+<!--              ><img style="width: 12px" :src="item.countryImageUrl"></img><span style="margin-left:10px;color:#ccc">{{ item.name }}</span>  <span>{{ '  +'+item.areaCode }}</span></Option-->
+<!--              >-->
+<!--            </Select>-->
+<!--          </Input>-->
+<!--        </FormItem>-->
         <FormItem prop="code">
-          <Input type="text" v-model="formInline.code" :placeholder="$t('uc.regist.smscode')">
+          <Input type="text" v-model="formInline.code" :placeholder="$t('uc.forget.smscode')">
           </Input>
-          <input id="sendCode"  type="Button" :value="sendcodeValue" :disabled="codedisabled">
-          </input>
+          <input id="sendCode"  type="Button" :value="sendcodeValue" :disabled="codedisabled" />
         </FormItem>
         <FormItem prop="password"  class="password">
           <Input type="password" v-model="formInline.password" :placeholder="$t('uc.forget.newpwd')">
@@ -39,7 +64,7 @@
             <p id="wait" class="show">{{$t('uc.login.validatecodeload')}}......</p>
           </div>
         </div>
-        <p id="notice" class="hide">{{$t('uc.login.validatemsg')}}</p>
+        <!-- <p id="notice" class="hide">{{$t('uc.login.validatemsg')}}</p> -->
       </div>
       <p slot="footer"></p>
     </Modal>
@@ -116,8 +141,25 @@
   color: #666;
   margin: 0;
 }
+.ivu-btn-group>.ivu-btn.active, .ivu-btn-group>.ivu-btn:active, .ivu-btn-group>.ivu-btn:hover{
+  background: transparent!important;
+  border-color: transparent!important;
+  color: #f0ac19!important;
+}
+.ivu-btn-group>.ivu-btn:focus{
+  box-shadow: none!important;
+}
+.ivu-btn-group>.ivu-btn.ivu-btn-default{
+  background: transparent!important;
+  color: #828ea1;
+}
+.ivu-btn-group>.ivu-btn{
+  font-size: 16px;
+}
 </style>
 <script>
+const mobilereg = /^[1][3,4,5,6,7,8,9][0-9]{9}$/,
+    emailReg = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
 import gtInit from "../../assets/js/gt.js";
 import $ from "jquery";
 export default {
@@ -154,6 +196,8 @@ export default {
       }
     };
     return {
+      country: "美国",
+      countryImage: "",
       codedisabled:false,
       sendcodeValue: this.$t("uc.regist.sendcode"),
       captchaObj: null,
@@ -162,6 +206,9 @@ export default {
       buttonLists: [
         {
           text: this.$t("uc.forget.resettelpwd")
+        },
+        {
+          text: this.$t("uc.forget.resetemailpwd")
         }
       ],
       changeActive: 0,
@@ -173,7 +220,7 @@ export default {
         repassword: ""
       },
       ruleInline: {
-        user: [{ validator: validateUser, trigger: "blur" }],
+        // user: [{ validator: validateUser, trigger: "blur" }],
         code: [{ required: true, message: "请输入验证码", trigger: "blur" }],
         password: [
           {
@@ -210,7 +257,7 @@ export default {
   },
   created: function() {
     this.init();
-    // this.actives(this.changeActive);
+    this.actives(this.changeActive);
   },
   computed: {
     isLogin: function() {
@@ -224,9 +271,43 @@ export default {
       } else {
         this.$store.state.HeaderActiveName = "1-4";
       }
+      this.getAreas();
       this.initGtCaptcha();
     },
-    // 切换
+    getAreas() {
+      this.$http.post(this.host + "/uc/support/country").then(response => {
+        var resp = response.body;
+        this.areas = resp.data;
+        this.country = this.areas[0].zhName;
+        this.countryImage = this.areas[0].countryImageUrl;
+        this.form.rmb = this.areas[0].localCurrency;
+      });
+    },
+    changeImage(item){
+      for(var i=0;i<this.areas.length;i++){
+        if(this.areas[i].zhName==item.value){
+          this.countryImage = this.areas[i].countryImageUrl;
+        }
+      }
+    },
+    actives: function(index) {
+      this.changeActive = index
+      if (this.changeActive == 0) {
+        this.showCode = true
+        this.key = this.$t('uc.regist.telno')
+        this.ruleInline.code = [
+          {
+            required: true,
+            message: this.$t('uc.regist.smscodetip'),
+            trigger: 'blur',
+          },
+        ]
+      } else {
+        this.showCode = false
+        this.key = this.$t('uc.regist.email')
+        this.ruleInline.code = []
+      }
+    },
     // actives: function(index) {
     //   this.changeActive = index;
     //   if (this.changeActive == 0) {
@@ -274,41 +355,69 @@ export default {
       var that = this;
       this.$http.get(this.host + this.api.uc.captcha).then(function(res) {
         window.initGeetest(
-          {
-            // 以下配置参数来自服务端 SDK
-            gt: res.body.gt,
-            challenge: res.body.challenge,
-            offline: !res.body.success, //表示用户后台检测极验服务器是否宕机
-            new_captcha: res.body.new_captcha, //用于宕机时表示是新验证码的宕机
-            product: "bind",
-            width: "100%"
-          },
-          this.handler
+            {
+              // 以下配置参数来自服务端 SDK
+              gt: res.body.gt,
+              challenge: res.body.challenge,
+              offline: !res.body.success, //表示用户后台检测极验服务器是否宕机
+              new_captcha: res.body.new_captcha, //用于宕机时表示是新验证码的宕机
+              product: "bind",
+              width: "100%",
+              lang: "en_US"
+            },
+            this.handler
         );
       });
     },
     handler(captchaObj) {
       captchaObj.onReady(() => {
-          $("#wait").hide();
-        }).onSuccess(() => {
-          let result = (this._captchaResult = captchaObj.getValidate());
-          if (!result) {
-            this.$Message.error("请完成验证");
-          } else {
-            this.afterValidate();
-          }
-        });
+        $("#wait").hide();
+      }).onSuccess(() => {
+        let result = (this._captchaResult = captchaObj.getValidate());
+        if (!result) {
+          this.$Message.error("请完成验证");
+        } else {
+          // mobilereg.test(this.formInline.user) && this.afterValidate();
+          this.afterValidate();
+          // emailReg.test(this.formInline.user) && this.emailReset();
+        }
+      });
       $("#sendCode").click(()=> {
-         let reg = /^[1][3,4,5,6,7,8,9][0-9]{9}$/,
-         tel = this.formInline.user,
-         flagtel = reg.test(tel);
-         flagtel && captchaObj.verify();
-         !flagtel &&  this.$Message.error("请填写正确的手机号");
+        const tel = this.formInline.user,
+            // flagtel = mobilereg.test(tel) || emailReg.test(tel);
+            flagtel =  true;
+        flagtel && captchaObj.verify();
+        !flagtel && this.$Message.error("请填写正确的手机号或者邮箱号");
+      });
+    },
+    emailReset() {
+      this.modal1 = false;
+      var params = {};
+      params["account"] = this.formInline.user;
+      params["geetest_challenge"] = this._captchaResult.geetest_challenge; //极验验证二次验证表单数据 chllenge
+      params["geetest_validate"] = this._captchaResult.geetest_validate; //极验验证二次验证表单数据 validate
+      params["geetest_seccode"] = this._captchaResult.geetest_seccode; //极验验证二次验证表单数据 seccode
+
+      this.$http.post(this.host + "/uc/reset/email/code", params).then(response => {
+        this.countdown = 60;
+        var resp = response.body;
+        if (resp.code == 0) {
+          this.settime();
+          this.$Notice.success({
+            title: this.$t("common.tip"),
+            desc: resp.message
+          });
+        } else {
+          this.$Notice.error({
+            title: this.$t("common.tip"),
+            desc: resp.message
+          });
+        }
       });
     },
     afterValidate() {
       this.modal1 = false;
-      if (this.changeActive == 1) {
+      if (emailReg.test(this.formInline.user)) {
         //发送邮件
         var params = {};
         params["account"] = this.formInline.user;
@@ -317,20 +426,21 @@ export default {
         params["geetest_seccode"] = this._captchaResult.geetest_seccode; //极验验证二次验证表单数据 seccode
 
         this.$http.post(this.host + "/uc/reset/email/code", params).then(response => {
-            this.countdown = 60;
-            var resp = response.body;
-            if (resp.code == 0) {
-              this.$Notice.success({
-                title: this.$t("common.tip"),
-                desc: resp.message
-              });
-            } else {
-              this.$Notice.error({
-                title: this.$t("common.tip"),
-                desc: resp.message
-              });
-            }
-          });
+          this.countdown = 60;
+          var resp = response.body;
+          if (resp.code == 0) {
+            this.settime();
+            this.$Notice.success({
+              title: this.$t("common.tip"),
+              desc: resp.message
+            });
+          } else {
+            this.$Notice.error({
+              title: this.$t("common.tip"),
+              desc: resp.message
+            });
+          }
+        });
       } else {
         var params = {};
         params["account"] = this.formInline.user;
@@ -338,43 +448,43 @@ export default {
         params["geetest_validate"] = this._captchaResult.geetest_validate; //极验验证二次验证表单数据 validate
         params["geetest_seccode"] = this._captchaResult.geetest_seccode; //极验验证二次验证表单数据 seccode
         this.$http.post(this.host + "/uc/mobile/reset/code", params).then(response => {
-            var resp = response.body;
-            if (resp.code == 0) {
-              this.settime();
-              this.$Notice.success({title: this.$t("common.tip"),desc: resp.message });
-            } else {
-              this.$Notice.error({title: this.$t("common.tip"),desc: resp.message});
-            }
-          });
+          var resp = response.body;
+          if (resp.code == 0) {
+            this.settime();
+            this.$Notice.success({title: this.$t("common.tip"),desc: resp.message });
+          } else {
+            this.$Notice.error({title: this.$t("common.tip"),desc: resp.message});
+          }
+        });
       }
     },
     handleSubmit(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
-          if (this.changeActive == 1) {
+          if (emailReg.test(this.formInline.user)) {
             var params = {};
             params["account"] = this.formInline.user;
             params["code"] = this.formInline.code;
             params["mode"] = 1;
             params["password"] = this.formInline.password;
             this.$http
-              .post(this.host + "/uc/reset/login/password", params)
-              .then(response => {
-                this.countdown = 60;
-                var resp = response.body;
-                if (resp.code == 0) {
-                  this.$Notice.success({
-                    title: this.$t("common.tip"),
-                    desc: resp.message
-                  });
-                  this.$router.push("/login");
-                } else {
-                  this.$Notice.error({
-                    title: this.$t("common.tip"),
-                    desc: resp.message
-                  });
-                }
-              });
+                .post(this.host + "/uc/reset/login/password", params)
+                .then(response => {
+                  this.countdown = 60;
+                  var resp = response.body;
+                  if (resp.code == 0) {
+                    this.$Notice.success({
+                      title: this.$t("common.tip"),
+                      desc: resp.message
+                    });
+                    this.$router.push("/login");
+                  } else {
+                    this.$Notice.error({
+                      title: this.$t("common.tip"),
+                      desc: resp.message
+                    });
+                  }
+                });
           } else {
             var params = {};
             params["account"] = this.formInline.user;
@@ -382,22 +492,22 @@ export default {
             params["mode"] = 0;
             params["password"] = this.formInline.password;
             this.$http
-              .post(this.host + "/uc/reset/login/password", params)
-              .then(response => {
-                var resp = response.body;
-                if (resp.code == 0) {
-                  this.$Notice.success({
-                    title: this.$t("common.tip"),
-                    desc:'重置成功'
-                  });
-                  this.$router.push("/login");
-                } else {
-                  this.$Notice.error({
-                    title: this.$t("common.tip"),
-                    desc: resp.message
-                  });
-                }
-              });
+                .post(this.host + "/uc/reset/login/password", params)
+                .then(response => {
+                  var resp = response.body;
+                  if (resp.code == 0) {
+                    this.$Notice.success({
+                      title: this.$t("common.tip"),
+                      desc:'重置成功'
+                    });
+                    this.$router.push("/login");
+                  } else {
+                    this.$Notice.error({
+                      title: this.$t("common.tip"),
+                      desc: resp.message
+                    });
+                  }
+                });
           }
           // this.$Message.success(this.$t('uc.forget.resetpwdsuccess'));
         } else {
@@ -469,5 +579,35 @@ export default {
       }
     }
   }
+}
+.ivu-btn-group > .ivu-btn.active,
+   .ivu-btn-group > .ivu-btn:active,
+   .ivu-btn-group > .ivu-btn:hover {
+     border-color: transparent !important;
+     color: #f0ac19 !important;
+   }
+.ivu-btn-group > .ivu-btn:focus {
+  box-shadow: none !important;
+}
+.ivu-btn-group > .ivu-btn {
+  font-size: 16px;
+}
+.ivu-input-group-append,
+.ivu-input-group-prepend {
+  padding: 0 0 !important;
+}
+.ivu-input-default {
+  border: none;
+  border-bottom: 1px solid #27313e;
+  font-size: 14px;
+  background: transparent;
+  border-radius: 0;
+}
+.ivu-input-group .ivu-input, .ivu-input-group .ivu-input-inner-container {
+  width: 100%;
+  float: left;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 2;
 }
 </style>

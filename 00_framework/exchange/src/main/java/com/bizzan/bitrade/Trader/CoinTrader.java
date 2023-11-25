@@ -2,10 +2,8 @@ package com.bizzan.bitrade.Trader;
 
 import com.alibaba.fastjson.JSON;
 import com.bizzan.bitrade.entity.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.math.BigDecimal;
@@ -259,6 +257,7 @@ public class CoinTrader {
                 Map.Entry<BigDecimal,MergeOrder> entry = mergeOrderIterator.next();
                 MergeOrder mergeOrder = entry.getValue();
                 Iterator<ExchangeOrder> orderIterator = mergeOrder.iterator();
+
                 //买入单需要匹配的价格不大于委托价，否则退出
                 if (focusedOrder.getDirection() == ExchangeOrderDirection.BUY && mergeOrder.getPrice().compareTo(focusedOrder.getPrice()) > 0) {
                     break;
@@ -269,6 +268,7 @@ public class CoinTrader {
                 }
                 while (orderIterator.hasNext()) {
                     ExchangeOrder matchOrder = orderIterator.next();
+
                     //处理匹配
                     ExchangeTrade trade = processMatch(focusedOrder, matchOrder);
                     exchangeTrades.add(trade);
@@ -623,7 +623,7 @@ public class CoinTrader {
      */
     public void sendTradePlateMessage(TradePlate plate){
         //防止并发引起数组越界，造成盘口倒挂
-        synchronized (plate) {
+        synchronized (plate.getItems()) {
             kafkaTemplate.send("exchange-trade-plate", JSON.toJSONString(plate));
         }
     }

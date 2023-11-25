@@ -1,15 +1,14 @@
 package com.bizzan.bitrade.dao;
 
+import com.bizzan.bitrade.dao.base.BaseDao;
+import com.bizzan.bitrade.entity.Announcement;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.bizzan.bitrade.dao.base.BaseDao;
-import com.bizzan.bitrade.entity.Announcement;
-
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description
- * @date 2018/3/5 15:32
+ * @date 2019/3/5 15:32
  */
 public interface AnnouncementDao extends BaseDao<Announcement> {
 

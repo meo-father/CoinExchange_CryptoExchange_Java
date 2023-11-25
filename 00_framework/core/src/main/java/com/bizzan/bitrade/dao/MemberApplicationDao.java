@@ -1,19 +1,18 @@
 package com.bizzan.bitrade.dao;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import com.bizzan.bitrade.constant.AuditStatus;
 import com.bizzan.bitrade.dao.base.BaseDao;
 import com.bizzan.bitrade.entity.Member;
 import com.bizzan.bitrade.entity.MemberApplication;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description
- * @date 2017/12/26 15:12
+ * @date 2019/12/26 15:12
  */
 public interface MemberApplicationDao extends BaseDao<MemberApplication> {
     List<MemberApplication> findMemberApplicationByMemberAndAuditStatusOrderByIdDesc(Member var1, AuditStatus var2);

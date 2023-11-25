@@ -4,7 +4,10 @@
       <div class="bill_box rightarea padding-right-clear">
         <div class="shaow">
           <div class="money_table">
-            <Table :columns="tableColumns" :data="orderList" :loading="loading" :disabled-hover="true"></Table>
+            <div class="xs_table" v-if="xsWidth">
+              <Table :columns="tableColumns" :data="orderList" :loading="loading" :disabled-hover="true" style="width: 300%;"></Table>
+            </div>
+            <Table v-else :columns="tableColumns" :data="orderList" :loading="loading" :disabled-hover="true"></Table>
             <div class="page">
               <Page :total="total" :pageSize="pageSize" :current="pageNo" @on-change="loadDataPage"></Page>
             </div>
@@ -19,6 +22,7 @@ export default {
   components: {},
   data() {
     return {
+      xsWidth:window.innerWidth < 767,
       loginmsg: this.$t("common.logintip"),
       total: 0,
       pageSize: 10,
@@ -88,6 +92,9 @@ export default {
           }
           if(params.row.type == 5){
             text = "云矿机认购";
+          }
+          if(params.row.type == 6){
+            text = "锁仓";
           }
           return h(
             "span",{}, text
@@ -262,4 +269,19 @@ export default {
     cursor: pointer;
   }
 }
+.xs_table {
+        width: 100%;
+        overflow-x: scroll;
+
+        &::-webkit-scrollbar {
+          height: 2px;
+        }
+
+        
+
+        &::-webkit-scrollbar-track-piece {
+          background: transparent;
+        }
+
+      }
 </style>

@@ -8,6 +8,7 @@ import com.bizzan.bitrade.entity.BusinessAuthApply;
 import com.bizzan.bitrade.entity.DepositRecord;
 import com.bizzan.bitrade.entity.Member;
 import com.bizzan.bitrade.entity.MemberWallet;
+import com.bizzan.bitrade.event.MemberEvent;
 import com.bizzan.bitrade.model.screen.MemberScreen;
 import com.bizzan.bitrade.service.*;
 import com.bizzan.bitrade.util.FileUtil;
@@ -15,7 +16,6 @@ import com.bizzan.bitrade.util.MessageResult;
 import com.bizzan.bitrade.util.PredicateUtils;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -36,7 +36,7 @@ import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
 
 /**
- * @author Shaoxianjun
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description 后台管理会员
  * @date 2019/12/25 16:50
  */
@@ -59,6 +59,8 @@ public class MemberController extends BaseAdminController {
 
     @Autowired
     private LocaleMessageSourceService messageSource;
+    @Autowired
+    private MemberEvent memberEvent;
 
     @RequiresPermissions("member:all")
     @PostMapping("all")
@@ -258,7 +260,56 @@ public class MemberController extends BaseAdminController {
         return result;
     }
 
+    private Long coverToLong(String str){
+        try {
+            Long num=Long.valueOf(str);//把字符串强制转换为数字
+            return num;//如果是数字，数字
+        } catch (Exception e) {
+            return null;//如果抛出异常，返回null
+        }
+    }
+
     private Predicate getPredicate(MemberScreen screen) {
+        ArrayList<BooleanExpression> booleanExpressions = new ArrayList<>();
+        if (screen.getStatus() != null) {
+            booleanExpressions.add(member.certifiedBusinessStatus.eq(screen.getStatus()));
+        }
+        if (screen.getStartTime() != null) {
+            booleanExpressions.add(member.registrationTime.goe(screen.getStartTime()));
+        }
+        if (screen.getEndTime() != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(screen.getEndTime());
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            booleanExpressions.add(member.registrationTime.lt(calendar.getTime()));
+        }
+
+        if (!StringUtils.isEmpty(screen.getAccount())) {
+            Long accountId = coverToLong(screen.getAccount());
+            if(accountId==null) {
+                booleanExpressions.add(member.username.like("%" + screen.getAccount() + "%")
+                        .or(member.mobilePhone.like(screen.getAccount() + "%"))
+                        .or(member.email.like(screen.getAccount() + "%"))
+                        .or(member.realName.like("%" + screen.getAccount() + "%")));
+            }else {
+                booleanExpressions.add(member.username.like("%" + screen.getAccount() + "%")
+                        .or(member.mobilePhone.like(screen.getAccount() + "%"))
+                        .or(member.email.like(screen.getAccount() + "%"))
+                        .or(member.id.eq(accountId))
+                        .or(member.realName.like("%" + screen.getAccount() + "%")));
+            }
+        }
+        if (screen.getCommonStatus() != null) {
+            booleanExpressions.add(member.status.eq(screen.getCommonStatus()));
+        }
+
+        if(screen.getSuperPartner() != null && !screen.getSuperPartner().equals("")) {
+            booleanExpressions.add(member.superPartner.eq(screen.getSuperPartner()));
+        }
+        return PredicateUtils.getPredicate(booleanExpressions);
+    }
+
+    private Predicate getPredicate(MemberScreen screen, Long userId) {
         ArrayList<BooleanExpression> booleanExpressions = new ArrayList<>();
         if (screen.getStatus() != null) {
             booleanExpressions.add(member.certifiedBusinessStatus.eq(screen.getStatus()));
@@ -280,12 +331,13 @@ public class MemberController extends BaseAdminController {
                     .or(member.id.eq(Long.valueOf(screen.getAccount())))
                     .or(member.realName.like("%" + screen.getAccount() + "%")));
         }
+        // 筛选过滤出我邀请的人
+        booleanExpressions.add(member.inviterId.eq(userId));
         if (screen.getCommonStatus() != null) {
             booleanExpressions.add(member.status.eq(screen.getCommonStatus()));
         }
         return PredicateUtils.getPredicate(booleanExpressions);
     }
-
     @RequiresPermissions("member:out-excel")
     @GetMapping("out-excel")
     @AccessLog(module = AdminModule.MEMBER, operation = "导出会员Member Excel")
@@ -358,5 +410,84 @@ public class MemberController extends BaseAdminController {
         member.setTransactionStatus(status);
         memberService.save(member);
         return success(messageSource.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 更改用户等级（合伙人/代理商等）
+     * @param superPartner
+     * @param memberId
+     * @return
+     */
+    @RequiresPermissions("member:alter-member-superpartner")
+    @PostMapping("alter-member-superpartner")
+    @AccessLog(module = AdminModule.SYSTEM, operation = "修改用户等级")
+    public MessageResult alterSuperPartner(
+            @RequestParam("superPartner") String superPartner,
+            @RequestParam("memberId") Long memberId) {
+        Member member = memberService.findOne(memberId);
+        member.setSuperPartner(superPartner);
+        memberService.save(member);
+        return success(messageSource.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 查询代理商列表
+     * @param pageModel
+     * @param screen
+     * @return
+     */
+    @RequiresPermissions("member:page-query-super")
+    @PostMapping("page-query-super")
+    @ResponseBody
+    @AccessLog(module = AdminModule.MEMBER, operation = "分页查找会员Member")
+    public MessageResult pageSuperPartner(
+            PageModel pageModel,
+            MemberScreen screen) {
+        screen.setSuperPartner("1"); // 默认选择代理商
+        Predicate predicate = getPredicate(screen);
+        Page<Member> all = memberService.findAll(predicate, pageModel.getPageable());
+        return success(all);
+    }
+
+    /**
+     * 查询代理商邀请用户列表
+     * @param pageModel
+     * @param screen
+     * @param userId
+     * @return
+     */
+    @RequiresPermissions("member:supermember-page-query")
+    @PostMapping(value = "/supermember-page-query")
+    @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
+    public MessageResult pageSuperMember(
+            PageModel pageModel,
+            MemberScreen screen,
+            Long userId) {
+        // 检查用户是否是代理商
+        Member checkMember = memberService.findOne(userId);
+        if(!checkMember.getSuperPartner().equals("1")) {
+            return error("您不是代理商！");
+        }
+        Predicate predicate = getPredicate(screen, userId);
+        Page<Member> all = memberService.findAll(predicate, pageModel.getPageable());
+        return success(all);
+    }
+
+    @RequiresPermissions("member:set-inviter")
+    @PostMapping("setInviter")
+    @AccessLog(module = AdminModule.MEMBER, operation = "设置邀请人")
+    public MessageResult setInviter(
+            @RequestParam(value = "id") Long id,
+            @RequestParam(value = "inviterId") Long inviterId) throws Exception {
+        Member member = memberService.findOne(id);
+        notNull(member, "validate id!");
+        Member pMember = memberService.findOne(inviterId);
+        notNull(member, "validate id!");
+        if(member.getInviterId()!=null){
+            return error("已存在邀请人");
+        }
+        memberEvent.setMemberInviter(member,pMember);
+        return success();
     }
 }

@@ -3,8 +3,8 @@ package com.bizzan.bitrade.constant;
 /**
  * 系统常量
  *
- * @author GS
- * @date 2017年12月18日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月18日
  */
 public class SysConstant {
     /**
@@ -18,10 +18,14 @@ public class SysConstant {
      * 验证码
      */
     public static final String PHONE_WITHDRAW_MONEY_CODE_PREFIX = "PHONE_WITHDRAW_MONEY_CODE_PREFIX_";
-    
+    public static final String EMAIL_WITHDRAW_MONEY_CODE_PREFIX = "EMAIL_WITHDRAW_MONEY_CODE_";
+
+    public static final String EMAIL_UP_PWD_CODE_PREFIX = "EMAIL_UP_PWD_CODE_";
+    public static final String EMAIL_TRANSACTION_CODE_PREFIX = "EMAIL_TRANSACTION_CODE_";
     public static final String PHONE_CTC_TRADE_CODE_PREFIX = "PHONE_CTC_TRADE_CODE_PREFIX_";
-    
+
     public static final String PHONE_REG_CODE_PREFIX = "PHONE_REG_CODE_";
+    public static final String EMAIL_REG_CODE_PREFIX = "EMAIL_REG_CODE_";
 
     public static final String PHONE_RESET_TRANS_CODE_PREFIX = "PHONE_RESET_TRANS_CODE_";
 
@@ -30,12 +34,17 @@ public class SysConstant {
     public static final String PHONE_UPDATE_PASSWORD_PREFIX = "PHONE_UPDATE_PASSWORD_";
 
     public static final String PHONE_ADD_ADDRESS_PREFIX = "PHONE_ADD_ADDRESS_";
-    
+
     public static final String PHONE_RECEIVE_ENVELOPE_PREFIX = "PHONE_RECEIVE_ENVELOPE_PREFIX"; // 领取红包
 
     public static final String PHONE_ATTEND_ACTIVITY_PREFIX = "PHONE_ADD_ADDRESS_";
-    
+    public static final String EMAIL_ATTEND_ACTIVITY_PREFIX = "EMAIL_ADD_ADDRESS_";
+
     public static final String EMAIL_BIND_CODE_PREFIX = "EMAIL_BIND_CODE_";
+
+	public static final String EMAIL_UNTIE_CODE_PREFIX = "EMAIL_UNTIE_CODE_";
+
+	public static final String EMAIL_UPDATE_CODE_PREFIX = "EMAIL_UPDATE_CODE_";
 
     public static final String ADD_ADDRESS_CODE_PREFIX = "ADD_ADDRESS_CODE_";
     public static final String RESET_PASSWORD_CODE_PREFIX = "RESET_PASSWORD_CODE_";
@@ -46,6 +55,8 @@ public class SysConstant {
     public static final String ADMIN_COIN_REVISE_PHONE_PREFIX = "ADMIN_COIN_REVISE_PHONE_PREFIX_";
     public static final String ADMIN_COIN_TRANSFER_COLD_PREFIX = "ADMIN_COIN_TRANSFER_COLD_PREFIX_";
     public static final String ADMIN_EXCHANGE_COIN_SET_PREFIX = "ADMIN_EXCHANGE_COIN_SET_PREFIX_";
+
+    public static final String API_BIND_CODE_PREFIX = "API_BIND_CODE_PREFIX_";
 
     /** 防攻击验证 */
     public static final String ANTI_ATTACK_ = "ANTI_ATTACK_";
@@ -129,7 +140,7 @@ public class SysConstant {
      */
     public static final String USER_ADD_EXCHANGE_ORDER_TIME_LIMIT= "USER_ADD_EXCHANGE_ORDER_TIME_LIMIT_";
     public static final int USER_ADD_EXCHANGE_ORDER_TIME_LIMIT_EXPIRE_TIME= 20;
-    
+
     /**
      * 邀请人数排行榜
      */
@@ -141,4 +152,5 @@ public class SysConstant {
     public static final int MEMBER_PROMOTION_TOP_RANK_EXPIRE_TIME_DAY = 129600; // 排行榜缓存一天半（36小时）
     public static final int MEMBER_PROMOTION_TOP_RANK_EXPIRE_TIME_WEEK = 691200; // 排行榜缓存8天
     public static final int MEMBER_PROMOTION_TOP_RANK_EXPIRE_TIME_MONTH = 2764800; // 排行榜缓存32天
+
 }

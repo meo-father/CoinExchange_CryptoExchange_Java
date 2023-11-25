@@ -12,7 +12,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * @Createtime 2014年12月5日 14:22:00
+ * @Createtime 2020年12月5日 14:22:00
  * @author Lxz
  * 
  */

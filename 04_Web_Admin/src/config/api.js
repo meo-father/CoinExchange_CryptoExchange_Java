@@ -1,5 +1,4 @@
 export default {
-    host: 'http://49.234.13.106:8801',
     common: {
         login: '/admin/system/employee/sign/in'
     },

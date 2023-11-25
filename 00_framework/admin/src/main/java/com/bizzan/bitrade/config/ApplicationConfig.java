@@ -1,5 +1,10 @@
 package com.bizzan.bitrade.config;
 
+import com.bizzan.bitrade.ext.OrdinalToEnumConverterFactory;
+import com.bizzan.bitrade.interceptor.LogInterceptor;
+import com.bizzan.bitrade.interceptor.OutExcelInterceptor;
+import com.bizzan.bitrade.interceptor.SessionInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,16 +17,13 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.bizzan.bitrade.ext.OrdinalToEnumConverterFactory;
-import com.bizzan.bitrade.interceptor.LogInterceptor;
-import com.bizzan.bitrade.interceptor.OutExcelInterceptor;
-import com.bizzan.bitrade.interceptor.SessionInterceptor;
-
 /**
- * @author Administrator
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  */
 @Configuration
 public class ApplicationConfig extends WebMvcConfigurerAdapter {
+    @Autowired
+    private FilterConfig filterConfig;
 
     @Bean(name = "messageSource")
     public ResourceBundleMessageSource getMessageSource() {
@@ -58,9 +60,10 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     }
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(filterConfig).addPathPatterns("/**");
         registry.addInterceptor(new SessionInterceptor()).addPathPatterns("/**")
                 .excludePathPatterns("/code/sms-provider/**","/captcha","/system/employee/sign/in",
-                        "/system/employee/check","/system/employee/logout",
+                        "/system/employee/check","/system/employee/logout","/system/employee/login",
                         "/noauth/exchange-coin/detail",
                         "/noauth/exchange-coin/modify-limit");
         registry.addInterceptor(new LogInterceptor()).addPathPatterns("/**");

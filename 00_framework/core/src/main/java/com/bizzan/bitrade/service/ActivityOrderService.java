@@ -1,8 +1,15 @@
 package com.bizzan.bitrade.service;
 
-import java.math.BigDecimal;
-import java.util.List;
-
+import com.bizzan.bitrade.constant.BooleanEnum;
+import com.bizzan.bitrade.dao.ActivityOrderDao;
+import com.bizzan.bitrade.entity.Activity;
+import com.bizzan.bitrade.entity.ActivityOrder;
+import com.bizzan.bitrade.entity.MemberWallet;
+import com.bizzan.bitrade.pagination.Criteria;
+import com.bizzan.bitrade.pagination.Restrictions;
+import com.bizzan.bitrade.service.Base.BaseService;
+import com.bizzan.bitrade.util.MessageResult;
+import com.querydsl.core.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,20 +18,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.bizzan.bitrade.constant.BooleanEnum;
-import com.bizzan.bitrade.dao.ActivityOrderDao;
-import com.bizzan.bitrade.entity.Activity;
-import com.bizzan.bitrade.entity.ActivityOrder;
-import com.bizzan.bitrade.entity.MemberWallet;
-import com.bizzan.bitrade.entity.MiningOrder;
-import com.bizzan.bitrade.pagination.Criteria;
-import com.bizzan.bitrade.pagination.Restrictions;
-import com.bizzan.bitrade.service.Base.BaseService;
-import com.bizzan.bitrade.util.MessageResult;
-import com.querydsl.core.types.Predicate;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class ActivityOrderService extends BaseService {
+    @Autowired
+    private LocaleMessageSourceService msService;
+
 	@Autowired
     private ActivityOrderDao activityOrderDao;
 	
@@ -87,17 +88,17 @@ public class ActivityOrderService extends BaseService {
 	public MessageResult saveActivityOrder(Long memberId, ActivityOrder activityOrder) {
 		MemberWallet wallet = walletService.findByCoinUnitAndMemberId(activityOrder.getBaseSymbol(), memberId);
 		if(wallet.getIsLock().equals(BooleanEnum.IS_TRUE)){
-            return MessageResult.error("钱包已锁定");
+            return MessageResult.error(msService.getMessage("WALLET_LOCKED"));
         }
 		// 冻结资产
         MessageResult result = walletService.freezeBalance(wallet, activityOrder.getTurnover());
         if (result.getCode() != 0) {
-            return MessageResult.error("无法锁定资产");
+            return MessageResult.error(msService.getMessage("UNABLE_TO_LOCK_ASSET"));
         }
         // 更新Activity参与信息
         Activity activity = activityService.findOne(activityOrder.getActivityId());
         if (activity == null) {
-        	return MessageResult.error(500, "非法的活动！");
+        	return MessageResult.error(500, msService.getMessage("ILLEGAL_ACTIVITIES"));
         }
         if(activity.getType() == 3) { // 持仓瓜分，更新冻结资产数量
         	activity.setFreezeAmount(activity.getFreezeAmount().add(activityOrder.getFreezeAmount()));
@@ -105,18 +106,20 @@ public class ActivityOrderService extends BaseService {
         	activity.setTradedAmount(activity.getTradedAmount().add(activityOrder.getAmount()));
         }else if(activity.getType() == 5){ // 矿机认购，更新交易数量
         	activity.setTradedAmount(activity.getTradedAmount().add(activityOrder.getAmount()));
+        }else if(activity.getType() == 6) {
+            activity.setTradedAmount(activity.getTradedAmount().add(activityOrder.getAmount()));
         }
         
         // 更新进度
         if(activity.getType() == 4 || activity.getType() == 5) {
         	// 新进度不能小于旧进度
-        	int newProgress = activity.getTradedAmount().divide(activity.getTotalSupply()).multiply(new BigDecimal(100)).intValue();
+        	int newProgress = activity.getTradedAmount().divide(activity.getTotalSupply(),4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).intValue();
         	activity.setProgress(newProgress >= activity.getProgress() ? newProgress : activity.getProgress());
         }
         // 更新Activity表
         Activity saveResult = activityService.saveAndFlush(activity);
         if(saveResult == null) {
-        	return MessageResult.error(500, "更新活动失败！");
+        	return MessageResult.error(500, msService.getMessage("UPDATE_ACTIVITY_FAILED"));
         }
         
         ActivityOrder order = activityOrderDao.saveAndFlush(activityOrder);

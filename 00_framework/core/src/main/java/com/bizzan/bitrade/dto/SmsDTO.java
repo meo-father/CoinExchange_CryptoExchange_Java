@@ -6,8 +6,8 @@ import javax.persistence.*;
 
 /**
  * @Description:
- * @author: GuoShuai
- * @date: create in 21:23 2018/6/27
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date: create in 21:23 2019/6/27
  * @Modified:
  */
 @Entity

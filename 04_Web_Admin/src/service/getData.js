@@ -1,9 +1,7 @@
-import { BASEURL, fetch, post, patch, put, postConfig } from './http.js'
+import { BASEURL, fetch, post, postOut, patch, put, postConfig } from './http.js'
 
 export const BASICURL = BASEURL;
-// export const uploadPic = data => post('', data);
-// export const getALL = () => post(地址);  post
-// export const getALL = () => fetch(地址);  get
+
 // post  帮助管理
 export const helpDown = data => post('admin/cms/system-help/down', data);
 // post 公告管理
@@ -36,6 +34,7 @@ export const allTradeInfo = () => post('admin/finance/member-transaction/all');
 
 //GET获取 "财务管理"=>"个人记录"
 export const perTradeAll = data => post('admin/finance/member-transaction/page-query', data);
+export const perTradeAllOut = data => postOut('admin/finance/member-transaction/page-query', data);
 
 //POST获取 "会员实名审核"
 export const MemberRealNameList = data => post('admin/member/member-application/page-query', data);
@@ -90,6 +89,7 @@ export const memberManage = data => post('admin/member/page-query', data);
 
 //Post "会员管理" => "会员详情"
 export const memberDetail = data => post('admin/member/detail', data);
+export const memberUpdateInvite = data => post('admin/member/update-invite', data);
 
 //GET "内容管理" => "公告管理"
 export const announceManage = data => fetch('admin/system/announcement/page-query', data);
@@ -171,6 +171,7 @@ export const cancelAppealOrder = data => post('admin/otc/appeal/cancel-order', d
 
 //POST "法币管理" => "后台申诉"=> "订单管理"
 export const queryOtcOrder = data => post('admin/otc/order/page-query', data);
+export const queryOtcOrderOut = data => postOut('admin/otc/order/page-query', data);
 
 //POST "法币管理" => "币种管理"
 export const queryOtcCoin = data => post('admin/otc/otc-coin/page-query', data);
@@ -232,6 +233,9 @@ export const startBBTrader = data => post('admin/exchange/exchange-coin/start-tr
 //POST "币币管理" => "币币设置"=>"停止交易引擎"
 export const stopBBTrader = data => post('admin/exchange/exchange-coin/stop-trader', data);
 
+//POST "币币管理" => "币币设置"=>"重置交易引擎"
+export const resetBBTrader = data => post('admin/exchange/exchange-coin/reset-trader', data);
+
 //POST "币币管理" => "币币设置"=>"查看机器人参数"
 export const getRobotConfig = data => post('admin/exchange/exchange-coin/robot-config', data);
 
@@ -244,6 +248,14 @@ export const createRobotConfig = data => post('admin/exchange/exchange-coin/crea
 export const setPriceRobotConfig = data => post('admin/exchange/exchange-coin/alter-robot-config-price', data);
 //POST "币币管理" => "币币设置"=>"创建机器人参数"
 export const createPriceRobotConfig = data => post('admin/exchange/exchange-coin/create-robot-config-price', data);
+//POST "币币管理" => "控盘机器人"=>"获取机器人K线"
+export const getRobotKdataList = data => post('admin/exchange/exchange-coin/robot-kline-list', data);
+//POST "币币管理" => "控盘机器人"=>"保存机器人K线-自定义"
+export const saveRobotKdata = data => post('admin/exchange/exchange-coin/save-robot-kline', data);
+//POST "币币管理" => "控盘机器人"=>"保存机器人K线-跟随"
+export const saveRobotKdataFlow = data => post('admin/exchange/exchange-coin/save-robot-flow', data);
+//POST "币币管理" => "控盘机器人"=>"获取控盘币种列表"
+export const getCustomCoinPairList = data => post('admin/exchange/exchange-coin/custom-coin-list', data);
 
 //POST "币币管理" => "币币设置"=>"撤销所有委托单"
 export const cancelBBAllOrders = data => post('admin/exchange/exchange-coin/cancel-all-order', data);
@@ -253,9 +265,11 @@ export const overviewBB = data => post('admin/exchange/exchange-coin/exchange-ov
 
 //POST "币币管理" => "币币订单"
 export const queryBBOrder = data => post('admin/exchange/exchange-order/page-query', data);
+export const queryBBOrderOut = data => postOut('admin/exchange/exchange-order/page-query', data);
 
 //POST "会员管理" => "会员资产"
 export const memberAsset = data => post('admin/member/member-wallet/balance', data);
+export const memberAssetOut = data => postOut('admin/member/member-wallet/balance', data);
 
 //patch "财务管理" => "放币"
 export const passCoin = data => patch('admin/finance/withdraw-record/remittance', data);
@@ -275,8 +289,6 @@ export const employeeDetail = data => post('admin/system/employee/detail', data)
 //post "用户管理" => "删除用户"
 export const delEmployee = data => post('admin/system/employee/deletes', data);
 
-//post "首页" => "待处理事务（法币管理）"
-// export const queryOtc = data => post('admin/otc/order/page-query', data);
 
 //post "会员管理" => "会员详情"=>"人工充币"
 export const manualPay = data => post('admin/member/member-wallet/recharge', data);
@@ -304,9 +316,6 @@ export const addVote = (data, config) => postConfig('admin/system/vote/merge', d
 
 //post "系统管理" => "查询投票"
 export const queryVote = data => post('admin/system/vote/page-query', data);
-
-//post "系统管理" => "查询分红"
-// export const queryDividend = data => post('admin/system/dividend/page-query', data);
 
 //post "系统管理" => "开始分红"
 export const startDividend = data => post('admin/system/dividend/start', data);
@@ -341,6 +350,7 @@ export const delTansAdr = data => post('admin/system/transfer-address/deletes', 
 //POST获取 "首页"=>"获取验证码"
 export const getLoginCode = data => post('admin/system/employee/check', data);
 
+export const login = data => post('admin/system/employee/login', data);
 //POST获取 "首页"=>"获取验证码后登录"
 export const signIn = data => post('admin/system/employee/sign/in', data);
 
@@ -376,6 +386,9 @@ export const publishAdvOtc = data => post('admin/member/alter-publish-advertisem
 
 //POST获取 "法币管理"=>"认证商家"=>"禁用/解禁会员交易"
 export const forbiddenMemberTrans = data => post('admin/member/alter-transaction-status', data);
+
+//POST获取 "法币管理"=>"认证商家"=>"禁用/解禁会员交易"
+export const setSuperPartner = data => post('admin/member/alter-member-superpartner', data);
 
 //POST获取 "法币管理"=>"认证商家"=>"禁用/解禁会员"
 export const forbiddenMember = data => post('admin/member/alter-status', data);
@@ -445,6 +458,13 @@ export const activityOrderList = parma => fetch(`admin/activity/activity/${parma
 
 // POST "活动管理" => "派发活动币"
 export const distributeOrder = data => post(`admin/activity/activity/distribute`, data);
+
+//POST获取 "活动管理"=>"活动管理"=>"活动列表"
+export const lockedActivityList = data => post('admin/activity/activity/locked-activity', data);
+
+//POST获取 "活动管理"=>"活动管理"=>"活动列表"
+export const lockMemberCoin = data => post('admin/activity/activity/lock-member-coin', data);
+
 
 //POST获取 "系统管理"=>"活动管理"=>"签到详情"
 export const signDetail = (url) => fetch(`admin/activity/sign/${url}`);
@@ -565,6 +585,9 @@ export const inviteSecondRecord = data => postConfig('admin/invite/management/in
 //查询邀请排名
 export const inviteRank = data => postConfig('admin/invite/management/rank', data);
 
+//添加邀请关系
+export const setInviter = data => post('admin/member/setInviter', data);
+
 //更新邀请排名
 export const alterRank = data => post('admin/invite/management/update-rank', data);
 
@@ -585,3 +608,47 @@ export const ctcAcceptorSwitch = data => post('admin/ctc/acceptor/switch', data)
 
 //POST获取 "系统管理"=>"APP版本"=>"列表"
 export const sysAppRevision = data => fetch('admin/system/app-revision/page-query', data);
+export const sysAppRevisionSave = data => {return data.id && data.id > 0 ? put('admin/system/app-revision/' + data.id, data) : post('admin/system/app-revision', data)}
+// 期权合约管理=========================================================
+
+//POST支取手续费
+export const withdrawFeeFunc = data => post('admin/fee/withdraw', data);
+//POST 支取手续费明细
+export const withdrawFeeDetail = data => post('admin/fee/withdraw/page-query', data);
+
+// 币种协议管理
+export const coinprotocolList = data => post('admin/system/coinprotocol/page-query', data);
+export const coinprotocolSave = data => post('admin/system/coinprotocol/merge', data);
+
+// 币种扩展管理
+export const coinextCoinList = () => fetch('admin/system/coinext/coin-list');
+export const coinextProtocolList = () => fetch('admin/system/coinext/protocol-list');
+export const coinextList = data => post('admin/system/coinext/page-query', data);
+export const coinextSave = data => post('admin/system/coinext/merge', data);
+
+// 归集配置
+export const automainconfigCoinList = () => fetch('admin/system/automainconfig/coin-list');
+export const automainconfigProtocolList = () => fetch('admin/system/automainconfig/protocol-list');
+export const automainconfigList = data => post('admin/system/automainconfig/page-query', data);
+export const automainconfigSave = data => post('admin/system/automainconfig/merge', data);
+export const collectCoin = data => post('admin/system/automainconfig/collectCoin', data);
+export const setPassword = data => post('admin/system/automainconfig/setPassword', data);
+export const updateContract = data => post('admin/system/automainconfig/updateContract', data);
+export const encryptMessage = data => post('admin/system/automainconfig/encrypt', data);
+// 充值记录
+export const rechargeCoinList = () => fetch('admin/finance/recharge/coin-list');
+export const rechargeProtocolList = () => fetch('admin/finance/recharge/protocol-list');
+export const rechargeList = data => post('admin/finance/recharge/page-query', data);
+export const rechargeListOut = data => postOut('admin/finance/recharge/page-query', data);
+
+// 提币审核记录
+export const withdrawCoinList = () => fetch('admin/finance/withdraw/coin-list');
+export const withdrawProtocolList = () => fetch('admin/finance/withdraw/protocol-list');
+export const withdrawList = data => post('admin/finance/withdraw/page-query', data);
+export const withdrawListOut = data => postOut('admin/finance/withdraw/page-query', data);
+export const withdrawSave = data => post('admin/finance/withdraw/merge', data);
+
+
+
+
+

@@ -12,27 +12,32 @@ import com.bizzan.bitrade.entity.QMemberTransaction;
 import com.bizzan.bitrade.es.ESUtils;
 import com.bizzan.bitrade.model.screen.MemberTransactionScreen;
 import com.bizzan.bitrade.model.vo.MemberTransaction2ESVO;
+import com.bizzan.bitrade.model.vo.MemberTransactionExcelVO;
+import com.bizzan.bitrade.model.vo.MemberTransactionFeeExcelVO;
 import com.bizzan.bitrade.service.LocaleMessageSourceService;
 import com.bizzan.bitrade.service.MemberTransactionService;
 import com.bizzan.bitrade.util.DateUtil;
+import com.bizzan.bitrade.util.ExcelUtil;
 import com.bizzan.bitrade.util.FileUtil;
 import com.bizzan.bitrade.util.MessageResult;
 import com.bizzan.bitrade.vo.MemberTransactionVO;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,7 +45,7 @@ import java.util.List;
 import static org.springframework.util.Assert.notNull;
 
 /**
- * @author Shaoxianjun
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description 交易记录
  * @date 2019/1/17 17:07
  */
@@ -88,7 +93,8 @@ public class MemberTransactionController extends BaseAdminController {
     @AccessLog(module = AdminModule.FINANCE, operation = "分页查找交易记录MemberTransaction")
     public MessageResult pageQuery(
             PageModel pageModel,
-            MemberTransactionScreen screen) {
+            MemberTransactionScreen screen,
+            HttpServletResponse response) throws IOException {
         List<Predicate> predicates = new ArrayList<>();
 
         if(screen.getMemberId()!=null) {
@@ -122,6 +128,47 @@ public class MemberTransactionController extends BaseAdminController {
 
         if(screen.getMaxFee()!=null) {
             predicates.add(QMemberTransaction.memberTransaction.fee.loe(screen.getMaxFee()));
+        }
+        if (screen.getIsOut() != null && screen.getIsOut() == 1) {
+            predicates.add(QMemberTransaction.memberTransaction.memberId.notIn(1));
+            List<MemberTransactionVO> memberTransactionVOS = memberTransactionService.joinFindAll(predicates, pageModel);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            if (screen.getOutType() != null && screen.getOutType() == 0) {
+                List<MemberTransactionExcelVO> voList = new ArrayList<>();
+                for (MemberTransactionVO v : memberTransactionVOS) {
+                    MemberTransactionExcelVO vo = new MemberTransactionExcelVO();
+                    vo.setMemberId(v.getMemberId());
+                    vo.setAmount(v.getAmount().toPlainString());
+                    vo.setFee(v.getFee().toPlainString());
+                    vo.setCreateTime(sdf.format(v.getCreateTime()));
+                    TransactionType type = v.getType();
+                    vo.setType(type.getCnName());
+                    voList.add(vo);
+                }
+                if (voList.size() == 0) {
+                    MemberTransactionExcelVO vo = new MemberTransactionExcelVO();
+                    voList.add(vo);
+                }
+                ExcelUtil.listToExcel(voList, MemberTransactionExcelVO.class.getDeclaredFields(), response.getOutputStream());
+            } else {
+                List<MemberTransactionFeeExcelVO> voList = new ArrayList<>();
+                for (MemberTransactionVO v : memberTransactionVOS) {
+                    MemberTransactionFeeExcelVO vo = new MemberTransactionFeeExcelVO();
+                    vo.setMemberId(v.getMemberId());
+                    vo.setSymbol(v.getSymbol());
+                    vo.setFee(v.getFee().toPlainString());
+                    vo.setCreateTime(sdf.format(v.getCreateTime()));
+                    TransactionType type = v.getType();
+                    vo.setType(type.getCnName());
+                    voList.add(vo);
+                }
+                if (voList.size() == 0) {
+                    MemberTransactionFeeExcelVO vo = new MemberTransactionFeeExcelVO();
+                    voList.add(vo);
+                }
+                ExcelUtil.listToExcel(voList, MemberTransactionFeeExcelVO.class.getDeclaredFields(), response.getOutputStream());
+            }
+            return null;
         }
 
         Page<MemberTransactionVO> results = memberTransactionService.joinFind(predicates, pageModel);
@@ -210,5 +257,64 @@ public class MemberTransactionController extends BaseAdminController {
             log.info(">>>>>>查询异常>>>"+e);
             return error("查询异常");
         }
+    }
+
+
+    /**
+     * 查询代理商下面资产变更记录
+     * @param pageModel
+     * @param screen
+     * @param memberId
+     * @return
+     */
+    @RequiresPermissions("finance:member-transaction:supertrans-page-query")
+    @PostMapping(value = "/supertrans-page-query")
+    @Transactional(rollbackFor = Exception.class)
+    @AccessLog(module = AdminModule.FINANCE, operation = "查询代理商下面资产变更记录MemberTransaction")
+    public MessageResult pageQuerySuper(
+            PageModel pageModel,
+            MemberTransactionScreen screen,
+            Long memberId) {
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        predicates.add(QMember.member.inviterId.eq(memberId));
+
+        if(screen.getMemberId()!=null) {
+            predicates.add((QMember.member.id.eq(screen.getMemberId())));
+        }
+        if (!StringUtils.isEmpty(screen.getAccount())) {
+            predicates.add(QMember.member.username.like("%"+screen.getAccount()+"%")
+                    .or(QMember.member.realName.like("%"+screen.getAccount()+"%")));
+        }
+        if (screen.getStartTime() != null) {
+            predicates.add(QMemberTransaction.memberTransaction.createTime.goe(screen.getStartTime()));
+        }
+        if (screen.getEndTime() != null){
+            predicates.add(QMemberTransaction.memberTransaction.createTime.lt(DateUtil.dateAddDay(screen.getEndTime(),1)));
+        }
+        if (screen.getType() != null) {
+            predicates.add(QMemberTransaction.memberTransaction.type.eq(screen.getType()));
+        }
+
+        if(screen.getMinMoney()!=null) {
+            predicates.add(QMemberTransaction.memberTransaction.amount.goe(screen.getMinMoney()));
+        }
+
+        if(screen.getMaxMoney()!=null) {
+            predicates.add(QMemberTransaction.memberTransaction.amount.loe(screen.getMaxMoney()));
+        }
+
+        if(screen.getMinFee()!=null) {
+            predicates.add(QMemberTransaction.memberTransaction.fee.goe(screen.getMinFee()));
+        }
+
+        if(screen.getMaxFee()!=null) {
+            predicates.add(QMemberTransaction.memberTransaction.fee.loe(screen.getMaxFee()));
+        }
+
+        Page<MemberTransactionVO> results = memberTransactionService.joinFind(predicates, pageModel);
+
+        return success(results);
     }
 }

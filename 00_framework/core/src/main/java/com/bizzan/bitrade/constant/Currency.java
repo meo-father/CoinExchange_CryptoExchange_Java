@@ -2,14 +2,13 @@ package com.bizzan.bitrade.constant;
 
 import com.bizzan.bitrade.core.BaseEnum;
 import com.fasterxml.jackson.annotation.JsonValue;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * @author GS
- * @create 2017年12月07日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @create 2020年12月07日
  * @desc 电子币种
  */
 @AllArgsConstructor

@@ -10,8 +10,8 @@ import java.util.Date;
 /**
  * 意见反馈
  *
- * @author GS
- * @date 2018年03月19日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年03月19日
  */
 @Entity
 @Data

@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description
- * @date 2018/3/5 15:25
+ * @date 2019/3/5 15:25
  */
 @RestController
 @RequestMapping("announcement")
@@ -48,7 +48,8 @@ public class AnnouncementController extends BaseController {
     public MessageResult page(
             @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
-            @RequestParam(value = "lang", defaultValue = "CN") String lang
+            @RequestParam(value = "lang", defaultValue = "CN") String paramLang,
+            @RequestHeader(value = "lang") String lang
     ) {
         //条件
         ArrayList<Predicate> predicates = new ArrayList<>();
@@ -80,21 +81,21 @@ public class AnnouncementController extends BaseController {
      * @return
      */
     @RequestMapping(value = "more",method = RequestMethod.POST)
-    public MessageResult moreDetail(@RequestParam("id")Long id, @RequestParam("lang")String lang){
-        ValueOperations redisOperations = redisTemplate.opsForValue();
-        JSONObject result  = (JSONObject) redisOperations.get(SysConstant.NOTICE_DETAIL+id);
-        if ( result != null){
-            return success(result);
-        }else {
+    public MessageResult moreDetail(@RequestParam("id")Long id, @RequestParam("lang")String paramLang,@RequestHeader(value = "lang") String lang){
+//        ValueOperations redisOperations = redisTemplate.opsForValue();
+//        JSONObject result  = (JSONObject) redisOperations.get(SysConstant.NOTICE_DETAIL+id);
+//        if ( result != null){
+//            return success(result);
+//        }else {
             JSONObject resultObj = new JSONObject();
             Announcement announcement = announcementService.findById(id);
             Assert.notNull(announcement, "validate id!");
             resultObj.put("info",announcement);
             resultObj.put("back",announcementService.getBack(id, lang));
             resultObj.put("next",announcementService.getNext(id, lang));
-            redisOperations.set(SysConstant.NOTICE_DETAIL+id,resultObj,SysConstant.NOTICE_DETAIL_EXPIRE_TIME, TimeUnit.SECONDS);
+//            redisOperations.set(SysConstant.NOTICE_DETAIL+id,resultObj,SysConstant.NOTICE_DETAIL_EXPIRE_TIME, TimeUnit.SECONDS);
             return success(resultObj);
-        }
+//        }
     }
 
 

@@ -8,18 +8,17 @@ import com.bizzan.bitrade.entity.*;
 import com.bizzan.bitrade.service.MemberWalletService;
 import com.bizzan.bitrade.service.RewardPromotionSettingService;
 import com.bizzan.bitrade.service.RewardRecordService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import static com.bizzan.bitrade.util.BigDecimalUtils.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 
+import static com.bizzan.bitrade.util.BigDecimalUtils.*;
+
 /**
- * @author Shaoxianjun
- * @date 2019年01月22日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月22日
  */
 @Service
 public class OrderEvent {

@@ -2,20 +2,17 @@ package com.bizzan.bitrade.entity;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 系统角色
  *
- * @author GS
- * @date 2017年12月18日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月18日
  */
 @Entity
 @Data

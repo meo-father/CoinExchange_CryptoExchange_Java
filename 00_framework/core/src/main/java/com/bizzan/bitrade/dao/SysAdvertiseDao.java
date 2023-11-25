@@ -1,21 +1,20 @@
 package com.bizzan.bitrade.dao;
 
+import com.bizzan.bitrade.constant.CommonStatus;
+import com.bizzan.bitrade.constant.SysAdvertiseLocation;
+import com.bizzan.bitrade.entity.SysAdvertise;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
-import com.bizzan.bitrade.constant.CommonStatus;
-import com.bizzan.bitrade.constant.SysAdvertiseLocation;
-import com.bizzan.bitrade.entity.SysAdvertise;
-
 import java.util.List;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description
- * @date 2018/1/6 16:44
+ * @date 2019/1/6 16:44
  */
 public interface SysAdvertiseDao extends JpaRepository<SysAdvertise, String>, JpaSpecificationExecutor<SysAdvertise>, QueryDslPredicateExecutor<SysAdvertise> {
     List<SysAdvertise> findAllByStatusAndSysAdvertiseLocationOrderBySortAsc(CommonStatus status, SysAdvertiseLocation sysAdvertiseLocation);

@@ -1,5 +1,6 @@
 package com.bizzan.bitrade.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.bizzan.bitrade.coin.CoinExchangeFactory;
 import com.bizzan.bitrade.constant.*;
 import com.bizzan.bitrade.entity.*;
@@ -15,6 +16,7 @@ import com.bizzan.bitrade.util.DateUtil;
 import com.bizzan.bitrade.util.Md5;
 import com.bizzan.bitrade.util.MessageResult;
 import com.bizzan.bitrade.vendor.provider.SMSProvider;
+import com.bizzan.bitrade.vo.PaymentTypeConfig;
 import com.querydsl.core.types.dsl.BooleanExpression;
 
 import lombok.extern.slf4j.Slf4j;
@@ -25,12 +27,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.bizzan.bitrade.constant.BooleanEnum.IS_FALSE;
 import static com.bizzan.bitrade.constant.BooleanEnum.IS_TRUE;
@@ -41,15 +45,15 @@ import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
 
 /**
- * @author GS
- * @date 2017年12月11日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月11日
  */
 @RestController
 @RequestMapping(value = "/order", method = RequestMethod.POST)
 @Slf4j
 public class OrderController {
 
-   /* private static Logger logger = LoggerFactory.getLogger(OrderController.class);*/
+    /* private static Logger logger = LoggerFactory.getLogger(OrderController.class);*/
 
     @Autowired
     private OrderService orderService;
@@ -66,8 +70,8 @@ public class OrderController {
     @Autowired
     private CoinExchangeFactory coins;
 
-    @Autowired
-    private OrderEvent orderEvent;
+//    @Autowired
+//    private OrderEvent orderEvent;
 
     @Autowired
     private AppealService appealService;
@@ -81,19 +85,24 @@ public class OrderController {
     @Autowired
     private MemberTransactionService memberTransactionService;
 
+    @Autowired
+    private PaymentTypeRecordService paymentTypeRecordService;
+
 
     @Value("${spark.system.order.sms:1}")
     private int notice;
 
     @Autowired
     private SMSProvider smsProvider;
+    @Autowired
+    private PaymentTypeService paymentTypeService;
 
     @Autowired
     private MongoTemplate mongoTemplate ;
     @Autowired
     private ESUtils esUtils;
 
-
+    private String[] colors = {"#f0a70a","#e5dc2a","#4fbe51","#d07e3b","#0a4bf0","#810af0","#2b9f76"};
     /**
      * 买入，卖出详细信息
      *
@@ -111,6 +120,7 @@ public class OrderController {
         PreOrderInfo preOrderInfo = PreOrderInfo.builder()
                 .advertiseType(advertise.getAdvertiseType())
                 .country(advertise.getCountry().getZhName())
+                .currency(advertise.getCountry().getLocalCurrency())
                 .emailVerified(member.getEmail() == null ? IS_FALSE : IS_TRUE)
                 .idCardVerified(member.getIdNumber() == null ? IS_FALSE : IS_TRUE)
                 .maxLimit(advertise.getMaxLimit())
@@ -119,7 +129,7 @@ public class OrderController {
                 .otcCoinId(otcCoin.getId())
                 .payMode(advertise.getPayMode())
                 .phoneVerified(member.getMobilePhone() == null ? IS_FALSE : IS_TRUE)
-                .timeLimit(advertise.getTimeLimit())
+//                .timeLimit(advertise.getTimeLimit())
                 .transactions(member.getTransactions())
                 .unit(otcCoin.getUnit())
                 .username(member.getUsername())
@@ -135,7 +145,7 @@ public class OrderController {
         if (advertise.getPriceType().equals(PriceType.REGULAR)) {
             preOrderInfo.setPrice(advertise.getPrice());
         } else {
-            BigDecimal marketPrice = coins.get(otcCoin.getUnit());
+            BigDecimal marketPrice = coins.get(otcCoin.getUnit(),advertise.getCountry().getLocalCurrency());
             preOrderInfo.setPrice(mulRound(marketPrice, rate(advertise.getPremiseRate()), 2));
         }
         MessageResult result = MessageResult.success();
@@ -175,7 +185,7 @@ public class OrderController {
         if (advertise.getPriceType().equals(PriceType.REGULAR)) {
             isTrue(isEqual(price, advertise.getPrice()), msService.getMessage("PRICE_EXPIRED"));
         } else {
-            BigDecimal marketPrice = coins.get(otcCoin.getUnit());
+            BigDecimal marketPrice = coins.get(otcCoin.getUnit(),advertise.getCountry().getLocalCurrency());
             isTrue(isEqual(price, mulRound(rate(advertise.getPremiseRate()), marketPrice, 2)), msService.getMessage("PRICE_EXPIRED"));
         }
         if (mode == 0) {
@@ -183,9 +193,9 @@ public class OrderController {
         } else {
             isTrue(isEqual(mulRound(amount, price,2), money), msService.getMessage("NUMBER_ERROR"));
         }
-        isTrue(compare(money, advertise.getMinLimit()), msService.getMessage("MONEY_MIN") + advertise.getMinLimit().toString() + " CNY");
-        isTrue(compare(advertise.getMaxLimit(), money), msService.getMessage("MONEY_MAX") + advertise.getMaxLimit().toString() + " CNY");
-        String[] pay = advertise.getPayMode().split(",");
+        isTrue(compare(money, advertise.getMinLimit()), msService.getMessage("MONEY_MIN") + advertise.getMinLimit().toString() + " " + advertise.getCountry().getLocalCurrency());
+        isTrue(compare(advertise.getMaxLimit(), money), msService.getMessage("MONEY_MAX") + advertise.getMaxLimit().toString() + " " + advertise.getCountry().getLocalCurrency());
+//        String[] pay = advertise.getPayMode().split(",");
         //计算手续费
         //if(advertise.getMember().getCertifiedBusinessStatus()==)
         BigDecimal commission = mulRound(amount, getRate(otcCoin.getJyRate()));
@@ -219,15 +229,15 @@ public class OrderController {
         order.setPrice(price);
         order.setRemark(remark);
         order.setTimeLimit(advertise.getTimeLimit());
-        Arrays.stream(pay).forEach(x -> {
-            if (ALI.getCnName().equals(x)) {
-                order.setAlipay(advertise.getMember().getAlipay());
-            } else if (WECHAT.getCnName().equals(x)) {
-                order.setWechatPay(advertise.getMember().getWechatPay());
-            } else if (BANK.getCnName().equals(x)) {
-                order.setBankInfo(advertise.getMember().getBankInfo());
-            }
-        });
+//        Arrays.stream(pay).forEach(x -> {
+//            if (ALI.getCnName().equals(x)) {
+//                order.setAlipay(advertise.getMember().getAlipay());
+//            } else if (WECHAT.getCnName().equals(x)) {
+//                order.setWechatPay(advertise.getMember().getWechatPay());
+//            } else if (BANK.getCnName().equals(x)) {
+//                order.setBankInfo(advertise.getMember().getBankInfo());
+//            }
+//        });
         if (!advertiseService.updateAdvertiseAmountForBuy(advertise.getId(), amount)) {
             throw new InformationExpiredException("Information Expired");
         }
@@ -244,19 +254,19 @@ public class OrderController {
             /**
              * 下单后，将自动回复记录添加到mongodb
              */
-           if(advertise.getAuto()==BooleanEnum.IS_TRUE){
-               ChatMessageRecord chatMessageRecord = new ChatMessageRecord();
-               chatMessageRecord.setOrderId(order1.getOrderSn());
-               chatMessageRecord.setUidFrom(order1.getMemberId().toString());
-               chatMessageRecord.setUidTo(order1.getCustomerId().toString());
-               chatMessageRecord.setNameFrom(order1.getMemberName());
-               chatMessageRecord.setNameTo(order1.getCustomerName());
-               chatMessageRecord.setContent(advertise.getAutoword());
-               chatMessageRecord.setSendTime(Calendar.getInstance().getTimeInMillis());
-               chatMessageRecord.setSendTimeStr(DateUtil.getDateTime());
-               //自动回复消息保存到mogondb
-               mongoTemplate.insert(chatMessageRecord,"chat_message");
-           }
+            if(advertise.getAuto()==BooleanEnum.IS_TRUE){
+                ChatMessageRecord chatMessageRecord = new ChatMessageRecord();
+                chatMessageRecord.setOrderId(order1.getOrderSn());
+                chatMessageRecord.setUidFrom(order1.getMemberId().toString());
+                chatMessageRecord.setUidTo(order1.getCustomerId().toString());
+                chatMessageRecord.setNameFrom(order1.getMemberName());
+                chatMessageRecord.setNameTo(order1.getCustomerName());
+                chatMessageRecord.setContent(advertise.getAutoword());
+                chatMessageRecord.setSendTime(Calendar.getInstance().getTimeInMillis());
+                chatMessageRecord.setSendTimeStr(DateUtil.getDateTime());
+                //自动回复消息保存到mogondb
+                mongoTemplate.insert(chatMessageRecord,"chat_message");
+            }
             MessageResult result = MessageResult.success(msService.getMessage("CREATE_ORDER_SUCCESS"));
             result.setData(order1.getOrderSn().toString());
             return result;
@@ -297,7 +307,7 @@ public class OrderController {
         if (advertise.getPriceType().equals(PriceType.REGULAR)) {
             isTrue(isEqual(price, advertise.getPrice()), msService.getMessage("PRICE_EXPIRED"));
         } else {
-            BigDecimal marketPrice = coins.get(otcCoin.getUnit());
+            BigDecimal marketPrice = coins.get(otcCoin.getUnit(),advertise.getCountry().getLocalCurrency());
             isTrue(isEqual(price, mulRound(rate(advertise.getPremiseRate()), marketPrice, 2)), msService.getMessage("PRICE_EXPIRED"));
         }
         if (mode == 0) {
@@ -340,27 +350,27 @@ public class OrderController {
         order.setPrice(price);
         order.setRemark(remark);
         order.setTimeLimit(advertise.getTimeLimit());
-        String[] pay = advertise.getPayMode().split(",");
+//        String[] pay = advertise.getPayMode().split(",");
         MessageResult result = MessageResult.error(msService.getMessage("CREATE_ORDER_SUCCESS"));
-        Arrays.stream(pay).forEach(x -> {
-            if (ALI.getCnName().equals(x)) {
-                if (member.getAlipay() != null) {
-                    result.setCode(0);
-                    order.setAlipay(member.getAlipay());
-                }
-            } else if (WECHAT.getCnName().equals(x)) {
-                if (member.getWechatPay() != null) {
-                    result.setCode(0);
-                    order.setWechatPay(member.getWechatPay());
-                }
-            } else if (BANK.getCnName().equals(x)) {
-                if (member.getBankInfo() != null) {
-                    result.setCode(0);
-                    order.setBankInfo(member.getBankInfo());
-                }
-            }
-        });
-        isTrue(result.getCode() == 0, msService.getMessage("AT_LEAST_SUPPORT_PAY"));
+//        Arrays.stream(pay).forEach(x -> {
+//            if (ALI.getCnName().equals(x)) {
+//                if (member.getAlipay() != null) {
+//                    result.setCode(0);
+//                    order.setAlipay(member.getAlipay());
+//                }
+//            } else if (WECHAT.getCnName().equals(x)) {
+//                if (member.getWechatPay() != null) {
+//                    result.setCode(0);
+//                    order.setWechatPay(member.getWechatPay());
+//                }
+//            } else if (BANK.getCnName().equals(x)) {
+//                if (member.getBankInfo() != null) {
+//                    result.setCode(0);
+//                    order.setBankInfo(member.getBankInfo());
+//                }
+//            }
+//        });
+//        isTrue(result.getCode() == 0, msService.getMessage("AT_LEAST_SUPPORT_PAY"));
         if (!advertiseService.updateAdvertiseAmountForBuy(advertise.getId(), amount)) {
             throw new InformationExpiredException("Information Expired");
         }
@@ -409,7 +419,11 @@ public class OrderController {
         List<BooleanExpression> booleanExpressionList = new ArrayList();
         booleanExpressionList.add(QMember.member.id.in(memberIdList));
         PageResult<Member> memberPage= memberService.queryWhereOrPage(booleanExpressionList,null,null);
-        Page<ScanOrder> scanOrders = page.map(x -> ScanOrder.toScanOrder(x, user.getId()));
+        Page<ScanOrder> scanOrders = page.map(x -> {
+            Advertise advertise = advertiseService.findOne(x.getAdvertiseId());
+            return ScanOrder.toScanOrder(x, user.getId(),advertise.getCountry().getLocalCurrency());
+        });
+
         for(ScanOrder scanOrder:scanOrders){
             for(Member member:memberPage.getContent()){
                 if(scanOrder.getMemberId().equals(member.getId())){
@@ -435,6 +449,37 @@ public class OrderController {
         notNull(order, msService.getMessage("ORDER_NOT_EXISTS"));
         MessageResult result = MessageResult.success();
         Member member = memberService.findOne(order.getMemberId());
+        Advertise advertise = advertiseService.findOne(order.getAdvertiseId());
+        //获取卖家收款方式
+        String payMode = advertise.getPayMode();
+        Long seller = advertise.getMember().getId();
+        if(advertise.getAdvertiseType().equals(AdvertiseType.BUY)){
+            seller=order.getCustomerId();
+        }
+        List<PaymentTypeRecord> records = paymentTypeRecordService.getRecordsByUserId(seller);
+
+        for (PaymentTypeRecord record : records) {
+            PaymentType type = paymentTypeService.findPaymentTypeById(record.getType());
+            record.setTypeName(type.getCode());
+            List<PaymentTypeConfig> cList = JSON.parseArray(type.getConfigJson(),PaymentTypeConfig.class);
+            Map<String, String> fieldType = cList.stream().collect(Collectors.toMap(PaymentTypeConfig::getFieldName, PaymentTypeConfig::getType));
+            record.setFieldType(fieldType);
+
+        }
+        List<PaymentTypeRecord> payInfos = new ArrayList<>();
+        int index = 0;
+        if(!StringUtils.isEmpty(payMode)){
+            String[] type = payMode.split(",");
+            List<String> types = Arrays.asList(type);
+            for (PaymentTypeRecord record : records) {
+                if(types.contains(record.getTypeName())){
+                    record.setColor(colors[index%6]);
+                    index++;
+                    payInfos.add(record);
+                }
+            }
+        }
+
         OrderDetail info = OrderDetail.builder().orderSn(orderSn)
                 .unit(order.getCoin().getUnit())
                 .status(order.getStatus())
@@ -443,17 +488,19 @@ public class OrderController {
                 .money(order.getMoney())
                 .payTime(order.getPayTime())
                 .createTime(order.getCreateTime())
-                .timeLimit(order.getTimeLimit())
+                .payInfos(payInfos)
+//                .timeLimit(order.getTimeLimit())
+                .currency(advertise.getCountry().getLocalCurrency())
                 .myId(user.getId()).memberMobile(member.getMobilePhone())
                 .build();
         /*if (!order.getStatus().equals(OrderStatus.CANCELLED)) {*/
-            PayInfo payInfo = PayInfo.builder()
-                    .bankInfo(order.getBankInfo())
-                    .alipay(order.getAlipay())
-                    .wechatPay(order.getWechatPay())
-                    .build();
-            info.setPayInfo(payInfo);
-       /* }*/
+//        PayInfo payInfo = PayInfo.builder()
+//                .bankInfo(order.getBankInfo())
+//                .alipay(order.getAlipay())
+//                .wechatPay(order.getWechatPay())
+//                .build();
+//        info.setPayInfo(payInfo);
+        /* }*/
         if (order.getMemberId().equals(user.getId())) {
             info.setHisId(order.getCustomerId());
             info.setOtherSide(order.getCustomerName());
@@ -572,7 +619,7 @@ public class OrderController {
         }
         isTrue(ret != 0, msService.getMessage("REQUEST_ILLEGAL"));
         isTrue(order.getStatus().equals(OrderStatus.NONPAYMENT), msService.getMessage("ORDER_STATUS_EXPIRED"));
-        isTrue(compare(new BigDecimal(order.getTimeLimit()), DateUtil.diffMinute(order.getCreateTime())), msService.getMessage("ORDER_ALREADY_AUTO_CANCEL"));
+//        isTrue(compare(new BigDecimal(order.getTimeLimit()), DateUtil.diffMinute(order.getCreateTime())), msService.getMessage("ORDER_ALREADY_AUTO_CANCEL"));
         int is = orderService.payForOrder(orderSn);
         if (is > 0) {
             /**
@@ -686,7 +733,7 @@ public class OrderController {
             memberTransaction1.setCreateTime(new Date());
             memberTransaction1 = memberTransactionService.save(memberTransaction1);
         }
-        orderEvent.onOrderCompleted(order);
+//        orderEvent.onOrderCompleted(order);
         return MessageResult.success(msService.getMessage("RELEASE_SUCCESS"));
     }
 

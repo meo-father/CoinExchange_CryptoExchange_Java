@@ -4,9 +4,9 @@ import com.bizzan.bitrade.dao.base.BaseDao;
 import com.bizzan.bitrade.entity.MemberSignRecord;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @Description:
- * @date 2018/5/410:18
+ * @date 2019/5/410:18
  */
 public interface MemberSignRecordDao extends BaseDao<MemberSignRecord> {
 }

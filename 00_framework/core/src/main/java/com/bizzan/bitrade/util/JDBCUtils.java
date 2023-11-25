@@ -1,12 +1,10 @@
 package com.bizzan.bitrade.util;
 
-import com.alibaba.fastjson.JSONObject;
 import com.bizzan.bitrade.config.JDBCConfig;
 import com.bizzan.bitrade.dto.MemberBonusDTO;
 import com.bizzan.bitrade.entity.Member;
 import com.bizzan.bitrade.entity.MemberWallet;
 import com.bizzan.bitrade.es.ESUtils;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,8 +15,8 @@ import java.util.List;
 
 /**
  * @Description:
- * @author: GuoShuai
- * @date: create in 13:10 2018/7/2
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date: create in 13:10 2019/7/2
  * @Modified:
  */
 @Slf4j
@@ -232,7 +230,7 @@ public class JDBCUtils {
         Statement state = null;
         ResultSet rs = null;
         String sql = " INSERT INTO member_wallet( address, balance, frozen_balance, is_lock, member_id, version, coin_id, to_released )" +
-                " VALUES ( \"\", 0, 0, 0, ?, 0, ?, 0) ";
+                " VALUES ( \"\", 0, 0, 0, ?, 0, ?, 0) ON DUPLICATE KEY UPDATE version=version";
 
         try {
 
@@ -300,24 +298,79 @@ public class JDBCUtils {
 
     }
 
-//    public static void main(String[] args) {
-//        List<MemberWallet> memberWallets = new ArrayList<>();
-//         String sql1 = "SELECT * FROM member_transaction WHERE id>=";
-//        String sql2 = " AND id<";
-//        int total = 10058359;
-//        int start = 1;
-//        int end= 2000;
-//        for (int i = 1; i <= 5030; i++) {
-//            if ( end >= total){
-//                end = total;
-//            }
-//            String sql = sql1+start+sql2+end;
-//            start = end;
-//            end =end+2000;
-//            System.out.println(sql);
-//        }
-//
-//    }
+
+    public void synchronizationMemberContractWallet(List<Member> members, Long contractId) {
+        long startTime = System.currentTimeMillis();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        Statement state = null;
+        ResultSet rs = null;
+        String sql = "INSERT INTO `member_contract_wallet` (`coin_balance`, `coin_buy_leverage`, `coin_buy_position`, `coin_buy_price`, `coin_buy_principal_amount`, `coin_frozen_balance`, `coin_frozen_buy_position`, `coin_frozen_sell_position`, `coin_pattern`, `coin_sell_leverage`, `coin_sell_position`, `coin_sell_price`, `coin_sell_principal_amount`, `coin_share_number`, `member_id`, `usdt_balance`, `usdt_buy_leverage`, `usdt_buy_position`, `usdt_buy_price`, `usdt_buy_principal_amount`, `usdt_frozen_balance`, `usdt_frozen_buy_position`, `usdt_frozen_sell_position`, `usdt_pattern`, `usdt_sell_leverage`, `usdt_sell_position`, `usdt_sell_price`, `usdt_sell_principal_amount`, `usdt_share_number`, `contract_id`) VALUES" +
+                " (0, 10, 0, 0, 0, 0, 0, 0, 1, 10, 0, 0, 0, 0, ?, 0, 10, 0, 0, 0, 0, 0, 0, 1, 10, 0, 0, 0, 0, ?) ON DUPLICATE KEY UPDATE coin_buy_leverage=coin_buy_leverage";
+
+        try {
+
+            //Register JDBC driver
+            Class.forName(JDBC_DRIVER);
+            System.setProperty("jdbc.driver", "com.mysql.jdbc.Driver");
+
+            //Open a connection
+            log.info("Connecting to a selected database...");
+            conn = DriverManager.getConnection(jdbcConfig.getDbURRL(), jdbcConfig.getUsername(), jdbcConfig.getPassword());
+            log.info("Connected database successfully...");
 
 
+            stmt = conn.prepareStatement(sql);
+
+            state = conn.createStatement();
+            String querySql = "select id from member";
+            rs = state.executeQuery(querySql);
+            conn.setAutoCommit(false);
+
+            int i=0;
+            while(rs.next()){
+
+                log.info("sql>>>>"+sql);
+                //log.info("会员id>>>>>"+rs.getLong("id")+">>>>币种>>>"+coinId);
+                stmt.setLong(1, rs.getLong("id")); // member_d
+                stmt.setLong(2, contractId); // contract_id
+                i++;
+                stmt.addBatch();
+                if (i % 2000 == 0) {
+                    stmt.executeBatch();
+                    conn.commit();
+                }
+            }
+            stmt.executeBatch();
+            conn.commit();
+            log.info("Inserted records into the table...");
+        } catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+
+            } catch (SQLException se) {
+            }// do nothing
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        long endTime = System.currentTimeMillis();
+        log.info("------批量操作SQL：" + sql);
+        log.info("------执行时间：" + (endTime - startTime) + "ms");
+
+    }
 }

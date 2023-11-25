@@ -1,23 +1,22 @@
 package com.bizzan.bitrade.job;
 
+import com.bizzan.bitrade.constant.SignStatus;
+import com.bizzan.bitrade.entity.Sign;
+import com.bizzan.bitrade.service.MemberService;
+import com.bizzan.bitrade.service.SignService;
+import com.bizzan.bitrade.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.bizzan.bitrade.constant.SignStatus;
-import com.bizzan.bitrade.entity.Sign;
-import com.bizzan.bitrade.service.MemberService;
-import com.bizzan.bitrade.service.SignService;
-import com.bizzan.bitrade.util.DateUtil;
-
 import java.util.Date;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @Description: 关于签到活动的定时任务
- * @date 2018/5/410:41
+ * @date 2019/5/410:41
  */
 @Component
 @Slf4j

@@ -1,20 +1,19 @@
 package com.bizzan.bitrade.dao;
 
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import com.bizzan.bitrade.constant.OrderStatus;
 import com.bizzan.bitrade.dao.base.BaseDao;
 import com.bizzan.bitrade.entity.Order;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author GS
- * @date 2017年12月11日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月11日
  */
 public interface OrderDao extends BaseDao<Order> {
 
@@ -97,5 +96,5 @@ public interface OrderDao extends BaseDao<Order> {
     List<Object[]> getOtcTurnoverAmount(@Param("date")String date);
 
     @Query(value = "select sum(b.commission) as fee,sum(b.money) as money from Order b  where  b.status = 3 and b.memberId = :memberId")
-    Map<String,Object> getBusinessStatistics(@Param("memberId")Long memberId);
+    List<Object[]> getBusinessStatistics(@Param("memberId")Long memberId);
 }

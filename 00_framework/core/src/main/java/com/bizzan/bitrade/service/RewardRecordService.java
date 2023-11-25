@@ -4,13 +4,13 @@ import com.bizzan.bitrade.constant.RewardRecordType;
 import com.bizzan.bitrade.dao.RewardRecordDao;
 import com.bizzan.bitrade.entity.Member;
 import com.bizzan.bitrade.entity.RewardRecord;
-import com.bizzan.bitrade.pagination.Criteria;
-import com.bizzan.bitrade.pagination.Restrictions;
 import com.bizzan.bitrade.service.Base.BaseService;
 import com.querydsl.core.types.dsl.BooleanExpression;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author GS
- * @date 2018年03月08日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年03月08日
  */
 @Service
 public class RewardRecordService extends BaseService {

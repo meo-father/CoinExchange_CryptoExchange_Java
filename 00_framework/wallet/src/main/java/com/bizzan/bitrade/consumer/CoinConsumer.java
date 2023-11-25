@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author GS
- * @date 2018年02月08日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年02月08日
  */
 @Component
 public class CoinConsumer {

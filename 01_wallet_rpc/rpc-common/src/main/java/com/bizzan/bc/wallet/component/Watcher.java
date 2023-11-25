@@ -4,7 +4,6 @@ import com.bizzan.bc.wallet.entity.Coin;
 import com.bizzan.bc.wallet.entity.Deposit;
 import com.bizzan.bc.wallet.event.DepositEvent;
 import com.bizzan.bc.wallet.service.WatcherLogService;
-
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 @Data
-public abstract class Watcher implements Runnable{
+public abstract class Watcher implements Runnable {
     private Logger logger = LoggerFactory.getLogger(Watcher.class);
     private boolean stop = false;
     //默认同步间隔20秒
@@ -25,7 +24,7 @@ public abstract class Watcher implements Runnable{
     private Coin coin;
     private WatcherLogService watcherLogService;
 
-    public void check(){
+    public void check() {
         try {
             Long networkBlockNumber = getNetworkBlockHeight() - confirmation + 1;
             if (currentBlockHeight < networkBlockNumber) {
@@ -33,22 +32,21 @@ public abstract class Watcher implements Runnable{
                 currentBlockHeight = (networkBlockNumber - currentBlockHeight > step) ? currentBlockHeight + step : networkBlockNumber;
                 logger.info("replay block from {} to {}", startBlockNumber, currentBlockHeight);
                 List<Deposit> deposits = replayBlock(startBlockNumber, currentBlockHeight);
-                if(deposits != null) {
-	        		deposits.forEach(deposit -> {
-	                    depositEvent.onConfirmed(deposit);
-	                });
-	                //记录日志
-	        		watcherLogService.update(coin.getName(), currentBlockHeight);
-        		}else {
-        			logger.info("扫块失败！！！");
-        			// 未扫描成功
-        			currentBlockHeight = startBlockNumber - 1;
-        		}
+                if (deposits != null) {
+                    deposits.forEach(deposit -> {
+                        depositEvent.onConfirmed(deposit);
+                    });
+                    //记录日志
+                    watcherLogService.update(coin.getName(), currentBlockHeight);
+                } else {
+                    logger.info("扫块失败！！！");
+                    // 未扫描成功
+                    currentBlockHeight = startBlockNumber - 1;
+                }
             } else {
                 logger.info("Already latest height: {}, networkBlockHeight: {},nothing to do!", currentBlockHeight, networkBlockNumber);
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -61,7 +59,7 @@ public abstract class Watcher implements Runnable{
     public void run() {
         stop = false;
         long nextCheck = 0;
-        while(!(Thread.interrupted() || stop)) {
+        while (!(Thread.interrupted() || stop)) {
             if (nextCheck <= System.currentTimeMillis()) {
                 try {
                     nextCheck = System.currentTimeMillis() + checkInterval;
@@ -70,8 +68,7 @@ public abstract class Watcher implements Runnable{
                 } catch (Exception ex) {
                     logger.info(ex.getMessage());
                 }
-            }
-            else {
+            } else {
                 try {
                     Thread.sleep(Math.max(nextCheck - System.currentTimeMillis(), 100));
                 } catch (InterruptedException ex) {

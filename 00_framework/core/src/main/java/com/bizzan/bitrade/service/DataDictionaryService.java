@@ -1,17 +1,16 @@
 package com.bizzan.bitrade.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.bizzan.bitrade.dao.DataDictionaryDao;
 import com.bizzan.bitrade.entity.DataDictionary;
 import com.bizzan.bitrade.service.Base.TopBaseService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @Title: ${file_name}
  * @Description:
- * @date 2018/4/1214:19
+ * @date 2019/4/1214:19
  */
 @Service
 public class DataDictionaryService extends TopBaseService<DataDictionary, DataDictionaryDao> {

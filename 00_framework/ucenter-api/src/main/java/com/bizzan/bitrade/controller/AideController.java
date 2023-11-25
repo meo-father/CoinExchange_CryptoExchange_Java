@@ -1,12 +1,10 @@
 package com.bizzan.bitrade.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bizzan.bitrade.constant.Platform;
 import com.bizzan.bitrade.constant.SysAdvertiseLocation;
 import com.bizzan.bitrade.constant.SysConstant;
 import com.bizzan.bitrade.constant.SysHelpClassification;
-import com.bizzan.bitrade.controller.BaseController;
 import com.bizzan.bitrade.entity.AppRevision;
 import com.bizzan.bitrade.entity.SysAdvertise;
 import com.bizzan.bitrade.entity.SysHelp;
@@ -16,8 +14,6 @@ import com.bizzan.bitrade.service.SysAdvertiseService;
 import com.bizzan.bitrade.service.SysHelpService;
 import com.bizzan.bitrade.service.WebsiteInformationService;
 import com.bizzan.bitrade.util.MessageResult;
-import com.netflix.discovery.converters.Auto;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,8 +26,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author GS
- * @date 2018年02月05日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年02月05日
  */
 @RestController
 @RequestMapping("/ancillary")
@@ -71,8 +67,12 @@ public class AideController extends BaseController{
      */
     @RequestMapping("/system/advertise")
     public MessageResult sysAdvertise(@RequestParam(value = "sysAdvertiseLocation", required = false) SysAdvertiseLocation sysAdvertiseLocation,
-    								  @RequestParam(value = "lang", required = false) String lang) {
-        List<SysAdvertise> list = sysAdvertiseService.findAllNormal(sysAdvertiseLocation, lang);
+    								  @RequestParam(value = "lang", required = false) String lang,
+                                      @RequestHeader(value = "lang") String headerLanguage) {
+        if(headerLanguage==null || "".equals(headerLanguage)){
+            headerLanguage = lang;
+        }
+        List<SysAdvertise> list = sysAdvertiseService.findAllNormal(sysAdvertiseLocation, headerLanguage);
         MessageResult result = MessageResult.success();
         result.setData(list);
         return result;
@@ -104,7 +104,8 @@ public class AideController extends BaseController{
      */
     @RequestMapping(value = "more/help",method = RequestMethod.POST)
     public MessageResult sysAllHelp(@RequestParam(value = "total",defaultValue = "6")Integer total,
-    								@RequestParam(value = "lang",defaultValue = "CN")String lang){
+                                    @RequestParam("lang")String paramLang,
+                                    @RequestHeader(value = "lang") String lang){
 
         ValueOperations valueOperations = redisTemplate.opsForValue();
         List<JSONObject> result = (List<JSONObject>) valueOperations.get(SysConstant.SYS_HELP+lang);
@@ -219,7 +220,8 @@ public class AideController extends BaseController{
     public MessageResult sysHelpCate(@RequestParam(value = "pageNo",defaultValue = "1")Integer pageNo,
                                     @RequestParam(value = "pageSize",defaultValue = "10")Integer pageSize,
                                     @RequestParam(value = "cate")SysHelpClassification cate,
-                                    @RequestParam(value = "lang",defaultValue = "CN")String lang){
+                                     @RequestParam("lang")String paramLang,
+                                     @RequestHeader(value = "lang") String lang){
     	// 首页缓存
     	if(pageNo.intValue() == 1) {
 	        ValueOperations valueOperations = redisTemplate.opsForValue();
@@ -252,7 +254,8 @@ public class AideController extends BaseController{
      */
     @RequestMapping(value = "more/help/page/top", method = RequestMethod.POST)
     public MessageResult sysHelpTop(@RequestParam(value = "cate")String cate,
-    								@RequestParam(value = "lang", defaultValue = "CN")String lang){
+                                    @RequestParam("lang")String paramLang,
+                                    @RequestHeader(value = "lang") String lang){
         ValueOperations valueOperations = redisTemplate.opsForValue();
         List<SysHelp> result = (List<SysHelp>) valueOperations.get(SysConstant.SYS_HELP_TOP+cate+lang);
         if ( result != null && !result.isEmpty()){

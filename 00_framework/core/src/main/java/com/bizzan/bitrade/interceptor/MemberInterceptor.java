@@ -1,6 +1,11 @@
 package com.bizzan.bitrade.interceptor;
 
 
+import com.bizzan.bitrade.constant.SysConstant;
+import com.bizzan.bitrade.entity.Member;
+import com.bizzan.bitrade.entity.transform.AuthMember;
+import com.bizzan.bitrade.event.MemberEvent;
+import com.bizzan.bitrade.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,12 +13,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.bizzan.bitrade.constant.SysConstant;
-import com.bizzan.bitrade.entity.Member;
-import com.bizzan.bitrade.entity.transform.AuthMember;
-import com.bizzan.bitrade.event.MemberEvent;
-import com.bizzan.bitrade.service.MemberService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,8 +22,8 @@ import java.io.PrintWriter;
 import java.util.Calendar;
 
 /**
- * @author GS
- * @date 2018年01月11日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月11日
  */
 @Slf4j
 public class MemberInterceptor implements HandlerInterceptor {
@@ -54,14 +53,14 @@ public class MemberInterceptor implements HandlerInterceptor {
                 session.setAttribute(SysConstant.SESSION_MEMBER, AuthMember.toAuthMember(member));
                 return true;
             } else {
-                ajaxReturn(response, 4000, "当前登录状态过期，请您重新登录！");
+                ajaxReturn(response, 4000, "The current login status has expired, please login again!");
                 return false;
             }
         }
     }
 
 
-    public void ajaxReturn(HttpServletResponse response, int code, String msg) throws IOException, JSONException {
+    public static void ajaxReturn(HttpServletResponse response, int code, String msg) throws IOException, JSONException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/json; charset=UTF-8");
         PrintWriter out = response.getWriter();

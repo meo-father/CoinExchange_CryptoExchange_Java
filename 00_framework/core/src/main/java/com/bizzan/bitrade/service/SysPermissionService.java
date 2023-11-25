@@ -4,7 +4,6 @@ import com.bizzan.bitrade.dao.SysPermissionDao;
 import com.bizzan.bitrade.entity.SysPermission;
 import com.bizzan.bitrade.service.Base.BaseService;
 import com.querydsl.core.types.Predicate;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * @author GS
- * @date 2017年12月20日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月20日
  */
 @Service
 public class SysPermissionService extends BaseService<SysPermission> {

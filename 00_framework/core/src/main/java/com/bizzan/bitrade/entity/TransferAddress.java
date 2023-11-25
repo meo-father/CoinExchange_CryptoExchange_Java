@@ -1,16 +1,14 @@
 package com.bizzan.bitrade.entity;
 
+import com.bizzan.bitrade.constant.CommonStatus;
 import lombok.Data;
 
 import javax.persistence.*;
-
-import com.bizzan.bitrade.constant.CommonStatus;
-
 import java.math.BigDecimal;
 
 /**
- * @author GS
- * @date 2018年02月27日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年02月27日
  */
 @Entity
 @Data

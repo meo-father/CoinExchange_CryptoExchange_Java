@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Configuration;
 import javax.persistence.EntityManager;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description
- * @date 2018/1/18 11:29
+ * @date 2019/1/18 11:29
  */
 @Configuration
 public class QueryDslConfig {

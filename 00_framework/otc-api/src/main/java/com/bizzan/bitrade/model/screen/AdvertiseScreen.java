@@ -4,16 +4,15 @@ import com.bizzan.bitrade.ability.ScreenAbility;
 import com.bizzan.bitrade.constant.AdvertiseControlStatus;
 import com.bizzan.bitrade.entity.QAdvertise;
 import com.querydsl.core.types.dsl.BooleanExpression;
-
 import lombok.Data;
 
 import java.util.ArrayList;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @Title: ${file_name}
  * @Description:
- * @date 2018/4/2711:45
+ * @date 2019/4/2711:45
  */
 @Data
 public class AdvertiseScreen implements ScreenAbility {

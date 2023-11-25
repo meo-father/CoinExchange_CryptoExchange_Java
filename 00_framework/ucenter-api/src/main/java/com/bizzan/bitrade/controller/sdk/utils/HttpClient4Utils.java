@@ -1,22 +1,11 @@
 /*
- * @(#) HttpClientUtils.java 2016年2月3日
+ * @(#) HttpClientUtils.java 2020年2月3日
  * 
  * Copyright 2010 NetEase.com, Inc. All rights reserved.
  */
 package com.bizzan.bitrade.controller.sdk.utils;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -30,13 +19,19 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.*;
 
 /**
  * HttpClient工具类
  *
  * @author captcha_dev
- * @version 2016年2月3日
+ * @version 2020年2月3日
  */
 public class HttpClient4Utils {
     private static HttpClient defaultClient = createHttpClient(20, 20, 5000, 5000, 3000);

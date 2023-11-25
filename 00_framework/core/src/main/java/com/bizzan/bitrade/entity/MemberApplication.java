@@ -2,7 +2,6 @@ package com.bizzan.bitrade.entity;
 
 import com.bizzan.bitrade.constant.AuditStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -13,9 +12,9 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description 会员审核信息
- * @date 2017/12/26 14:35
+ * @date 2019/12/26 14:35
  */
 @Entity
 @Table(name = "member_application")

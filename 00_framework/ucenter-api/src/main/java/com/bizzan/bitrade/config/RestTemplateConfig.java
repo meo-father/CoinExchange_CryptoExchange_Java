@@ -3,13 +3,11 @@ package com.bizzan.bitrade.config;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * @author GS
- * @date 2018年02月27日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年02月27日
  */
 @Configuration
 public class RestTemplateConfig {

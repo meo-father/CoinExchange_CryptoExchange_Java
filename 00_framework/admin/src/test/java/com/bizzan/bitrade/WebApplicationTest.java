@@ -1,31 +1,19 @@
 package com.bizzan.bitrade;
 
 import com.alibaba.fastjson.JSON;
-import com.bizzan.bitrade.constant.AdvertiseControlStatus;
-import com.bizzan.bitrade.constant.PageModel;
-import com.bizzan.bitrade.constant.RewardRecordType;
-import com.bizzan.bitrade.constant.TransactionTypeEnum;
 import com.bizzan.bitrade.core.Menu;
 import com.bizzan.bitrade.dao.MemberDao;
 import com.bizzan.bitrade.dao.MemberWalletDao;
 import com.bizzan.bitrade.dao.OrderDao;
-import com.bizzan.bitrade.dto.MemberWalletDTO;
-import com.bizzan.bitrade.entity.*;
-import com.bizzan.bitrade.job.MemberStatisticsJob;
+import com.bizzan.bitrade.entity.TurnoverStatistics;
 import com.bizzan.bitrade.service.*;
 import com.bizzan.bitrade.util.DateUtil;
-import com.bizzan.bitrade.util.ExcelUtil;
 import com.bizzan.bitrade.util.MessageResult;
-import com.bizzan.bitrade.vo.RegisterPromotionVO;
-import com.jayway.jsonpath.Predicate;
-
 import lombok.extern.slf4j.Slf4j;
-import org.bson.types.Decimal128;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
@@ -33,12 +21,12 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
+import java.io.File;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -129,13 +117,13 @@ private KafkaTemplate kafkaTemplate ;
 		Date date = memberDao.getStartRegistrationDate() ;
 
 		System.out.println(date);
-		/*int a = memberDao.getApplicationNum("2018-03-27");
+		/*int a = memberDao.getApplicationNum("2020-03-27");
 		System.out.println(",,,,,,,,,,,,,,,,,,,,,,,,,"+a);*/
 	/*	Admin admin = adminService.login("root","47943eeeab5ed28f8a93f7fb77ec5111");
 		System.out.println(admin);*/
 		/*try {
 			MemberStatisticsJob job = new MemberStatisticsJob() ;
-			Date startDate = DateUtil.YYYY_MM_DD.parse("2018-03-18");
+			Date startDate = DateUtil.YYYY_MM_DD.parse("2020-03-18");
 			Date endDate = DateUtil.dateAddDay(DateUtil.getCurrentDate(),-1);
 			while(!startDate.after(endDate)){
 				String dateStr = DateUtil.YYYY_MM_DD.format(startDate);
@@ -156,9 +144,9 @@ private KafkaTemplate kafkaTemplate ;
 		//System.out.println(memberWalletDao.getWalletAllBalance("Bitcoin"));
 		System.out.println(page.getContent());*/
 		//kafkaTemplate.send("test","aaaa");
-		/*System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:"+memberService.getRegistrationNum("2018-03-19"));
-		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:"+memberService.getApplicationNum("2018-03-19"));
-		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:"+memberService.getBusinessNum("2018-03-19"));*/
+		/*System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:"+memberService.getRegistrationNum("2020-03-19"));
+		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:"+memberService.getApplicationNum("2020-03-19"));
+		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:"+memberService.getBusinessNum("2020-03-19"));*/
 		/*for(Map<String,Object> map : orderService.getOtcOrderStatistics()){
 			System.out.println(map.keySet()+"-----------------------"+map.values());
 		}*/
@@ -166,7 +154,7 @@ private KafkaTemplate kafkaTemplate ;
 		/*System.out.println(orderDao.getOtcTurnoverAmount());*/
 	/*	Date date = *//*DateUtil.dateAddDay(DateUtil.getCurrentDate(),-1);*//* new Date();
 		String dateStr = DateUtil.getFormatTime(DateUtil.YYYY_MM_DD,date);*/
-		String dateStr = "2018-03-20";
+		String dateStr = "2020-03-20";
 		Date date = DateUtil.YYYY_MM_DD.parse(dateStr);
 		/**
 		 * 法币成交

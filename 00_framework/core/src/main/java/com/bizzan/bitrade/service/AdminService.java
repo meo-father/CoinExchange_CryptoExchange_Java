@@ -1,5 +1,8 @@
 package com.bizzan.bitrade.service;
 
+import com.bizzan.bitrade.dao.AdminDao;
+import com.bizzan.bitrade.entity.Admin;
+import com.bizzan.bitrade.service.Base.TopBaseService;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,10 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.bizzan.bitrade.dao.AdminDao;
-import com.bizzan.bitrade.entity.Admin;
-import com.bizzan.bitrade.service.Base.TopBaseService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -20,8 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author GS
- * @date 2017年12月18日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月18日
  */
 @Service
 public class AdminService extends TopBaseService<Admin, AdminDao> {

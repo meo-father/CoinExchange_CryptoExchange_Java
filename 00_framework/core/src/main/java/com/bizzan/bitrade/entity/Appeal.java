@@ -3,7 +3,6 @@ package com.bizzan.bitrade.entity;
 import com.bizzan.bitrade.constant.AppealStatus;
 import com.bizzan.bitrade.constant.BooleanEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -13,8 +12,8 @@ import java.util.Date;
 /**
  * 申诉
  *
- * @author GS
- * @date 2018年01月22日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月22日
  */
 @Entity
 @Data

@@ -1,17 +1,16 @@
 package com.bizzan.bitrade.dao;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import com.bizzan.bitrade.constant.WithdrawStatus;
 import com.bizzan.bitrade.dao.base.BaseDao;
 import com.bizzan.bitrade.entity.WithdrawRecord;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 /**
- * @author GS
- * @date 2018年01月29日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月29日
  */
 public interface WithdrawRecordDao extends BaseDao<WithdrawRecord> {
 
@@ -19,4 +18,6 @@ public interface WithdrawRecordDao extends BaseDao<WithdrawRecord> {
     List<Object[]> getWithdrawStatistics(@Param("date")String date);
 
     long countAllByStatus(WithdrawStatus status);
+
+    WithdrawRecord findWithdrawRecordByTransactionNumber(String transactionNumber);
 }

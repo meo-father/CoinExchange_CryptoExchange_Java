@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description
- * @date 2018/2/28 15:48
+ * @date 2019/2/28 15:48
  */
 public class PageListMapResult implements Serializable {
     private List<Map<String, Object>> content;

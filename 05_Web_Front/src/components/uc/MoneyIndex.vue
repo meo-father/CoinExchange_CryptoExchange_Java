@@ -5,12 +5,14 @@
         <div class="shaow">
           <div class="money_table">
             <div style="width: 100%;height: 50px;">
-            <div style="float:left;letter-spacing:1px;padding-top: 5px;">
-                <span style="font-size:12px;color:#828ea1;">{{$t('uc.finance.money.totalassets')}}</span>
-                <span style="font-size: 18px;color:#D8E1EB;">${{totalUSDT}}</span>
-                <span style="font-size:10px;color:#828ea1;margin-left: 5px;"> ≈ ¥{{totalCny}}</span>
-            </div>
-            <Input style="float:right;" class="search" search :placeholder="$t('common.searchplaceholder')" @on-change="seachInputChange" v-model="searchKey"/>
+              <div style="float:left;letter-spacing:1px;padding-top: 5px;">
+                  <span style="font-size:12px;color:#828ea1;">{{$t('uc.finance.money.totalassets')}}</span>
+                  <span style="font-size: 18px;color:#D8E1EB;">${{totalUSDT}}</span>
+                  <!--<span style="font-size:10px;color:#828ea1;margin-left: 5px;"> ≈ ¥{{totalCny}}</span>-->
+              </div>
+              <Input style="float:right;" class="search" search :placeholder="$t('common.searchplaceholder')" @on-change="seachInputChange" v-model="searchKey"/>
+
+              <!--<Button @click="toQuickExchange" type="warning" style="padding: 6px 30px;margin-right:30px;background-color:#f0a70a;border-color:#f0a70a;float:right;">{{$t('uc.finance.record.quickExchange')}}</Button>-->
             </div>
             <Table :columns="tableColumnsMoney" :data="tableMoneyShow" :loading="loading" :disabled-hover="true"></Table>
           </div>
@@ -26,6 +28,42 @@
     </Modal>
     <Modal v-model="modal_msg" :title="$t('uc.finance.money.match')">
       <p>{{match_msg}}</p>
+    </Modal>
+    <Modal v-model="transModal"  @on-ok="confrimTrans" :title="$t('uc.finance.money.onkeytrans')">
+      <p>{{$t('uc.finance.record.chooseTransCoinUnit')}}：
+        <Select v-model="toUnit" style="width: 400px;">
+          <Option v-for="item in transList" :value="item" :key="item">{{ item }}</Option>
+        </Select>
+      </p>
+      <p style="margin-top: 15px;">{{$t('uc.finance.record.inputTransAmount')}}：
+        <InputNumber style="width: 400px;" type="text" v-model="transAmount" :placeholder="$t('uc.finance.money.matchtip2')"></InputNumber>
+      </p>
+    </Modal>
+
+
+    <Modal v-model="quickExchangeModal"  @on-ok="confrimExchange" :title="$t('uc.finance.record.quickExchange')">
+      <h2 style="text-align:center;">{{$t('uc.finance.record.currentRate')}}： <span style="color: #45b854">{{priceRate | fixed2}} </span></h2>
+      <p style="margin-top: 15px;">{{$t('uc.finance.record.from')}}：
+        <Select v-model="fromExchangeCoin" style="width: 450px;">
+          <Option v-for="item in fromCoinList" :value="item" :key="item">{{ item }}</Option>
+        </Select>
+      </p>
+      <p style="margin-top: 15px;">{{$t('uc.finance.record.to')}}：
+        <Select v-model="toExchangeCoin" style="width: 450px;">
+          <Option v-for="item in toCoinList" :value="item" :key="item">{{ item }}</Option>
+        </Select>
+      </p>
+      <p style="margin-top: 15px;">{{$t('uc.finance.record.inputexchangeamount')}}:
+        <InputNumber style="width: 330px;" type="text" v-model="exchangeAmount" :placeholder="$t('uc.finance.record.inputexchangeamount')"></InputNumber>
+        <span style="margin-left: 10px;font-weight: bold;">{{fromExchangeCoin}}</span>
+      </p>
+      <p style="margin-top: 15px;">{{$t('uc.finance.record.predictAmount')}}:
+        <InputNumber style="width: 330px;" disabled type="text" v-model="predictAmount"></InputNumber>
+        <span style="margin-left: 10px;font-weight: bold;">{{toExchangeCoin}}</span>
+      </p>
+      <p style="margin-top: 15px;">{{$t('uc.finance.record.inputexchangepasswd')}}:
+        <Input style="width: 400px;" type="password" autocomplete="new-password" v-model="exchangePassword" :placeholder="$t('uc.finance.record.inputexchangepasswd')"></Input>
+      </p>
     </Modal>
   </div>
 </template>
@@ -45,12 +83,53 @@ export default {
       canMatch: true,
       modal_msg: false,
       match_msg: "",
-      searchKey: ""
+      searchKey: "",
+      transModal: false,
+      toUnit: "",
+      fromUnit: "",
+      transAmount: 0,
+      transList: ["USDT", "EUSDT", "TUSDT"],
+      quickExchangeModal: false,
+      fromExchangeCoin: "CCASH",
+      toExchangeCoin: "USDT",
+      fromCoinList: ["CCASH"],
+      toCoinList: ["USDT"],
+      exchangeAmount: 0,
+      exchangePassword: "",
+      predictAmount: 0,
+      priceRate: 7.0
     };
+  },
+  filters: {
+    fixed2: function(value) {
+      return value.toFixed(2);
+    }
   },
   methods: {
     seachInputChange(){
       this.tableMoneyShow = this.tableMoney.filter(item => item["coinType"].indexOf(this.searchKey) == 0);
+    },
+    toQuickExchange(){
+      this.quickExchangeModal = true;
+    },
+    confrimExchange(){
+      let params = {};
+      params["toUnit"] = this.toExchangeCoin;
+      params["fromUnit"] = this.fromExchangeCoin;
+      params["amount"] = this.transAmount;
+      params["jyPassword"] = this.exchangePassword;
+      this.$http
+        .post(this.host + "/uc/asset/wallet/quick-exchange", params)
+        .then(response => {
+          var resp = response.body;
+          if (resp.code == 0) {
+            this.$Message.success(resp.message);
+          } else {
+            this.$Message.error(resp.message);
+          }
+          this.quickExchangeModal = false;
+        });
+      return false;
     },
     getMoney() {
       //获取
@@ -85,6 +164,14 @@ export default {
           this.showMatchDailog();
         });
     },
+    getRate(){
+      this.$http
+        .post(this.host + "/market/ctc-usdt")
+        .then(response => {
+          var resp = response.body;
+          this.priceRate = resp.data.buy;
+        });
+    },
     showMatchDailog() {
       if (this.canMatch) this.modal = true;
       else this.modal_msg = true;
@@ -112,44 +199,27 @@ export default {
       }
     },
     resetAddress(unit) {
-      this.$Spin.show({
-          render: (h) => {
-              return h('div', [
-                  h('Icon', {
-                      'class': 'demo-spin-icon-load',
-                      props: {
-                          type: 'ios-loading',
-                          size: 18
-                      }
-                  }),
-                  h('div', {style:{
-                      fontSize: "12px",
-                      marginTop: "8px"
-                    }}, this.$t('uc.finance.recharge.gettingaddress'))
-              ])
-          }
-      });
-      var self = this;
+      this.$router.push(
+          "/uc/recharge?name=" + unit
+      );
+    },
+    confrimTrans: function(){
       let params = {};
-      params["unit"] = unit;
+      params["toUnit"] = this.toUnit;
+      params["fromUnit"] = this.fromUnit;
+      params["amount"] = this.transAmount;
       this.$http
-        .post(this.host + "/uc/asset/wallet/reset-address", params)
+        .post(this.host + "/uc/asset/wallet/trans-usd", params)
         .then(response => {
           var resp = response.body;
           if (resp.code == 0) {
-            //this.$Message.success(this.$t("uc.finance.money.resetsuccess"));
-
-            setTimeout(function() {
-              self.$Spin.hide();
-              self.$router.push(
-                "/uc/recharge?name=" + unit
-              );
-            }, 3000);
+            this.$Message.success(resp.message);
           } else {
             this.$Message.error(resp.message);
-            this.$Spin.hide();
           }
+          this.transModal = false;
         });
+      return false;
     }
   },
   created() {
@@ -230,6 +300,7 @@ export default {
         title: this.$t("uc.finance.money.operate"),
         key: "price1",
         align: "center",
+        width: 250,
         render: function(h, params) {
           var actions = [];
           if (params.row.coin.canRecharge == 1) {
@@ -349,6 +420,30 @@ export default {
               )
             );
           }
+          if(params.row.coin.unit == "USDT" || params.row.coin.unit == "EUSDT" || params.row.coin.unit == "TUSDT") {
+            // actions.push(
+            //   h(
+            //     "Button",
+            //     {
+            //       props: {
+            //         type: "success",
+            //         size: "small",
+            //         disabled: false
+            //       },
+            //       on: {
+            //         click: function() {
+            //           self.fromUnit = params.row.coin.unit;
+            //           self.transModal = true;
+            //         }
+            //       },
+            //       style: {
+            //         marginRight: "8px"
+            //       }
+            //     },
+            //     self.$t("uc.finance.money.onkeytrans")
+            //   )
+            // );
+          }
           return h("p", actions);
         }
       });
@@ -379,7 +474,8 @@ export default {
           td {
             color: #fff;
             .ivu-table-cell {
-              padding: 10px 10px;
+              // padding: 10px 10px;
+              padding: 5px 10px;
               p .ivu-btn {
                 background: transparent;
                 height: 25px;
@@ -420,12 +516,31 @@ export default {
                   color: #54637a;
                 }
               }
+              p .ivu-btn.ivu-btn-success {
+                border: 1px solid #32ad00;
+                span {
+                  color: #32ad00;
+                }
+              }
+				p{
+					width: 100%;height: 100%;padding-top: 5px;
+					display: inline-flex;align-items: center;
+					flex-wrap: wrap;
+					button{
+						margin-bottom: 5px;
+					}
+				}
+
             }
           }
         }
       }
     }
   }
+}
+
+.ivu-input-number-disabled .ivu-input-number-input{
+  background: transparent!important;
 }
 </style>
 
@@ -450,5 +565,6 @@ export default {
     display: none;
   }
 }
+
 
 </style>

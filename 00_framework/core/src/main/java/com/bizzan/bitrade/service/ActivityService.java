@@ -1,19 +1,19 @@
 package com.bizzan.bitrade.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
 import com.bizzan.bitrade.dao.ActivityDao;
 import com.bizzan.bitrade.entity.Activity;
 import com.bizzan.bitrade.pagination.Criteria;
 import com.bizzan.bitrade.pagination.Restrictions;
 import com.bizzan.bitrade.service.Base.BaseService;
 import com.querydsl.core.types.Predicate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ActivityService extends BaseService {
@@ -53,4 +53,8 @@ public class ActivityService extends BaseService {
         specification.add(Restrictions.eq("status", 1, false));
         return activityDao.findAll(specification, pageRequest);
 	}
+
+	public List<Activity> findByTypeAndStep(int type, int step) {
+	    return activityDao.findAllByTypeAndStep(type, step);
+    }
 }

@@ -11,8 +11,8 @@ import java.util.Date;
 /**
  * 分红开启记录
  *
- * @author GS
- * @date 2018年03月22日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年03月22日
  */
 @Entity
 @Data

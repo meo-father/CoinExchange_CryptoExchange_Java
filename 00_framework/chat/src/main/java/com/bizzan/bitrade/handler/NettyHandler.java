@@ -1,35 +1,34 @@
 package com.bizzan.bitrade.handler;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.bizzan.aqmd.core.annotation.HawkBean;
+import com.bizzan.aqmd.core.annotation.HawkMethod;
+import com.bizzan.aqmd.netty.common.NettyCacheUtils;
+import com.bizzan.aqmd.netty.push.HawkPushServiceApi;
+import com.bizzan.bitrade.entity.ChatMessageRecord;
+import com.bizzan.bitrade.entity.ConfirmResult;
+import com.bizzan.bitrade.entity.RealTimeChatMessage;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.bizzan.bitrade.constant.NettyCommand;
+import com.bizzan.bitrade.entity.*;
+import com.bizzan.bitrade.netty.QuoteMessage;
+import com.bizzan.bitrade.service.OrderService;
+import com.bizzan.bitrade.utils.DateUtils;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.aqmd.netty.annotation.HawkBean;
-import com.aqmd.netty.annotation.HawkMethod;
-import com.aqmd.netty.common.NettyCacheUtils;
-import com.aqmd.netty.push.HawkPushServiceApi;
-import com.bizzan.bitrade.entity.ChatMessageRecord;
-import com.bizzan.bitrade.entity.ConfirmResult;
-import com.bizzan.bitrade.entity.MessageTypeEnum;
-import com.bizzan.bitrade.entity.RealTimeChatMessage;
-import com.bizzan.bitrade.netty.QuoteMessage;
-import com.bizzan.bitrade.utils.DateUtils;
-
-import com.bizzan.bitrade.constant.NettyCommand;
-import com.bizzan.bitrade.entity.Order;
-import com.bizzan.bitrade.service.OrderService;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 处理Netty订阅与取消订阅
  */
+@Slf4j
 @HawkBean
 public class NettyHandler {
     @Autowired
@@ -40,10 +39,9 @@ public class NettyHandler {
     private MessageHandler chatMessageHandler ;
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
-    /*
     @Autowired
     private ApnsHandler apnsHandler;
-	*/
+
     public void subscribeTopic(Channel channel,String topic){
         String userKey = channel.id().asLongText();
         NettyCacheUtils.keyChannelCache.put(channel,userKey);
@@ -66,7 +64,7 @@ public class NettyHandler {
         NettyCacheUtils.keyChannelCache.remove(channel);
     }
 
-    /*@HawkMethod(cmd = NettyCommand.SUBSCRIBE_CHAT,version = NettyCommand.COMMANDS_VERSION)
+    @HawkMethod(cmd = NettyCommand.SUBSCRIBE_CHAT,version = NettyCommand.COMMANDS_VERSION)
     public QuoteMessage.SimpleResponse subscribeChat(byte[] body, ChannelHandlerContext ctx){
         JSONObject json = JSON.parseObject(new String(body));
         System.out.println("订阅："+json.toJSONString());
@@ -77,17 +75,17 @@ public class NettyHandler {
             response.setCode(500).setMessage("订阅失败，参数错误");
         }
         else {
-            String key = orderId + "-" + uid;
-            subscribeTopic(ctx.channel(),key);
+            String accessKey = orderId + "-" + uid;
+            subscribeTopic(ctx.channel(),accessKey);
             response.setCode(0).setMessage("订阅成功");
         }
         return response.build();
-    }*/
+    }
 
     @HawkMethod(cmd = NettyCommand.SUBSCRIBE_GROUP_CHAT)
     public QuoteMessage.SimpleResponse subscribeGroupChat(byte[] body, ChannelHandlerContext ctx){
         JSONObject json = JSON.parseObject(new String(body));
-        System.out.println("订阅GroupChat："+json.toJSONString());
+        log.info("订阅GroupChat："+json.toJSONString());
         QuoteMessage.SimpleResponse.Builder response = QuoteMessage.SimpleResponse.newBuilder();
         String uid = json.getString("uid");
         if(StringUtils.isEmpty(uid)){
@@ -101,19 +99,19 @@ public class NettyHandler {
         return response.build();
     }
 
-    /*@HawkMethod(cmd = NettyCommand.UNSUBSCRIBE_CHAT)
+    @HawkMethod(cmd = NettyCommand.UNSUBSCRIBE_CHAT)
     public QuoteMessage.SimpleResponse unsubscribeChat(byte[] body, ChannelHandlerContext ctx){
         System.out.println(ctx.channel().id());
         JSONObject json = JSON.parseObject(new String(body));
         String orderId = json.getString("orderId");
         String uid = json.getString("uid");
-        String key = orderId+"-"+uid;
-        unsubscribeTopic(ctx.channel(),key);
+        String accessKey = orderId+"-"+uid;
+        unsubscribeTopic(ctx.channel(),accessKey);
         apnsHandler.removeToken(uid);
         QuoteMessage.SimpleResponse.Builder response = QuoteMessage.SimpleResponse.newBuilder();
         response.setCode(0).setMessage("取消订阅成功");
         return response.build();
-    }*/
+    }
 
     @HawkMethod(cmd = NettyCommand.UNSUBSCRIBE_GROUP_CHAT)
     public QuoteMessage.SimpleResponse unsubscribeGroupChat(byte[] body, ChannelHandlerContext ctx){
@@ -121,7 +119,7 @@ public class NettyHandler {
         String uid = json.getString("uid");
         String key = uid;
         unsubscribeTopic(ctx.channel(),key);
-        //apnsHandler.removeToken(uid);
+        apnsHandler.removeToken(uid);
         QuoteMessage.SimpleResponse.Builder response = QuoteMessage.SimpleResponse.newBuilder();
         response.setCode(0).setMessage("取消订阅成功");
         return response.build();
@@ -130,7 +128,7 @@ public class NettyHandler {
     @HawkMethod(cmd = NettyCommand.SUBSCRIBE_APNS)
     public QuoteMessage.SimpleResponse subscribeApns(byte[] body, ChannelHandlerContext ctx){
         JSONObject json = JSON.parseObject(new String(body));
-        System.out.println("订阅APNS推送："+json.toJSONString());
+        log.info("订阅APNS推送："+json.toJSONString());
         QuoteMessage.SimpleResponse.Builder response = QuoteMessage.SimpleResponse.newBuilder();
         String token = json.getString("token");
         String uid = json.getString("uid");
@@ -138,7 +136,7 @@ public class NettyHandler {
             response.setCode(500).setMessage("订阅失败，参数错误");
         }
         else {
-            //apnsHandler.setToken(uid,token);
+            apnsHandler.setToken(uid,token);
             response.setCode(0).setMessage("订阅成功");
         }
         return response.build();
@@ -147,9 +145,9 @@ public class NettyHandler {
     @HawkMethod(cmd = NettyCommand.UNSUBSCRIBE_APNS)
     public QuoteMessage.SimpleResponse unsubscribeApns(byte[] body, ChannelHandlerContext ctx){
         JSONObject json = JSON.parseObject(new String(body));
-        System.out.println("取消订阅APNS推送："+json.toJSONString());
+        log.info("取消订阅APNS推送："+json.toJSONString());
         String uid = json.getString("uid");
-        //apnsHandler.removeToken(uid);
+        apnsHandler.removeToken(uid);
         QuoteMessage.SimpleResponse.Builder response = QuoteMessage.SimpleResponse.newBuilder();
         response.setCode(0).setMessage("取消订阅成功");
         return response.build();
@@ -157,7 +155,7 @@ public class NettyHandler {
 
     @HawkMethod(cmd = NettyCommand.SEND_CHAT)
     public QuoteMessage.SimpleResponse sendMessage(byte[] body, ChannelHandlerContext ctx){
-        System.out.println("发送消息："+new String(body));
+        log.info("发送消息："+new String(body));
         RealTimeChatMessage message = JSON.parseObject(new String(body), RealTimeChatMessage.class);
         handleMessage(message);
         QuoteMessage.SimpleResponse.Builder response = QuoteMessage.SimpleResponse.newBuilder();
@@ -174,7 +172,7 @@ public class NettyHandler {
         byte[] body = JSON.toJSONString(result).getBytes();
         Set<Channel> channels = NettyCacheUtils.getChannel(key);
         if(channels!=null && channels.size() > 0) {
-            System.out.println("下发消息:key="+key+",result="+JSON.toJSONString(result)+",channel size="+channels.size());
+            log.info("下发消息:key="+key+",result="+JSON.toJSONString(result)+",channel size="+channels.size());
             hawkPushService.pushMsg(channels, command, body);
         }
     }
@@ -186,7 +184,7 @@ public class NettyHandler {
             result.setUidFrom(message.getUidFrom());
             result.setOrderId(message.getOrderId());
             result.setNameFrom(message.getNameFrom());
-            //push(message.getOrderId() + "-" + message.getUidTo(),result,NettyCommand.PUSH_CHAT);
+            push(message.getOrderId() + "-" + message.getUidTo(),result,NettyCommand.PUSH_CHAT);
             push(message.getUidTo(),result,NettyCommand.PUSH_GROUP_CHAT);
             messagingTemplate.convertAndSendToUser(message.getUidTo(),"/order-notice/"+message.getOrderId(),result);
         }
@@ -198,10 +196,9 @@ public class NettyHandler {
             //聊天消息保存到mogondb
             chatMessageHandler.handleMessage(chatMessageRecord);
             chatMessageRecord.setSendTimeStr(DateUtils.getDateStr(chatMessageRecord.getSendTime()));
-            //发送给指定用户（客户端订阅路径：/user/+uid+/+key）
+            //发送给指定用户（客户端订阅路径：/user/+uid+/+accessKey）
             push(message.getUidTo(),chatMessageRecord,NettyCommand.PUSH_GROUP_CHAT);
-            //push(message.getOrderId() + "-" + message.getUidTo(),chatMessageRecord,NettyCommand.PUSH_CHAT);
-            //apnsHandler.handleMessage(message.getUidTo(),chatMessageRecord);
+            apnsHandler.handleMessage(message.getUidTo(),chatMessageRecord);
             messagingTemplate.convertAndSendToUser(message.getUidTo(), "/" + message.getOrderId(), chatMessageRecord);
         }
     }

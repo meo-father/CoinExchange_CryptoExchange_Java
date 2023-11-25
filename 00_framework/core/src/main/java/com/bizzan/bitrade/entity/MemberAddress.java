@@ -2,19 +2,17 @@ package com.bizzan.bitrade.entity;
 
 import com.bizzan.bitrade.constant.CommonStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
  * 会员提币地址
  *
- * @author GS
- * @date 2018年01月26日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月26日
  */
 @Entity
 @Data

@@ -1,18 +1,14 @@
 package com.bizzan.bitrade.service;
 
-import com.bizzan.bitrade.constant.CommonStatus;
 import com.bizzan.bitrade.constant.SysHelpClassification;
 import com.bizzan.bitrade.dao.SysHelpDao;
 import com.bizzan.bitrade.entity.QSysHelp;
 import com.bizzan.bitrade.entity.SysHelp;
 import com.bizzan.bitrade.pagination.PageResult;
 import com.bizzan.bitrade.service.Base.BaseService;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,16 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-
-import static com.bizzan.bitrade.entity.QSysAdvertise.sysAdvertise;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description
- * @date 2018/1/9 10:00
+ * @date 2019/1/9 10:00
  */
 @Service
 public class SysHelpService extends BaseService {

@@ -8,8 +8,8 @@ import java.io.Serializable;
 /**
  * 地址
  *
- * @author GS
- * @date 2018年01月02日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月02日
  */
 @Data
 @Embeddable

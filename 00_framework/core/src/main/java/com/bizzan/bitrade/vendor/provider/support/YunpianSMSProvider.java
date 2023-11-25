@@ -3,10 +3,7 @@ package com.bizzan.bitrade.vendor.provider.support;
 import com.bizzan.bitrade.util.HttpSend;
 import com.bizzan.bitrade.util.MessageResult;
 import com.bizzan.bitrade.vendor.provider.SMSProvider;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.dom4j.DocumentException;
@@ -14,12 +11,11 @@ import org.dom4j.DocumentException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * @author tansitao
- * @time 2018-04-05
+ * @time 2020-04-05
  * 云片短信验证码发送类
  */
 @Slf4j
@@ -59,7 +55,7 @@ public class YunpianSMSProvider implements SMSProvider {
 
     @Override
     public MessageResult sendInternationalMessage(String mobile, String content) throws IOException, DocumentException {
-        content = String.format("【djw】Your verification code is %s", content);
+        content = String.format("【BIZZAN】Your verification code is %s", content);
         Map<String, String> params = new HashMap<String, String>();
         params.put("apikey", apikey);
         params.put("text", content);
@@ -77,7 +73,7 @@ public class YunpianSMSProvider implements SMSProvider {
      */
     @Override
     public String formatVerifyCode(String code) {
-        return String.format("【djw】您的验证码为：%s，请按页面提示填写，切勿泄露于他人。", code);
+        return String.format("【BIZZAN】您的验证码为：%s，请按页面提示填写，切勿泄露于他人。", code);
     }
 
     @Override

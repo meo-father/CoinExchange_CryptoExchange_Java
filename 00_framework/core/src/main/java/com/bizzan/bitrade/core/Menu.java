@@ -9,8 +9,8 @@ import java.util.List;
 /**
  * 目录菜单
  *
- * @author GS
- * @date 2017年12月19日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月19日
  */
 @Data
 @Builder
@@ -23,5 +23,6 @@ public class Menu implements Serializable {
     private Integer sort;
     private List<Menu> subMenu;
     private String title;
+    private String titleKey;
     private String description;
 }

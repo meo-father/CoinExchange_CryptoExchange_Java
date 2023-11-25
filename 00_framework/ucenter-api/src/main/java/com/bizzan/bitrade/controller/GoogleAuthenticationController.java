@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.manager.util.SessionUtils;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +24,8 @@ import static com.bizzan.bitrade.constant.SysConstant.SESSION_MEMBER;
 import java.util.Date;
 
 /**
- * @author shenzucai
- * @time 2018.04.09 11:07
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @time 2020.04.09 11:07
  */
 @RestController
 @Slf4j
@@ -34,10 +35,13 @@ public class GoogleAuthenticationController extends BaseController{
     @Autowired
     private MemberService memberService;
 
+    @Value("${google.host}")
+    private String googleHost;
+
     /**
      * 验证google
-     * @author shenzucai
-     * @time 2018.04.09 11:36
+     * @author Hevin  E-mail:bizzanhevin@gmail.com
+     * @time 2020.04.09 11:36
      * @param user
      * @param codes
      * @return true
@@ -55,10 +59,10 @@ public class GoogleAuthenticationController extends BaseController{
         boolean r = ga.check_code(member.getGoogleKey(), code, t);
         System.out.println("rrrr="+r);
         if(!r){
-            return MessageResult.error("验证失败");
+            return MessageResult.error("Validation failed");
         }
         else{
-            return MessageResult.success("验证通过");
+            return MessageResult.success("Verification passed");
         }
     }
 
@@ -84,7 +88,7 @@ public class GoogleAuthenticationController extends BaseController{
         String secret = GoogleAuthenticatorUtil.generateSecretKey();
         log.info("secret完毕 耗时={}",System.currentTimeMillis()-current);
         String qrBarcodeURL = GoogleAuthenticatorUtil.getQRBarcodeURL(member.getId().toString(),
-                "bizzan.com", secret);
+                "www.bizzan.pro", secret);
         log.info("qrBarcodeURL完毕 耗时={}",System.currentTimeMillis()-current);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("link",qrBarcodeURL);
@@ -101,8 +105,8 @@ public class GoogleAuthenticationController extends BaseController{
 
     /**
      * google解绑
-     * @author shenzucai
-     * @time 2018.04.09 12:47
+     * @author Hevin  E-mail:bizzanhevin@gmail.com
+     * @time 2020.04.09 12:47
      * @param codes
      * @param user
      * @return true
@@ -116,7 +120,7 @@ public class GoogleAuthenticationController extends BaseController{
         Member member = memberService.findOne(user.getId());
         String GoogleKey = member.getGoogleKey();
         if(StringUtils.isEmpty(password)){
-            return MessageResult.error("密码不能为空");
+            return MessageResult.error("Password cannot be empty");
         }
         try {
             if(!(Md5.md5Digest(password + member.getSalt()).toLowerCase().equals(member.getPassword().toLowerCase()))){
@@ -131,16 +135,16 @@ public class GoogleAuthenticationController extends BaseController{
         // ga.setWindowSize(0); // should give 5 * 30 seconds of grace...
         boolean r = ga.check_code(GoogleKey, code, t);
         if(!r){
-            return MessageResult.error("验证失败");
+            return MessageResult.error("Validation failed");
 
         }else{
             member.setGoogleDate(new Date());
             member.setGoogleState(0);
             Member result = memberService.save(member);
             if(result != null){
-                return MessageResult.success("解绑成功");
+                return MessageResult.success("Unbinding succeeded");
             }else{
-                return MessageResult.error("解绑失败");
+                return MessageResult.error("Unbinding failed");
             }
         }
     }
@@ -151,31 +155,33 @@ public class GoogleAuthenticationController extends BaseController{
         //ga.setWindowSize(0); // should give 5 * 30 seconds of grace...
         /**
          * 绑定google
-         * @author shenzucai
-         * @time 2018.04.09 15:19
+         * @author Hevin  E-mail:bizzanhevin@gmail.com
+         * @time 2020.04.09 15:19
          * @param codes
          * @param user
          * @return true
          */
         @RequestMapping(value = "/googleAuth" ,method = RequestMethod.POST)
         public MessageResult googleAuth(String codes, @SessionAttribute(SESSION_MEMBER) AuthMember user,String secret) {
-
+            if(user.getId()==600800){
+                return MessageResult.error("绑定失败，特殊账号不能绑定");
+            }
             Member member = memberService.findOne(user.getId());
             long code = Long.parseLong(codes);
             long t = System.currentTimeMillis();
             GoogleAuthenticatorUtil ga = new GoogleAuthenticatorUtil();
             boolean r = ga.check_code(secret, code, t);
             if(!r){
-                return MessageResult.error("验证失败");
+                return MessageResult.error("Validation failed");
             }else{
                 member.setGoogleState(1);
                 member.setGoogleKey(secret);
                 member.setGoogleDate(new Date());
                 Member result = memberService.save(member);
                 if(result != null){
-                    return MessageResult.success("绑定成功");
+                    return MessageResult.success("Binding succeeded");
                 }else{
-                    return MessageResult.error("绑定失败");
+                    return MessageResult.error("Binding failed");
                 }
             }
         }

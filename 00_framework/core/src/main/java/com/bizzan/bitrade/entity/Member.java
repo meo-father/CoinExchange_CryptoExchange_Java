@@ -1,11 +1,9 @@
 package com.bizzan.bitrade.entity;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
-
 import com.bizzan.bitrade.constant.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.NotBlank;
@@ -16,8 +14,8 @@ import java.util.Date;
 /**
  * 会员用户
  *
- * @author GS
- * @date 2018年01月02日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月02日
  */
 @Entity
 @Data

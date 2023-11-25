@@ -1,18 +1,17 @@
 package com.bizzan.bitrade.entity.transform;
 
+import com.bizzan.bitrade.constant.CommonStatus;
+import com.bizzan.bitrade.constant.MemberLevelEnum;
+import com.bizzan.bitrade.entity.Location;
+import com.bizzan.bitrade.entity.Member;
 import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
 
-import com.bizzan.bitrade.constant.CommonStatus;
-import com.bizzan.bitrade.constant.MemberLevelEnum;
-import com.bizzan.bitrade.entity.Location;
-import com.bizzan.bitrade.entity.Member;
-
 /**
- * @author GS
- * @date 2018年01月11日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月11日
  */
 @Builder
 @Data

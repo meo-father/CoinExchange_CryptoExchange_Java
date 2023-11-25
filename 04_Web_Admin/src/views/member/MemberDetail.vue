@@ -3,43 +3,43 @@
     <Row class="firstLine">
 			<Card class="rightArea clearfix">
 				<p slot="title" class="lineTitle">
-					<Icon type="bookmark"></Icon> 基本信息
+					<Icon type="bookmark"></Icon> {{ $t('essentialinformation.essentialinformation') }}
 				</p>
 				<div class="baseInfo">
 					<Row>
 						<Col span="6">
-							<p>会员等级：<span style="color: #ec0909">{{ getlevel(memberInfo.memberLevel) }}</span></p>
+							<p>{{ $t('essentialinformation.membershiplevel') }}<span style="color: #ec0909">{{ getlevel(memberInfo.memberLevel) }}</span></p>
 						</Col>
 						<Col span="6">
-							<p>会员状态：<span style="color: #2d8cf0">{{ !memberInfo.status ? '正常' : '禁用'}}</span></p>
+							<p>{{ $t('essentialinformation.memberstatus') }}<span style="color: #2d8cf0">{{ !memberInfo.status ? '正常' : '禁用'}}</span></p>
 						</Col>
 						<Col span="6">
-							<p>会员昵称：<span>{{ memberInfo.username }}</span></p>
+							<p>{{ $t('essentialinformation.membernickname') }}<span>{{ memberInfo.username }}</span></p>
 						</Col>
 						<Col span="6">
-							<p>用户ID：<span>{{ memberInfo.id }}</span></p>
-						</Col>
-					</Row>
-					<Row>
-						<Col span="6">
-							<p>真实姓名：<span>{{ memberInfo.realName }}</span></p>
-						</Col>
-						<Col span="6">
-							<p>会员手机号：<span>{{ memberInfo.mobilePhone }}</span></p>
-						</Col>
-						<Col span="6">
-							<p>身份证号：<span>{{ memberInfo.idNumber }}</span></p>
-						</Col>
-						<Col span="6">
-							<p>邮箱：<span>{{ memberInfo.email }}</span></p>
+							<p>{{ $t('essentialinformation.userid') }}<span>{{ memberInfo.id }}</span></p>
 						</Col>
 					</Row>
 					<Row>
 						<Col span="6">
-							<p>注册时间：<span>{{ memberInfo.registrationTime }}</span></p>
+							<p>{{ $t('essentialinformation.realname') }}<span>{{ memberInfo.realName }}</span></p>
 						</Col>
 						<Col span="6">
-							<p>最近登录时间：<span>{{ memberInfo.lastLoginTime }}</span></p>
+							<p>{{ $t('essentialinformation.membermobilenumber') }}<span>{{ memberInfo.mobilePhone }}</span></p>
+						</Col>
+						<Col span="6">
+							<p>{{ $t('essentialinformation.idnumber') }}<span>{{ memberInfo.idNumber }}</span></p>
+						</Col>
+						<Col span="6">
+							<p>{{ $t('currencywithdrawalauditmanagement.email') }}<span>{{ memberInfo.email }}</span></p>
+						</Col>
+					</Row>
+					<Row>
+						<Col span="6">
+							<p>{{ $t('essentialinformation.registrationtime') }}<span>{{ memberInfo.registrationTime }}</span></p>
+						</Col>
+						<Col span="6">
+							<p>{{ $t('essentialinformation.lastlogintime') }}<span>{{ memberInfo.lastLoginTime }}</span></p>
 						</Col>
 					</Row>
 				</div>
@@ -49,7 +49,7 @@
     <Row class="secLine">
       <Card>
         <p class="lineTitle" slot="title">
-          <Icon type="bookmark"></Icon>用户资产
+          <Icon type="bookmark"></Icon>{{ $t('essentialinformation.userassets') }}
         </p>
 
         <div class="tableWrapper">
@@ -64,33 +64,54 @@
 					@on-cancel="$Message.info('已取消！')">
           <h3 class="header" slot="header">
             <Icon type="information-circled"></Icon>
-            <span> 人工充币</span>
+            <span> {{ $t('essentialinformation.manualcharging') }}</span>
           </h3>
-          <p>币种：<span>{{ payUnit }}</span></p>
-          <p>充值地址：<span>{{ payAddress }}</span></p>
-          <p>充值数量：<span><Input v-model="payAmount"></Input></span></p>
+          <p>{{ $t('perpetualcontractcurrencystandardmanagement.currency') }}<span>{{ payUnit }}</span></p>
+          <p>{{ $t('essentialinformation.rechargeaddress') }}<span>{{ payAddress }}</span></p>
+          <p>{{ $t('essentialinformation.rechargequantity') }}<span><Input v-model="payAmount"></Input></span></p>
         </Modal>
 
+        <Modal
+          class="manualPay"
+          width="400"
+          v-model="lockCoinModal"
+          @on-ok="confrimLockCoin"
+          @on-cancel="$Message.info('已取消！')">
+          <h3 class="header" slot="header">
+            <Icon type="information-circled"></Icon>
+            <span> {{ $t('essentialinformation.lockup') }}</span>
+          </h3>
+          <p>{{ $t('perpetualcontractcurrencystandardmanagement.currency') }}<span>{{ lockUnit }}</span></p>
+
+          <p>{{ $t('essentialinformation.selectlockupactivity') }}
+              <Select v-model="lockedActivityId">
+                <Option v-for="(item, index) in lockActivityArr" :key="item.id" :value="item.id">
+                  {{ item.title }}
+                </Option>
+              </Select>
+          </p>
+          <p>{{ $t('essentialinformation.lockupquantity') }}<br><Input v-model="lockAmount"></Input></p>
+        </Modal>
       </Card>
     </Row>
     <Row class="triLine">
       <Card>
         <p class="lineTitle" slot="title">
-          <Icon type="bookmark"></Icon>交易记录
+          <Icon type="bookmark"></Icon>{{ $t('detailsofcurrencyentrustment.transactions') }}
         </p>
 
 				<Row class="functionWrapper">
 					<div class="searchWrapper clearfix">
 						<div class="poptip">
-							<span>交易类型：</span>
+							<span>{{ $t('servicechargewithdrawaldetails.transactiontype') }}</span>
 							<Select v-model="filterSearch.type">
-								<Option v-for="(item, index) in typeArr" :key="item" :value="index==15?' ':index">
+								<Option v-for="(item, index) in typeArr" :key="item" :value="index==45?' ':index">
 									{{ item }}
 								</Option>
 							</Select>
 						</div>
 						<div class="poptip">
-							<span>币种：</span>
+							<span>{{ $t('perpetualcontractcurrencystandardmanagement.currency') }}</span>
 							<Select v-model="filterSearch.symbol">
 								<Option v-for="(item, index) in allSymbol" :key="item.unit" :value="item.unit">
 									{{ item.unit }}
@@ -103,12 +124,13 @@
 							<DatePicker type="daterange"
 								@on-change="handelChange"
 								placement="bottom-end"
-								placeholder="请选择时间区间搜索">
+                :value="timeRange"
+								:placeholder="$t('essentialinformation.pleaseselectatimeintervaltosearch')">
 							</DatePicker>
 						</div>
 
 					<div class="btns">
-            <Button type="info" size="small" @click="searchByFilter">搜索</Button>
+            <Button type="info" size="small" @click="searchByFilter">{{ $t('positionmanagementcontractassetmanagement.search') }}</Button>
           </div>
 
 					</div>
@@ -135,7 +157,7 @@
 </template>
 
 <script>
-import { getCoinName, memberDetail, perTradeAll, manualPay, lockWallet, unlockWallet, resetMemberAddr } from "@/service/getData";
+import { getCoinName, memberDetail, perTradeAll, manualPay, lockWallet, unlockWallet, resetMemberAddr, lockedActivityList, lockMemberCoin } from "@/service/getData";
 import { setStore, getStore, removeStore } from "@/config/storage";
 
 export default {
@@ -144,6 +166,12 @@ export default {
 			currentPageIdx: 1,
 			cbData: {},
 			allSymbol: [],
+      lockCoinModal: false,
+      lockUnit: "",
+      lockAmount: "",
+      lockActivityArr:[],
+      lockedActivityId: null,
+      timeRange: [],
 			filterSearch: {
 				pageNo: 1,
 				pageSize: 10,
@@ -154,24 +182,52 @@ export default {
 				endTime: ''
 			},
 			typeArr: [
-				"充值",
-				"提现",
-				"转账",
-				"币币交易",
-				"法币买入",
-				"法币卖出",
-				"活动奖励",
-				"推广奖励",
-				"分红",
-				"投票",
-				"人工充值",
-        "配对",
-        "活动兑换",
-        "CTC买入",
-        "CTC卖出",
-        "发红包",
-        "收红包",
-        "全部"
+				this.$t('handlingchargemanagement.recharge'),
+				this.$t('handlingchargemanagement.withdrawal'),
+				this.$t('handlingchargemanagement.transfer'),
+				this.$t('servicechargewithdrawaldetails.currencytransaction'),
+				this.$t('handlingchargemanagement.purchaseinlegalcurrency'),
+				this.$t('handlingchargemanagement.sellinginlegalcurrency'),
+				this.$t('handlingchargemanagement.activityrewards'),
+				this.$t('handlingchargemanagement.promotionreward'),
+				this.$t('handlingchargemanagement.dividends'),
+				this.$t('handlingchargemanagement.vote'),
+				this.$t('handlingchargemanagement.manualrecharge'),
+        this.$t('handlingchargemanagement.pairing'),
+        this.$t('handlingchargemanagement.eventredemption'),
+        this.$t('essentialinformation.ctcbuy'),
+        this.$t('essentialinformation.ctcsales'),
+        this.$t('handlingchargemanagement.redenvelope'),
+        this.$t('handlingchargemanagement.receiveredenvelopes'),
+        this.$t('essentialinformation.withdrawalcodewithdrawal'),
+        this.$t('essentialinformation.cashwithdrawalcoderecharge'),
+        this.$t('essentialinformation.contractfee'),
+        this.$t('essentialinformation.contractprofit'),
+        this.$t('essentialinformation.contractloss'),
+        this.$t('essentialinformation.optioncontractfailed'),
+        this.$t('essentialinformation.optioncontractfee'),
+        this.$t('essentialinformation.optioncontractbonus'),
+        this.$t('essentialinformation.contractrebate'),
+        this.$t('essentialinformation.peerrewards'),
+        this.$t('essentialinformation.platformfeeincome'),
+        this.$t('essentialinformation.secondcontractfailed'),
+        this.$t('essentialinformation.secondcontractbonus'),
+        this.$t('essentialinformation.financialinterest'),
+        this.$t('transactiontype.pay_charge_fee'),
+        this.$t('transactiontype.get_charge_fee'),
+        this.$t('transactiontype.auto_invest_buy'),
+        this.$t('transactiontype.auto_invest_sell'),
+        this.$t('transactiontype.locked_saving_buy'),
+        this.$t('transactiontype.locked_saving_sell'),
+        this.$t('transactiontype.transfer_in_coin'),
+        this.$t('transactiontype.transfer_out_coin'),
+        this.$t('transactiontype.transfer_in_usdt'),
+        this.$t('transactiontype.transfer_out_usdt'),
+        this.$t('transactiontype.transfer_in_second'),
+        this.$t('transactiontype.transfer_out_second'),
+        this.$t('transactiontype.transfer_in'),
+        this.$t('transactiontype.transfer_out'),
+        this.$t('transactiondetailsinlegalcurrency.all')
 			],
 			memberInfo: {},
       ifLoading: true,
@@ -183,11 +239,11 @@ export default {
       totalNum: null,
        columnsList: [
           {
-            title: '会员ID',
+            title: this.$t('essentialinformation.memberid'),
             key:"memberId"
           },
           {
-            title: '交易类型',
+            title: this.$t('handlingchargemanagement.transactiontype'),
             render: (h ,obj) => {
               let  type =  obj.row.type;
               return h('span',{
@@ -195,7 +251,7 @@ export default {
             }
           },
           {
-            title: '交易金额',
+            title: this.$t('essentialinformation.transactionamount'),
             render: (h ,obj) => {
               let  amount =  obj.row.amount;
               let  symbol =  obj.row.symbol;
@@ -204,11 +260,11 @@ export default {
             }
           },
           {
-            title: '交易手续费',
+            title: this.$t('handlingchargemanagement.transactionhandlingfee'),
             key:"fee"
           },
           {
-            title: '交易时间',
+            title: this.$t('transactiondetailsinlegalcurrency.transactiontime'),
             key:"createTime"
           },
 
@@ -216,21 +272,21 @@ export default {
       trade_data: [],
       assetColumns: [
         {
-          title: "币种",
+          title: this.$t('transactiondetailsinlegalcurrency.currency'),
           width: 100,
           render: (h, param) => {
             return h('span', {}, param.row.coin.unit);
           }
         },
         {
-          title: "可用",
+          title: this.$t('essentialinformation.available'),
           key: "balance",
           render:(h,param)=>{
             return h('span', param.row.balance)
           }
         },
         {
-          title: "冻结",
+          title: this.$t('essentialinformation.freeze'),
           // width: 100,
           key: "frozenBalance",
           render:(h,param)=>{
@@ -238,7 +294,7 @@ export default {
           }
         },
         {
-          title: "待释放资产",
+          title: this.$t('essentialinformation.assetstobereleased'),
           // width: 100,
           key: "toReleased",
           render:(h,param)=>{
@@ -246,23 +302,40 @@ export default {
           }
         },
         {
-          title: "地址",
+          title: this.$t('essentialinformation.address'),
           key: "address"
         },
         {
-					title: "操作",
-					width: 200,
+					title: this.$t('perpetualcontractcurrencystandardmanagement.operation'),
+					width: 240,
           render: (h, param) => {
 						let btnTxt = '';
 						let btnType = '';
 						if(!param.row.isLock) {
-							btnTxt = '锁定'
+							btnTxt = this.$t('essentialinformation.lock')
 							btnType = 'error';
 						}else {
-							btnTxt = '解锁'
+							btnTxt = this.$t('essentialinformation.unlock')
 							btnType = 'success';
 						}
 						return h('div', {}, [
+              h("Button",
+                {
+                  props: {
+                    type: "success",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.showLockCoin(param.row.coin.unit);
+                    },
+                  },
+                  style: {
+                    marginRight: "8px"
+                  }
+                },
+                this.$t('essentialinformation.lockup')
+              ),
 							h("Button",
                 {
                   props: {
@@ -278,7 +351,7 @@ export default {
                     marginRight: "8px"
                   }
                 },
-                "充币"
+                this.$t('essentialinformation.recharge')
 							),
 							h("Button",
 								{
@@ -319,7 +392,7 @@ export default {
 											.catch(err => console.log(err))
 										}
 									}
-								},'重置地址'
+								},this.$t('essentialinformation.resetaddress')
 							)
 						])
           }
@@ -328,7 +401,27 @@ export default {
       assetRows:[]
     };
   },
+  mounted() {
+    const end = new Date();
+    const start = new Date();
+    start.setTime(start.getTime() - (3600 * 1000 * 24 * 7));
+
+    this.timeRange = [this.formatDate(start), this.formatDate(end)];
+    this.filterSearch.startTime = this.timeRange[0] + " 00:00:00";
+    this.filterSearch.endTime = this.timeRange[1] + " 00:00:00";
+  },
   methods: {
+    formatDate(date) {
+      const yy = date.getFullYear();
+      const dateM = date.getMonth() + 1;
+      const mm = dateM > 9 ? dateM : `0${dateM}`;
+      const dateD = date.getDate();
+      const dd = dateD > 9 ? dateD : `0${dateD}`;
+      // if (type) {
+      //   return `${yy}${type}${mm}${type}${dd}`;
+      // }
+      return `${yy}-${mm}-${dd}`;
+    },
 		handelChange(timeRange) {
       if(timeRange[0]){
         this.filterSearch.startTime = timeRange[0] + " 00:00:00";
@@ -341,9 +434,9 @@ export default {
     },
      getlevel(str){
       let memberLevelTxt = ""
-      if (!str) memberLevelTxt = '普通会员'
-      else if (str===1) memberLevelTxt = '实名'
-      else if (str===2) memberLevelTxt = '认证'
+      if (!str) memberLevelTxt = this.$t('essentialinformation.ordinarymember')
+      else if (str===1) memberLevelTxt = this.$t('essentialinformation.realname1')
+      else if (str===2) memberLevelTxt = this.$t('essentialinformation.certification')
       return memberLevelTxt
     },
 		searchByFilter() {
@@ -394,6 +487,19 @@ export default {
 				}else this.$Message.error(res.message);
 			})
     },
+    showLockCoin(unit){
+      this.lockCoinModal = true;
+      this.lockUnit = unit;
+      this.lockAmount = 0;
+    },
+    confrimLockCoin(){
+      lockMemberCoin({memberId: this.userID, activityId: this.lockedActivityId, unit: this.lockUnit, amount: this.lockAmount}).then(res => {
+        if(res.code == 0){
+          this.$Message.success(res.message);
+          this.lockCoinModal = false;
+        }else this.$Message.error(res.message);
+      });
+    },
     showManualPay(wallet) {
       this.ifManualPay = true;
       this.payAddress = wallet.address;
@@ -424,7 +530,14 @@ export default {
 					this.filterSearch.memberId = getStore("memberID");
 					this.userID = getStore("memberID");
 					this.personRecode( this.filterSearch );
-        } else   this.$Message.err("个人资料获取失败!");
+        } else   this.$Message.err(this.$t('essentialinformation.failedtoobtainpersonaldata'));
+      });
+
+      // 获取锁仓列表
+      lockedActivityList().then(res => {
+        if(!res.code) {
+          this.lockActivityArr = res.data;
+        }
       });
     }
   },

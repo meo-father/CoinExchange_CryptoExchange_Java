@@ -1,13 +1,13 @@
-# 本地开发说明
+## 本地开发说明
 
 本文档适合有一定基础的人看，需要具备SpringCloud/SringBoot开发基础、Vue/Npm前端开发基础、Mysql基础、Mongodb基础、Redis基础、Linux基础。一般而言，大部分Java程序员都具备这些能力。
 
 同时，如果需要连接区块链，对区块链钱包进行操作/数据获取，你还需要具备一些区块链相关的基础知识，包括但不限于：搭建比特币/以太坊等节点、区块链节点RPC访问、比特币钱包基础、以太坊钱包基础等。一般而言，你不需要特别精通区块链的运行过程，只需要对区块链的运行原理有一定的了解。
 
 本项目前后端分离，如果你是一个全栈程序员，这个项目应该很快就能调试通。
-有什么问题可以添加QQ：877070886，我会给予一定的技术援助（小白问题请绕过）。
+有什么问题可以添加QQ：390330302，我会给予一定的技术援助（小白问题请绕过）。
 
-#### 关于Framework开发
+## 关于Framework开发
 
 00_Framework文件夹下的项目是所有服务的集合，通过SpringCloud的微服务开发模式进行开发，你可以通过Eclipse打开整个工程项目，我的开发工具版本如下：
 
@@ -26,7 +26,7 @@
 
 每个项目都有独立的服务端口（配置文件中），你可以直接通过（IP：端口）调用服务，也可以通过网关（Cloud项目，7000端口）调用服务，也可以通过配置Nginx反向代理进行服务调用（生产环境使用此种方式）
 
-#### 关于后台管理Web端开发
+## 关于后台管理Web端开发
 
 配置文件在src/config/api.js，你可以在这里配置你的Admin服务IP端口，因为后台管理web只会调用一个Admin服务，所以，你可以选择直接指定到Admin服务IP：端口。
 
@@ -35,12 +35,12 @@
 启动方式：通过npm run dev即可热启动项目，通过npm run build可编译出部署文件。
 
 
-#### 关于前台Web端开发
+## 关于前台Web端开发
 
 前台Web端（PC）因为要访问不同的服务，像个人信息需要调用Ucenter提供的服务，交易需要调用Exchange-api的服务，所以，你需要通过网关的方式为前端提供服务。
 配置文件在：src/main.js，你可通过修改Vue.prototype.rootHost及Vue.prototype.host来实现对后端服务的调用。
 
-#### 关于数据库（MySQL）
+## 关于数据库（MySQL）
 数据库文件在00_Framework/sql文件夹下，提供了db_patch，这个文件仅提供了一些基础数据（菜单树、管理员权限等），其他的数据库表会在jar包首次运行的时候自动更新到数据库，配置项在：
 
 
@@ -54,11 +54,11 @@
 
 如果你不希望数据库表与Java类实体动态更新，你可选择修改配置项：spring.jpa.hibernate.ddl-auto=update
 
-#### 环境配置
+## 环境配置
 
 系统运行依赖于Mongodb、Redis、MySQL、kafka、阿里云OSS，所以你需要准备好这些基础服务。
 
-#### 常见编译问题（Error）
+## 常见编译问题（Error）
 
 一、启动ucenter-api时，提示下列错误：
 Error creating bean with name 'enableRedisKeyspaceNotificationsInitializer' defined in class path resource
@@ -83,7 +83,7 @@ Error creating bean with name 'enableRedisKeyspaceNotificationsInitializer' defi
 3、market.jar启动失败，提示connection refuesed之类的错误，首先用netstat -tunlp查看端口6005（也就是exchange）是否有监听，如果没有，则说明exchange未完全启动。
 导致exchange启动慢的原因主要是初始化时，对未完成的订单加载慢。初始化时，需要从mangodb加载订单成交详情，这是非常巨大的数据。
 
-#### 一些配置项说明
+## 一些配置项说明
 
 1、market/application.properties
 	# 二级推荐人币币手续费佣金是否发放(true：开放    false：不开放)
@@ -106,34 +106,48 @@ Error creating bean with name 'enableRedisKeyspaceNotificationsInitializer' defi
 	transfer.key=
 	transfer.smac=
 
-#### Nginx配置
+## Nginx配置
 
-参考网址：
+ **参考网址：** 
+
 https://blog.csdn.net/qq_36628908/article/details/80243713
 
 nginx文档目录：usr/local/nginx/html/、usr/local/nginx/conf/
 
-注意事项：
-1、api.xxxx.com 与 www.xxxx.com需要转发不同服务
-2、需要api.xxxx.com支持websocket
+ **注意事项：** 
+
+1. api.xxxx.com 与 www.xxxx.com需要转发不同服务
+
+2. 需要api.xxxx.com支持websocket
 
 
 ===========================
+
 依赖环境
+
+```
 yum install -y wget  
 yum install -y vim-enhanced  
 yum install -y make cmake gcc gcc-c++  
 yum install -y pcre pcre-devel
 yum install -y zlib zlib-devel
 yum install -y openssl openssl-devel
+```
+
 
 下载nginx-1.12.2.tar.gz
-wget http://nginx.org/download/nginx-1.12.2.tar.gz
+`wget http://nginx.org/download/nginx-1.12.2.tar.gz`
 
 编译安装 
+
+```
 tar -zxvf nginx-1.12.2.tar.gz 
 cd nginx-1.12.2
+```
 
+
+
+```
 ./configure \
 --prefix=/usr/local/nginx \
 --pid-path=/var/run/nginx/nginx.pid \
@@ -152,3 +166,47 @@ cd nginx-1.12.2
 
 make 
 make install
+```
+
+
+# 关于访问服务
+你可以通过Eruka的服务调度中心看到每个服务（http://localhost:7000），或者通过zuul统一网关调用服务，为了方便，我本地开发的方式是用nginx反向代理各种服务，配置参考如下：
+
+```
+    server_name locahost;
+    location /market {
+        client_max_body_size    5m;
+        proxy_pass http://localhost:6004;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+    location /exchange {
+        client_max_body_size    5m;
+        proxy_pass http://localhost:6003;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+    location /uc {
+        client_max_body_size    5m;
+        proxy_pass http://localhost:6001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+    location /admin {
+        client_max_body_size    5m;
+        proxy_pass http://localhost:6010;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+    location /chat {
+        client_max_body_size    5m;
+        proxy_pass http://localhost:6008;
+        proxy_set_header Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+```

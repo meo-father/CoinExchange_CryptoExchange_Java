@@ -19,8 +19,8 @@ import com.bizzan.bitrade.service.MemberService;
 import com.bizzan.bitrade.util.MessageResult;
 
 /**
- * @author GS
- * @date 2018年03月19日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年03月19日
  */
 @RestController
 @Slf4j

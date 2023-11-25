@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.bizzan.bitrade.dto.MemberBonusDTO;
 import com.bizzan.bitrade.service.MemberBonusService;
 import com.bizzan.bitrade.util.MessageResult;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,8 +14,8 @@ import java.util.List;
 
 /**
  * @Description: 查询个人分红数据
- * @author: GuoShuai
- * @date: create in 11:25 2018/7/3
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date: create in 11:25 2019/7/3
  * @Modified:
  */
 @RestController

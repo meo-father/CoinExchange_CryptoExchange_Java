@@ -2,12 +2,11 @@ package com.bizzan.bitrade.entity;
 
 import com.bizzan.bitrade.constant.CertifiedBusinessStatus;
 import com.bizzan.bitrade.constant.MemberLevelEnum;
-
 import lombok.Data;
 
 /**
- * @author GS
- * @date 2018年02月26日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年02月26日
  */
 @Data
 public class CertifiedBusinessInfo {

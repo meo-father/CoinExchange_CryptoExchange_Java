@@ -3,8 +3,6 @@ package com.bizzan.bitrade.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.bizzan.bitrade.util.CaptchaUtil;
-
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -104,6 +102,7 @@ public class CaptchaController extends BaseController {
 		HttpSession session = request.getSession();
 		session.setAttribute(key, sRand);
 		session.setAttribute(key + "_time", System.currentTimeMillis());
+
 		// 图象生效
 		g.dispose();
 		ServletOutputStream responseOutputStream = response.getOutputStream();

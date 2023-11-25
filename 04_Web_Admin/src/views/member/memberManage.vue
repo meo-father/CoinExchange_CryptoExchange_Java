@@ -2,16 +2,16 @@
 	<div>
     <Card>
       <p slot="title">
-        会员管理
+        {{ $t('membermanagement.membermanagement') }}
         <Button type="primary" size="small" @click="refreshPageManual">
-          <Icon type="refresh"></Icon>刷新
+          <Icon type="refresh"></Icon>{{ $t('perpetualcontractcurrencystandardmanagement.refresh') }}
         </Button>
       </p>
       <Row class="functionWrapper">
         <div class="searchWrapper clearfix">
 					<div class="poptip">
-						<Poptip trigger="hover" content="请输入用户名、邮箱、手机号、姓名搜索" placement="bottom-start">
-							<Input placeholder="请输入用户名、邮箱、手机号、姓名搜索"
+						<Poptip trigger="hover" :content="$t('membermanagement.note1')" placement="bottom-start">
+							<Input :placeholder="$t('membermanagement.note1')"
 										v-model="filterSearch.account"
 										style="width: 300px"/>
 							</Input>
@@ -19,7 +19,7 @@
 					</div>
 
 					<div class="poptip">
-						<span>会员状态：</span>
+						<span>{{ $t('certifiedmerchants.memberstatus') }}</span>
 						<Select v-model="filterSearch.commonStatus">
 							<Option v-for="item in memberStatusArr"
 										:value="item.status"
@@ -27,13 +27,22 @@
 						</Select>
 					</div>
 
+          <div class="poptip">
+            <span>{{ $t('membermanagement.agentornot') }}</span>
+            <Select v-model="filterSearch.superPartner">
+              <Option v-for="item in superPartnerArr"
+                    :value="item.value"
+                    :key="item.value">{{ item.text }}</Option>
+            </Select>
+          </div>
+
 					<div class="btns">
-						<Button type="info" size="small" @click="searchByFilter">搜索</Button>
+						<Button type="info" size="small" @click="searchByFilter">{{ $t('positionmanagementcontractassetmanagement.search') }}</Button>
 					</div>
 
         </div>
         <div class="btnsWrapper clearfix">
-          <Button type="success" @click="exportExcel">导出</Button>
+          <Button type="success" @click="exportExcel">{{ $t('positionmanagementcontractassetmanagement.export') }}</Button>
         </div>
       </Row>
 
@@ -52,14 +61,41 @@
         <Page :total="totalNum" style='margin-top:8px' :current="currentPageIdx"   @on-change="changePage" show-elevator></Page>
       </Row>
     </Card>
-
+       <Modal  :title="$t('membermanagement.setinvitees')" v-model="detailModel" :mask-closable="false"  @on-ok="setInviterDetail">
+            <ul>
+                <li><span><i>*</i>ID：</span>
+                    <p>
+                        <Input v-model="this.userId" disabled></Input>
+                        <span>{{ }}</span>
+                    </p>
+                </li>
+                <li>
+                    <span><i>*</i>{{ $t('membermanagement.settheidoftheinvitee') }}</span>
+                    <p> <Input v-model="inviterId"></Input> </p>
+                </li>
+            </ul>
+        </Modal>
+<!-- 		<Modal  title="层级迁移"  v-model="inviteFormVisible" :mask-closable="false">
+		  <Form :model="inviteFormData" :rules="inviteFormRules" ref="inviteForm">
+		    <FormItem label="会员名称：" prop="username">
+		      <span>{{inviteFormData.username}}</span>
+		    </FormItem>
+		    <FormItem label="迁移至：" prop="toUsername">
+		      <Input v-model="inviteFormData.toUsername" placeholder="请输入邮箱或手机号" clearable></Input>
+		    </FormItem>
+		  </Form>
+		  <div slot="footer">
+		    <Button @click="hideInviteForm">取消</Button>
+		    <Button type="primary" @click="inviteFormSubmit" :loading="inviteFormLoading">确定</Button>
+		  </div>
+		</Modal> -->
   </div>
 </template>
 
 <script>
 
 import { setStore, getStore, removeStore } from '@/config/storage';
-import { memberManage, forbiddenMember, forbiddenMemberTrans  } from '@/service/getData';
+import { memberManage, forbiddenMember, forbiddenMemberTrans, setSuperPartner,setInviter,memberUpdateInvite } from '@/service/getData';
 
 export default {
   data () {
@@ -67,13 +103,22 @@ export default {
 			currentPageIdx: 1,
 			filterSearch: {
 				account: '',
-				commonStatus: ''
+				commonStatus: '',
+                superPartner: '',
 			},
+            //弹窗和信息
+            detailModel: false,
+            userId: "",
+            inviterId: null,
 			memberStatusArr: [
-				{ status: 0, text: '正常' },
-				{ status: 1, text: '非法' },
-				{ status: '', text: '全部' },
+				{ status: 0, text: this.$t('querymarginstrategy.normal') },
+				{ status: 1, text: this.$t('membermanagement.illegal') },
+				{ status: '', text: this.$t('transactiondetailsinlegalcurrency.all') },
 			],
+      superPartnerArr: [
+        { value: '0', text: this.$t('perpetualcontractcurrencystandardmanagement.no') },
+        { value: '1', text: this.$t('perpetualcontractcurrencystandardmanagement.yes') }
+      ],
       totalNum: null,
       ifLoading: true,
       usemmuber:'',
@@ -85,104 +130,105 @@ export default {
           width: 60
         },
         {
-          title: '会员ID',
+          title: this.$t('auditdetails.memberid'),
           key: 'id',
-          width: 70
+          width: 80
         },
         {
-          title: '会员名称',
+          title: this.$t('memberinvitationlist.membername'),
           key: 'username',
-          width: 120
+          width: 180
         },
         {
-          title: '手机号码',
+          title: this.$t('membermanagement.mobilenumber'),
           key: 'mobilePhone',
           width: 110
         },
         {
-          title: '会员等级',
+          title: this.$t('certifiedmerchants.memberlevel'),
           key: 'memberLevel',
           width:90,
           render: (h, obj) => {
             let memberLevel = obj.row.memberLevel;
             let memberLevelTxt = null;
-            if (!memberLevel) memberLevelTxt = '普通会员'
-            else if (memberLevel===1) memberLevelTxt = '实名'
-            else if (memberLevel===2) memberLevelTxt = '认证'
+            if (!memberLevel) memberLevelTxt = this.$t('certifiedmerchants.ordinarymember')
+            else if (memberLevel===1) memberLevelTxt = this.$t('membermanagement.realname')
+            else if (memberLevel===2) memberLevelTxt = this.$t('certifiedmerchants.certification')
             return h('span',{
             }, memberLevelTxt)
           }
         },
         {
-          title: '真实姓名',
+          title: this.$t('businessinformation.realname'),
           key: 'realName',
           width:90
         },
         {
-          title: '邀请者ID',
+          title: this.$t('membermanagement.inviteeid'),
           key: 'inviterId',
           width:90
         },
         {
-          title: '注册时间',
+          title: this.$t('realnamemanagement.registrationtime'),
           width: 150,
           key: 'registrationTime'
 				},
 				{
-          title: '交易状态',
+          title: this.$t('membermanagement.transactionstatus'),
           key: 'transactionStatus',
           width:90,
           render: (h, obj) => {
             let  userStatus = obj.row.transactionStatus;
-           	let statusTxt = !userStatus ? '禁用' : '正常';
+           	let statusTxt = !userStatus ? this.$t('currencyextensionmanagement.disable') : this.$t('querymarginstrategy.normal');
             return h('span', {
             }, statusTxt);
           }
         },
 
         {
-          title: '状态',
+          title: this.$t('managementofoptioncontractsineachperiod.status'),
           width:90,
           key: 'status',
           render: (h, obj) => {
             let  userStatus = obj.row.status;
             let statusTxt = null;
-            userStatus === 0 ? statusTxt = '正常' : statusTxt = '非法';
+            userStatus === 0 ? statusTxt = this.$t('querymarginstrategy.normal') : statusTxt = this.$t('membermanagement.illegal');
 
             return h('span', {
             },statusTxt);
           }
         },
         {
-          title: '会员邮箱',
+          title: this.$t('surrendermanagement.membermailbox'),
           key: 'email',
-          width: 150
+          width: 200
         },
         {
-         title:"合伙人",
+         title:this.$t('membermanagement.agent'),
+		 width:120,
          key:"superPartner",
-         width: 100,
          render:(h, obj) =>{
            let superPartner = obj.row.superPartner;
-          //  console.log(superPartner);
            let text = null;
-           superPartner == 0 && (text = "普通会员");
-           superPartner == 1 && (text = "俱乐部超级合伙人");
-           superPartner == 2 && (text = "超级群主");
+           superPartner == 0 && (text = this.$t('certifiedmerchants.ordinarymember'));
+           superPartner == 1 && (text = this.$t('membermanagement.superagent'));
+           superPartner == 2 && (text = this.$t('membermanagement.superpartner'));
            return h('span',{},text);
          }
         },
         {
-          title: '操作',
+          title: this.$t('perpetualcontractcurrencystandardmanagement.operation'),
           key: 'action',
-          width: 150,
+          width: 345,
           fixed: 'right',
           align: 'center',
           render: (h, obj) => {
 						let memberStatus = !obj.row.status ? 1 : 0;
-						let memberTxt = !obj.row.status ? '禁用' : '解禁';
+						let memberTxt = !obj.row.status ? this.$t('currencyextensionmanagement.disable') : this.$t('membermanagement.unblock');
 						let memberStatusTrans = !obj.row.transactionStatus ? 1 : 0;
-						let memberTxtTrans = !obj.row.transactionStatus ? '允许交易' : '禁止交易';
+						let memberTxtTrans = !obj.row.transactionStatus ? this.$t('perpetualcontractcurrencystandardmanagement.allowtransactions') : this.$t('membermanagement.prohibittransactions');
+            let memberSuperSpartner = obj.row.superPartner === '0' ? '1' : '0';
+            let setSuperSpartnerTxt = obj.row.superPartner === '0' ? this.$t('membermanagement.authorizedagents') : this.$t('membermanagement.cancelagent');
 						// let
 						return h('div', {
 						}, [
@@ -198,8 +244,40 @@ export default {
 										this.$router.push('/member/memberdetail');
 									}
 								}
-							}, '查看'),
-							h('Dropdown', {
+							}, this.$t('transactiondetailsinlegalcurrency.view')),
+                            h(
+                                "Button",
+                                {
+                                    props: {
+										type: "primary",
+										size: "small",
+									}, 
+                                    on: {
+                                        click: () => {
+                                            if(obj.row.inviterId!=null){
+                                                this.$Message.error(this.$t('membermanagement.inviteealreadyexists'));
+                                                return;
+                                            }
+                                            this.detailModel = true;
+                                            this.userId = obj.row.id;
+                                            // this.inviterId = obj.row.inviterId;
+                                        }
+                                    }
+                                },
+                                this.$t('membermanagement.setinvitees')
+                            ),
+							// h('Button', {
+							// 	props: {
+							// 		type: 'info',
+							// 		size: 'small',
+							// 	},
+							// 	on: {
+							// 		click: () => {
+							// 			this.clickInviteForm(obj.row)
+							// 		}
+							// 	}
+							// }, '层级迁移'),
+							h('dropdown', {
 								props: {
 									transfer: true
 								},
@@ -223,7 +301,15 @@ export default {
 												}else this.$Message.error(res.message)
 												this.refreshPage({ pageNo: this.currentPageIdx, pageSize: 10, property: 'registrationTime', direction: 1 })
 											})
-										}
+										}else if(name === 'setSuperSpartner') {
+                      setSuperPartner({ memberId: obj.row.id, superPartner: memberSuperSpartner })
+                      .then(res => {
+                        if(!res.code) {
+                          this.$Message.success(res.message)
+                        }else this.$Message.error(res.message)
+                        this.refreshPage({ pageNo: this.currentPageIdx, pageSize: 10, property: 'registrationTime', direction: 1 })
+                      })
+                    }
 									}
 								}
 							}, [
@@ -240,6 +326,11 @@ export default {
 												name: 'forbiddenTrans'
 											}
 										}, memberTxtTrans),
+                    h("DropdownItem",{
+                      props: {
+                        name: 'setSuperSpartner'
+                      }
+                    }, setSuperSpartnerTxt)
 								]),
 								h("Button",{
 									props: {
@@ -250,17 +341,61 @@ export default {
 										color: '#2d8cf0',
 										marginRight: "5px"
 									},
-								},"更多")
+								},this.$t('membermanagement.more'))
 							])
 						])
 
           }
         }
       ],
-      userpage: []
+      userpage: [],
+      inviteFormVisible: false,
+      inviteFormData: {
+			  memberId: "",
+			  username: "",
+			  toUsername: "",
+      },
+      inviteFormRules: {
+        toUsername: [
+          {required: true, message: this.$t('membermanagement.pleaseenteremailormobilenumber'), trigger: "blur"}
+        ],
+      },
+      inviteFormLoading: false
     }
   },
   methods: {
+    clickInviteForm(item) {
+      this.inviteFormData.memberId = item.id
+      this.inviteFormData.username = item.username
+      this.inviteFormVisible = true
+    },
+    hideInviteForm() {
+      this.inviteFormVisible = false
+    },
+    inviteFormSubmit() {
+      if (this.inviteFormLoading) {
+        return false
+      }
+      this.$refs["inviteForm"].validate(valid => {
+        if (valid) {
+          this.inviteFormLoading = true;
+          let data = Object.assign({}, this.inviteFormData);
+          memberUpdateInvite(data).then(response => {
+            this.inviteFormLoading = false;
+            if (response.code) {
+              this.$Message.error(response.message);
+              return false;
+            }
+            this.$Message.success(this.$t('currencywithdrawalauditmanagement.operationsuccessful'));
+            this.inviteFormVisible = false;
+          })
+          .catch(() => {
+            this.inviteFormLoading = false
+            this.$Message.error(this.$t('membermanagement.networkerror'));
+          });
+        }
+      });
+    },
     refreshPageManual() {
     for(let val in this.filterSearch)  {
 			this.filterSearch[val] = '';
@@ -270,7 +405,7 @@ export default {
     },
     exportExcel () {
       this.$refs.tabel.exportCsv({
-        filename: 'hello'
+        filename: 'MemberManage'
       });
     },
     searchByFilter(){
@@ -293,6 +428,20 @@ export default {
 			let obj =Object.assign({ pageNo: pageIndex, pageSize: 10, property: 'registrationTime', direction: 1 }, this.filterSearch);
       this.refreshPage(obj);
     },
+      setInviterDetail() {
+          let params = {
+              id: this.userId,
+              inviterId: this.inviterId
+          };
+          setInviter(params).then(res => {
+              if (!res.code) {
+                  this.$Message.success(this.$t('perpetualcontractcurrencystandardmanagement.modificationsucceeded'));
+                  this.refreshPageManual();
+              } else {
+                  this.$Message.error(res.message);
+              }
+          })
+      },
     refreshPage(obj = {}) {
 			this.ifLoading = true;
       memberManage(obj)

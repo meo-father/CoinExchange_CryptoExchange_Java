@@ -9,9 +9,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @Description: 会员签到记录
- * @date 2018/5/410:12
+ * @date 2019/5/410:12
  */
 @Entity
 @Data

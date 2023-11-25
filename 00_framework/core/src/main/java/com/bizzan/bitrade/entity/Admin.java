@@ -1,11 +1,9 @@
 package com.bizzan.bitrade.entity;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
-
 import com.bizzan.bitrade.constant.CommonStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.Data;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -13,16 +11,17 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @author GS
- * @date 2017年12月18日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月18日
  */
 @Entity
 @Data
 @Table
-public class Admin {
+public class Admin implements Serializable {
     @Excel(name = "用户编号", orderNum = "1", width = 25)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

@@ -8,8 +8,8 @@ import java.io.Serializable;
 /**
  * 微信信息
  *
- * @author GS
- * @date 2018年01月16日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月16日
  */
 @Data
 @Embeddable

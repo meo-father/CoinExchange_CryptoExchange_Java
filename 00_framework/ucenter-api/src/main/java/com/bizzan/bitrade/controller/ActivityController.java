@@ -1,14 +1,13 @@
 package com.bizzan.bitrade.controller;
 
-import static com.bizzan.bitrade.constant.SysConstant.SESSION_MEMBER;
-import static org.springframework.util.Assert.hasText;
-
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
-
+import com.bizzan.bitrade.constant.BooleanEnum;
+import com.bizzan.bitrade.constant.MemberLevelEnum;
+import com.bizzan.bitrade.constant.SysConstant;
+import com.bizzan.bitrade.entity.*;
+import com.bizzan.bitrade.entity.transform.AuthMember;
+import com.bizzan.bitrade.service.*;
+import com.bizzan.bitrade.util.DateUtil;
+import com.bizzan.bitrade.util.MessageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,52 +19,41 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
-import com.bizzan.bitrade.constant.BooleanEnum;
-import com.bizzan.bitrade.constant.MemberLevelEnum;
-import com.bizzan.bitrade.constant.SysConstant;
-import com.bizzan.bitrade.controller.BaseController;
-import com.bizzan.bitrade.entity.Activity;
-import com.bizzan.bitrade.entity.ActivityOrder;
-import com.bizzan.bitrade.entity.Coin;
-import com.bizzan.bitrade.entity.ExchangeOrderDirection;
-import com.bizzan.bitrade.entity.Member;
-import com.bizzan.bitrade.entity.MemberWallet;
-import com.bizzan.bitrade.entity.transform.AuthMember;
-import com.bizzan.bitrade.service.ActivityOrderService;
-import com.bizzan.bitrade.service.ActivityService;
-import com.bizzan.bitrade.service.CoinService;
-import com.bizzan.bitrade.service.LocaleMessageSourceService;
-import com.bizzan.bitrade.service.MemberService;
-import com.bizzan.bitrade.service.MemberWalletService;
-import com.bizzan.bitrade.util.DateUtil;
-import com.bizzan.bitrade.util.MessageResult;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+
+import static com.bizzan.bitrade.constant.SysConstant.SESSION_MEMBER;
+import static org.springframework.util.Assert.hasText;
 
 @RestController
 @RequestMapping("activity")
 public class ActivityController  extends BaseController {
 	@Autowired
     private ActivityService activityService;
-	
+
 	@Autowired
     private ActivityOrderService activityOrderService;
-    
+
 	@Autowired
     private LocaleMessageSourceService sourceService;
-	
+
 	@Autowired
     private RedisTemplate redisTemplate;
-	
+
 	@Autowired
     private MemberService memberService;
-	
+
 	@Autowired
     private CoinService coinService;
-	
+
 	@Autowired
     private MemberWalletService walletService;
-	
+
 	private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
+
     @RequestMapping("page-query")
     public MessageResult page(int pageNo, int pageSize, int step) {
     	MessageResult mr = new MessageResult();
@@ -74,22 +62,22 @@ public class ActivityController  extends BaseController {
         mr.setData(all);
         return mr;
     }
-    
+
     @RequestMapping("detail")
     public MessageResult detail(Long id) {
         Activity detail = activityService.findOne(id);
         Assert.notNull(detail, "validate id!");
         return success(detail);
     }
-    
+
     @RequestMapping("attend")
     @Transactional(rollbackFor = Exception.class)
     public MessageResult attendActivity(@SessionAttribute(SESSION_MEMBER) AuthMember user,
     									BigDecimal amount,
     									Long activityId,
-    									String code, 
+    									String code,
     									String aims) {
-    	
+
     	if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             return MessageResult.error(500, sourceService.getMessage("NUMBER_OF_ILLEGAL"));
         }
@@ -107,26 +95,26 @@ public class ActivityController  extends BaseController {
                 valueOperations.getOperations().delete(SysConstant.PHONE_ATTEND_ACTIVITY_PREFIX + member.getMobilePhone());
             }
         } else if (member.getEmail() != null && aims.equals(member.getEmail())) {
-            Object info = valueOperations.get(SysConstant.PHONE_ATTEND_ACTIVITY_PREFIX + member.getEmail());
-            if (!info.toString().equals(code)) {
+            Object info = valueOperations.get(SysConstant.EMAIL_ATTEND_ACTIVITY_PREFIX + member.getEmail());
+            if (info!=null && !info.toString().equals(code)) {
                 return MessageResult.error(sourceService.getMessage("VERIFICATION_CODE_INCORRECT"));
             } else {
-                valueOperations.getOperations().delete(SysConstant.PHONE_ATTEND_ACTIVITY_PREFIX + member.getEmail());
+                valueOperations.getOperations().delete(SysConstant.EMAIL_ATTEND_ACTIVITY_PREFIX + member.getEmail());
             }
         } else {
             return MessageResult.error("参与活动失败！");
         }
-        
+
         // 是否经过实名认证
         if(member.getMemberLevel()== MemberLevelEnum.GENERAL){
             return MessageResult.error(500,"请先进行实名认证");
         }
-        
+
         //是否被禁止交易
         if(member.getTransactionStatus().equals(BooleanEnum.IS_FALSE)){
             return MessageResult.error(sourceService.getMessage("CANNOT_TRADE"));
         }
-        
+
         // 检查活动是否存在
         Activity activity = activityService.findOne(activityId);
         Assert.notNull(activity, "此活动不存在!");
@@ -164,7 +152,7 @@ public class ActivityController  extends BaseController {
 			e.printStackTrace();
 			return MessageResult.error("发生未知错误！Code：9901");
 		}
-        
+
         // 自由认购类型，检查是否超过最大发售量
         if(activity.getType() == 4 || activity.getType() == 5) {
         	if(activity.getTradedAmount().compareTo(activity.getTotalSupply()) >= 0) {
@@ -205,7 +193,7 @@ public class ActivityController  extends BaseController {
 	    		}
 	    	}
     	}
-    	
+
     	// 检查持仓要求
     	if(activity.getHoldLimit().compareTo(BigDecimal.ZERO) > 0 && activity.getHoldUnit() != null && activity.getHoldUnit() != "") {
     		MemberWallet holdCoinWallet = walletService.findByCoinUnitAndMemberId(activity.getHoldUnit(), member.getId());
@@ -219,14 +207,14 @@ public class ActivityController  extends BaseController {
     			return MessageResult.error("您的" + activity.getHoldUnit() +"持仓数量不满足条件！");
     		}
     	}
-    	
+
         // 查询币种是否存在
         Coin coin;
         coin = coinService.findByUnit(activity.getAcceptUnit());
         if (coin == null) {
             return MessageResult.error(sourceService.getMessage("NONSUPPORT_COIN"));
         }
-        
+
         // 检查钱包是否可用
         MemberWallet acceptCoinWallet = walletService.findByCoinUnitAndMemberId(activity.getAcceptUnit(), member.getId());
         if (acceptCoinWallet == null || acceptCoinWallet == null) {
@@ -235,7 +223,7 @@ public class ActivityController  extends BaseController {
         if(acceptCoinWallet.getIsLock().equals(BooleanEnum.IS_TRUE)){
             return MessageResult.error("钱包已锁定");
         }
-        
+
         // 检查余额是否充足
         BigDecimal totalAcceptCoinAmount = BigDecimal.ZERO;
         if(activity.getType() == 3) { // 持仓瓜分
@@ -244,11 +232,15 @@ public class ActivityController  extends BaseController {
         	totalAcceptCoinAmount = activity.getPrice().multiply(amount).setScale(activity.getAmountScale(), BigDecimal.ROUND_HALF_DOWN);
         }else if(activity.getType() == 5) {  // 矿机认购
         	totalAcceptCoinAmount = activity.getPrice().multiply(amount).setScale(activity.getAmountScale(), BigDecimal.ROUND_HALF_DOWN);
+        }else if(activity.getType() == 6) { // 锁仓认购
+            // 保存了锁仓数量和门槛费
+            totalAcceptCoinAmount = amount.add(activity.getLockedFee()).setScale(activity.getAmountScale(), BigDecimal.ROUND_HALF_DOWN);
         }
+
         if(acceptCoinWallet.getBalance().compareTo(totalAcceptCoinAmount) < 0){
         	return MessageResult.error(sourceService.getMessage("INSUFFICIENT_COIN") + activity.getAcceptUnit());
         }
-        
+
         ActivityOrder activityOrder = new ActivityOrder();
         activityOrder.setActivityId(activityId);
         if(activity.getType() == 3) {
@@ -260,7 +252,10 @@ public class ActivityController  extends BaseController {
         }else if(activity.getType() == 5) {
         	activityOrder.setAmount(amount); // 实际下单数量
         	activityOrder.setFreezeAmount(BigDecimal.ZERO);
-        }else {
+        }else if(activity.getType() == 6){
+            activityOrder.setAmount(amount); // 实际锁仓数量
+            activityOrder.setFreezeAmount(totalAcceptCoinAmount); // 这里冻结的资产包含了用户实际锁仓数量和门槛费
+        }else{
         	activityOrder.setAmount(BigDecimal.ZERO);
         	activityOrder.setFreezeAmount(BigDecimal.ZERO);
         }
@@ -270,27 +265,27 @@ public class ActivityController  extends BaseController {
         activityOrder.setMemberId(member.getId());
         activityOrder.setPrice(activity.getPrice());
         activityOrder.setState(1); //未成交
-        activityOrder.setTurnover(totalAcceptCoinAmount);//作为资产冻结或扣除资产的标准
+        activityOrder.setTurnover(totalAcceptCoinAmount);//作为资产冻结或扣除资产的标准，锁仓活动中，此项目作为参与数量
         activityOrder.setType(activity.getType());
-        
+
         MessageResult mr = activityOrderService.saveActivityOrder(member.getId(), activityOrder);
-        
+
         if (mr.getCode() != 0) {
             return MessageResult.error(500, "活动参与失败:" + mr.getMessage());
         }else {
         	return MessageResult.success("恭喜！认购成功！");
         }
     }
-    
+
     @RequestMapping("getmemberrecords")
     public MessageResult getMemberRecordsByActivityId(@SessionAttribute(SESSION_MEMBER) AuthMember user, Long activityId) {
-    	
+
     	Assert.notNull(activityId, "valid activity id");
     	List<ActivityOrder> orderList = activityOrderService.findAllByActivityIdAndMemberId(user.getId(), activityId);
 
     	return success(orderList);
     }
-    
+
     /**
      * 获取用户参与的所有订单
      * @param user
@@ -300,7 +295,7 @@ public class ActivityController  extends BaseController {
      */
     @RequestMapping("getmyorders")
     public MessageResult getMemberOrders(@SessionAttribute(SESSION_MEMBER) AuthMember user, @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
-    	
+
     	Assert.notNull(user, "valid user");
     	Page<ActivityOrder> orderList = activityOrderService.finaAllByMemberId(user.getId(), pageNo, pageSize);
     	for(int i = 0; i < orderList.getContent().size(); i++) {

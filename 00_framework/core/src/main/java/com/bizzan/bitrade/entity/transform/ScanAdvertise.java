@@ -2,7 +2,6 @@ package com.bizzan.bitrade.entity.transform;
 
 import com.bizzan.bitrade.constant.AdvertiseType;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,8 +9,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * @author GS
- * @date 2018年01月12日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月12日
  */
 @Builder
 @Data
@@ -29,6 +28,7 @@ public class ScanAdvertise {
     private BigDecimal price;
     private BigDecimal minLimit;
     private BigDecimal maxLimit;
+    private String localCurrency;
     /**
      * 剩余币数
      */

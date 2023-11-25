@@ -1,11 +1,9 @@
 package com.bizzan.bitrade.handler;
 
-import com.alibaba.fastjson.JSON;
 import com.bizzan.bitrade.entity.ChatMessageRecord;
 import com.bizzan.bitrade.entity.HistoryChatMessage;
 import com.bizzan.bitrade.entity.HistoryMessagePage;
 import com.bizzan.bitrade.utils.DateUtils;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;

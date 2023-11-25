@@ -16,7 +16,6 @@ import com.bizzan.bitrade.vo.WithdrawRecordVO;
 import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
-
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,14 +32,15 @@ import java.util.Date;
 import java.util.List;
 
 import static com.bizzan.bitrade.constant.BooleanEnum.IS_FALSE;
-import static com.bizzan.bitrade.constant.WithdrawStatus.*;
+import static com.bizzan.bitrade.constant.WithdrawStatus.FAIL;
+import static com.bizzan.bitrade.constant.WithdrawStatus.PROCESSING;
 import static com.bizzan.bitrade.entity.QWithdrawRecord.withdrawRecord;
 import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
 
 /**
- * @author GS
- * @date 2018年01月29日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月29日
  */
 @Service
 @Slf4j
@@ -121,7 +121,7 @@ public class WithdrawRecordService extends BaseService {
     public void audit(Long[] ids, WithdrawStatus status) {
         WithdrawRecord withdrawRecord;
         for (Long id : ids) {
-            //20	4.70000000	0	2018-02-27 17:47:37		0.30000000	0	28	0	5.00000000			GalaxyChain
+            //20	4.70000000	0	2020-02-27 17:47:37		0.30000000	0	28	0	5.00000000			GalaxyChain
             withdrawRecord = withdrawApplyDao.findOne(id);
             //确认提现申请存在
             notNull(withdrawRecord, "不存在");
@@ -186,7 +186,7 @@ public class WithdrawRecordService extends BaseService {
         if (record == null || record.getStatus() != WithdrawStatus.PROCESSING) {
             return;
         }
-        MemberWallet wallet = walletService.findByCoinAndAddress(record.getCoin(), record.getAddress());
+        MemberWallet wallet = walletService.findByCoinAndMemberId(record.getCoin(), record.getMemberId());
         if (wallet != null) {
             wallet.setBalance(wallet.getBalance().add(record.getTotalAmount()));
             wallet.setFrozenBalance(wallet.getFrozenBalance().subtract(record.getTotalAmount()));

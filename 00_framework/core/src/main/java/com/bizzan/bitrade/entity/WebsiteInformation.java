@@ -2,12 +2,15 @@ package com.bizzan.bitrade.entity;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description
- * @date 2018/1/25 17:19
+ * @date 2019/1/25 17:19
  */
 @Entity
 @Data

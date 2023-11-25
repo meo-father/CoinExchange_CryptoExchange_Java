@@ -2,14 +2,13 @@ package com.bizzan.bitrade.handler;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.aqmd.netty.annotation.HawkBean;
-import com.aqmd.netty.annotation.HawkMethod;
-import com.aqmd.netty.common.NettyCacheUtils;
-import com.aqmd.netty.push.HawkPushServiceApi;
+import com.bizzan.aqmd.core.annotation.HawkBean;
+import com.bizzan.aqmd.core.annotation.HawkMethod;
+import com.bizzan.aqmd.netty.common.NettyCacheUtils;
+import com.bizzan.aqmd.netty.push.HawkPushServiceApi;
 import com.bizzan.bitrade.constant.NettyCommand;
 import com.bizzan.bitrade.entity.*;
 import com.bizzan.bitrade.netty.QuoteMessage;
-
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +52,12 @@ public class NettyHandler implements MarketHandler {
         NettyCacheUtils.keyChannelCache.remove(channel);
     }
 
+    @HawkMethod(cmd = NettyCommand.EXCHANGE_HEART_BEAT,version = NettyCommand.COMMANDS_VERSION)
+    public QuoteMessage.SimpleResponse exchangeHeartBeat(byte[] body, ChannelHandlerContext ctx){
+        QuoteMessage.SimpleResponse.Builder response = QuoteMessage.SimpleResponse.newBuilder();
+        response.setCode(0).setMessage("心跳成功");
+        return response.build();
+    }
     @HawkMethod(cmd = NettyCommand.SUBSCRIBE_SYMBOL_THUMB,version = NettyCommand.COMMANDS_VERSION)
     public QuoteMessage.SimpleResponse subscribeSymbolThumb(byte[] body, ChannelHandlerContext ctx){
         QuoteMessage.SimpleResponse.Builder response = QuoteMessage.SimpleResponse.newBuilder();
@@ -122,7 +127,7 @@ public class NettyHandler implements MarketHandler {
     public void handleOrder(short command, ExchangeOrder order){
         try {
             String topic = order.getSymbol() + "-" + order.getMemberId();
-            log.info("推送订单:" + JSON.toJSONString(order));
+//            log.info("推送订单:" + JSON.toJSONString(order));
             hawkPushService.pushMsg(NettyCacheUtils.getChannel(topic), command, JSON.toJSONString(order).getBytes());
         }
         catch (Exception e){

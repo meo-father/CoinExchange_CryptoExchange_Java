@@ -2,141 +2,186 @@
 <div>
   <Card>
     <p slot="title">
-      添加/编辑活动
-    </p>
+      {{ $t('addactivity.activity') }} </p>
     <div class="formWrapper">
       <Form :model="activityForm" :label-width="150" class='form'>
-          <FormItem label="活动标题:">
+          <FormItem :label="$t('addactivity.activitytitle')">
               <Input v-model="activityForm.title"></Input>
           </FormItem>
-          <FormItem label="活动简介:">
+          <FormItem :label="$t('addactivity.activityintroduction')">
               <Input v-model="activityForm.detail"></Input>
           </FormItem>
-          <FormItem label="显示状态:">
+          <FormItem :label="$t('addactivity.displaystatus')">
                   <RadioGroup v-model="activityForm.status">
-                    <Radio label="0"><em>隐藏</em></Radio>
-                    <Radio label="1"><em>显示</em></Radio>
+                    <Radio label="0"><em>{{ $t('addactivity.hide') }}</em></Radio>
+                    <Radio label="1"><em>{{ $t('addactivity.display') }}</em></Radio>
                   </RadioGroup>
           </FormItem>
-          <FormItem label="活动状态:">
+          <FormItem :label="$t('addactivity.activitystatus')">
                   <RadioGroup v-model="activityForm.step">
-                    <Radio label="0"><em>筹备中</em></Radio>
-                    <Radio label="1"><em>进行中</em></Radio>
-                    <Radio label="2"><em>派发中</em></Radio>
-                    <Radio label="3"><em>已结束</em></Radio>
+                    <Radio label="0"><em>{{ $t('addactivity.inpreparation') }}</em></Radio>
+                    <Radio label="1"><em>{{ $t('addactivity.haveinhand') }}</em></Radio>
+                    <Radio label="2"><em>{{ $t('addactivity.indistribution') }}</em></Radio>
+                    <Radio label="3"><em>{{ $t('addactivity.ended') }}</em></Radio>
                   </RadioGroup>
           </FormItem>
 
-          <FormItem label="活动类型:">
+          <FormItem :label="$t('addactivity.activitytype')">
                   <RadioGroup v-model="activityForm.type">
-                    <Radio label="1"><em>首次上线(抢购)</em></Radio>
-                    <Radio label="2"><em>首次上线(平分)</em></Radio>
-                    <Radio label="3"><em>持仓瓜分</em></Radio>
-                    <Radio label="4"><em>自由认购</em></Radio>
-                    <Radio label="5"><em>云矿机</em></Radio>
+                    <Radio label="1"><em>{{ $t('addactivity.firsttimeonlinerushpurchase') }}</em></Radio>
+                    <Radio label="2"><em>{{ $t('addactivity.firsttimeonlinesplitequally') }}</em></Radio>
+                    <Radio label="3"><em>{{ $t('addactivity.shareofpositions') }}</em></Radio>
+                    <Radio label="4"><em>{{ $t('addactivity.freesubscription') }}</em></Radio>
+                    <Radio label="5"><em>{{ $t('addactivity.cloudminer') }}</em></Radio>
+                    <Radio label="6"><em>{{ $t('addactivity.lockup') }}</em></Radio>
                   </RadioGroup>
           </FormItem>
 
-          <FormItem label="挖矿周期:" v-if="activityForm.type==5">
+          <FormItem :label="$t('addactivity.miningcycle')" v-if="activityForm.type==5">
                   <RadioGroup v-model="activityForm.miningPeriod">
-                    <Radio label="0"><em>天</em></Radio>
-                    <Radio label="1"><em>周</em></Radio>
-                    <Radio label="2"><em>月</em></Radio>
-                    <Radio label="3"><em>年</em></Radio>
+                    <Radio label="0"><em>{{ $t('addactivity.day') }}</em></Radio>
+                    <Radio label="1"><em>{{ $t('addactivity.week') }}</em></Radio>
+                    <Radio label="2"><em>{{ $t('addactivity.month') }}</em></Radio>
+                    <Radio label="3"><em>{{ $t('addactivity.year') }}</em></Radio>
                   </RadioGroup>
           </FormItem>
-          <FormItem label="挖矿周期数:" v-if="activityForm.type==5">
+          <FormItem :label="$t('addactivity.miningcycles')" v-if="activityForm.type==5">
               <Input v-model="activityForm.miningDays"></Input>
           </FormItem>
-          <FormItem label="挖矿周期产出:" v-if="activityForm.type==5">
+          <FormItem :label="$t('addactivity.miningcycleoutput')" v-if="activityForm.type==5">
               <Input v-model="activityForm.miningDaysprofit"></Input>
           </FormItem>
-          <FormItem label="挖矿币种:" v-if="activityForm.type==5">
+          <FormItem :label="$t('addactivity.miningcurrency')" v-if="activityForm.type==5">
               <Input v-model="activityForm.miningUnit"></Input>
           </FormItem>
-          <FormItem label="邀请(购买)产能增加:" v-if="activityForm.type==5">
-              <Input v-model="activityForm.miningInvite" placeholder="如：0.01(即基础产能增加1%)，0则不增加"></Input>
+
+
+          <FormItem :label="$t('addactivity.lockcurrency')" v-if="activityForm.type==6">
+              <Input v-model="activityForm.lockedUnit"></Input>
           </FormItem>
-          <FormItem label="产能增加上限:" v-if="activityForm.type==5">
-              <Input v-model="activityForm.miningInvitelimit" placeholder="如：0.1(即基础产能增加上限为10%)，0则无上限"></Input>
-          </FormItem>
-          <FormItem label="一级邀请:">
-              <Input v-model="activityForm.leveloneCount" placeholder="如：8(购买矿机时一级好友不能低于此数)"></Input>
-              <span style="font-size:10px;color:#FF0000;">要求一级好友人数不能低于该数值，为0则不做要求</span>
+          <FormItem :label="$t('addactivity.locktype')" v-if="activityForm.type == 6">
+                  <RadioGroup v-model="activityForm.releaseType">
+                    <Radio label="0"><em>{{ $t('addactivity.equalrelease') }}</em></Radio>
+                    <Radio label="1"><em>{{ $t('addactivity.proportionalrelease') }}</em></Radio>
+                  </RadioGroup><br>
+                  <span style="font-size:10px;color:#FF0000;">{{ $t('addactivity.mean') }}</span>
           </FormItem>
 
-          <FormItem label="开始结束时间:">
+          <FormItem :label="$t('addactivity.cyclereleaseratio')" v-if="activityForm.type == 6 && activityForm.releaseType == 1">
+              <Input v-model="activityForm.releasePercent"></Input>
+              <span style="font-size:10px;color:#FF0000;">{{ $t('addactivity.rate') }}</span>
+          </FormItem>
+
+          <FormItem :label="$t('addactivity.periodicreleaselimit')" v-if="activityForm.type == 6 && activityForm.releaseType == 0">
+              <Input v-model="activityForm.releaseAmount"></Input>
+          </FormItem>
+          <FormItem :label="$t('addactivity.releasecycle')" v-if="activityForm.type == 6">
+                  <RadioGroup v-model="activityForm.lockedPeriod">
+                    <Radio label="0"><em>{{ $t('addactivity.day') }}</em></Radio>
+                    <Radio label="1"><em>{{ $t('addactivity.week') }}</em></Radio>
+                    <Radio label="2"><em>{{ $t('addactivity.month') }}</em></Radio>
+                    <Radio label="3"><em>{{ $t('addactivity.year') }}</em></Radio>
+                  </RadioGroup>
+          </FormItem>
+
+          <FormItem :label="$t('addactivity.totallockingcycles')" v-if="activityForm.type == 6">
+              <Input v-model="activityForm.lockedDays"></Input>
+              <span style="font-size:10px;color:#FF0000;">{{ $t('addactivity.rate1') }}</span>
+          </FormItem>
+
+          <FormItem :label="$t('addactivity.participationthreshold')" v-if="activityForm.type == 6">
+              <Input v-model="activityForm.lockedFee"></Input>
+              <span style="font-size:10px;color:#FF0000;">{{ $t('addactivity.rate2') }}</span>
+          </FormItem>
+
+          <FormItem :label="$t('addactivity.releasemultiple')" v-if="activityForm.type == 6">
+              <Input v-model="activityForm.releaseTimes"></Input>
+              <span style="font-size:10px;color:#FF0000;">{{ $t('addactivity.rate3') }}</span>
+          </FormItem>
+
+          <FormItem :label="$t('addactivity.rate4')" v-if="activityForm.type==5 || activityForm.type == 6">
+              <Input v-model="activityForm.miningInvite" :placeholder="$t('addactivity.rate5')"></Input>
+          </FormItem>
+          <FormItem :label="$t('addactivity.rate6')" v-if="activityForm.type==5 || activityForm.type == 6">
+              <Input v-model="activityForm.miningInvitelimit" :placeholder="$t('addactivity.rate7')"></Input>
+          </FormItem>
+          <FormItem :label="$t('addactivity.rate7')">
+              <Input v-model="activityForm.leveloneCount" :placeholder="$t('addactivity.rate9')"></Input>
+              <span style="font-size:10px;color:#FF0000;">{{ $t('addactivity.rate10') }}</span>
+          </FormItem>
+
+          <FormItem :label="$t('addactivity.startandendtime')">
               <DatePicker v-model="activityForm.startTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="yyyy-MM-dd HH:mm:ss" style="width: 200px"></DatePicker>
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <DatePicker v-model="activityForm.endTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="yyyy-MM-dd HH:mm:ss" style="width: 200px"></DatePicker>
           </FormItem>
 
-          <FormItem label="总供应量:">
+          <FormItem :label="$t('addactivity.totalsupply')">
               <Input v-model="activityForm.totalSupply"></Input>
           </FormItem>
 
-          <FormItem label="发行价:">
+          <FormItem :label="$t('addactivity.issueprice')">
               <Input v-model="activityForm.price"></Input>
           </FormItem>
 
-          <FormItem label="价格精度:">
+          <FormItem :label="$t('addactivity.priceaccuracy')">
               <Input v-model="activityForm.priceScale"></Input>
           </FormItem>
 
-          <FormItem label="币种单位:">
+          <FormItem :label="$t('addactivity.currencyunit')">
               <Input v-model="activityForm.unit"></Input>
           </FormItem>
 
-          <FormItem label="接受币种:">
+          <FormItem :label="$t('addactivity.acceptedcurrency')">
               <Input v-model="activityForm.acceptUnit"></Input>
           </FormItem>
 
-          <FormItem label="数量精度:">
+          <FormItem :label="$t('addactivity.quantityaccuracy')">
               <Input v-model="activityForm.amountScale"></Input>
           </FormItem>
 
-          <FormItem label="最大限购:">
+          <FormItem :label="$t('addactivity.maximumpurchaselimit')">
               <Input v-model="activityForm.maxLimitAmout"></Input>
           </FormItem>
 
-          <FormItem label="最低起购:">
+          <FormItem :label="$t('addactivity.minimumpurchase')">
               <Input v-model="activityForm.minLimitAmout"></Input>
           </FormItem>
 
-          <FormItem label="限购次数:">
+          <FormItem :label="$t('addactivity.numberofpurchaserestrictions')">
               <Input v-model="activityForm.limitTimes"></Input>
           </FormItem>
 
-          <FormItem label="持仓要求币种:">
+          <FormItem :label="$t('addactivity.currencyrequiredforposition')">
               <Input v-model="activityForm.holdUnit"></Input>
-              <span style="font-size:10px;color:#FF0000;">此为参与门槛要求，如要求持有BZB不能低于10000</span>
+              <span style="font-size:10px;color:#FF0000;">{{ $t('addactivity.rate11') }}</span>
           </FormItem>
-          <FormItem label="持仓最低要求:">
+          <FormItem :label="$t('addactivity.minimumrequirementsforpositions')">
               <Input v-model="activityForm.holdLimit"></Input>
           </FormItem>
 
-          <FormItem label="活动链接:">
+          <FormItem :label="$t('addactivity.activitylink')">
               <Input v-model="activityForm.activityLink"></Input>
           </FormItem>
-          <FormItem label="公告链接:">
+          <FormItem :label="$t('addactivity.announcementlink')">
               <Input v-model="activityForm.noticeLink"></Input>
           </FormItem>
 
-          <FormItem label="配置JSON:">
+          <FormItem :label="$t('addactivity.configurejson')">
               <Input v-model="activityForm.settings" type="textarea" :rows="5"></Input>
           </FormItem>
 
-          <FormItem label="列表小图:">
+          <FormItem :label="$t('addactivity.listthumbnail')">
             <Upload :action="basicUrl+'admin/common/upload/oss/image'"
                     :on-success = 'uploadSuccessedSmall'
                     :on-error = "uploadFailed"
                     :on-progress = "imageUploading"
                     :show-upload-list = "false">
-              <Button type="ghost" icon="ios-cloud-upload-outline">添加图片</Button>
+              <Button type="ghost" icon="ios-cloud-upload-outline">{{ $t('addactivity.addpicture') }}</Button>
             </Upload>
           </FormItem>
 
-          <FormItem label="列表图地址:">
+          <FormItem :label="$t('addactivity.addressoflistdiagram')">
               <Input @on-blur="listenValUrl" v-model="activityForm.smallImageUrl" disabled style="width: 100%;"></Input>
               <span v-if="picUrlIcon">
                   <Icon style="color: green" type="checkmark-round" v-if="!!activityForm.smallImageUrl"></Icon>
@@ -144,17 +189,17 @@
               </span>
           </FormItem>
 
-          <FormItem label="Banner图片:">
+          <FormItem :label="$t('addactivity.bannerpicture')">
             <Upload :action="basicUrl+'admin/common/upload/oss/image'"
                     :on-success = 'uploadSuccessedBanner'
                     :on-error = "uploadFailed"
                     :on-progress = "imageUploading"
                     :show-upload-list = "false">
-              <Button type="ghost" icon="ios-cloud-upload-outline">添加图片</Button>
+              <Button type="ghost" icon="ios-cloud-upload-outline">{{ $t('addactivity.addpicture') }}</Button>
             </Upload>
           </FormItem>
 
-          <FormItem label="Banner图地址:">
+          <FormItem :label="$t('addactivity.bannermapaddress')">
               <Input @on-blur="listenValUrl" v-model="activityForm.bannerImageUrl" disabled style="width: 100%;"></Input>
               <span v-if="picUrlIcon">
                   <Icon style="color: green" type="checkmark-round" v-if="!!activityForm.bannerImageUrl"></Icon>
@@ -162,7 +207,7 @@
               </span>
           </FormItem>
 
-          <FormItem label="活动详情:">
+          <FormItem :label="$t('addactivity.activitydetails')">
               <smeditor :config='config' ref="smeditor" @isUploading = "ifUploading" style="width:100%;"></smeditor>
           </FormItem>
       </Form>
@@ -174,19 +219,18 @@
     </div>
     <div class="btnWrapper">
       <Button type="success" :disabled="false" long size='large' @click="submit">
-        提交
-      </Button>
+        {{ $t('addactivity.submit') }} </Button>
     </div>
   </Card>
 
     <Modal
           class="auditModel"
           v-model="loginPassModal"
-          title="请输入登录密码"
+          :title="$t('addactivity.pleaseentertheloginpassword')"
           width="350"
           @on-cancle="loginPW = ''"
           @on-ok="confirmLoginPass">
-          <Input v-model="loginPW" type="password" placeholder="请输入登录密码"></Input>
+          <Input v-model="loginPW" type="password" :placeholder="$t('addactivity.pleaseentertheloginpassword')"></Input>
    </Modal>
 </div>
 
@@ -229,6 +273,14 @@ import { getStore, removeStore, setStore } from '@/config/storage';
             leveloneCount: 0,
             holdUnit: "",
             holdLimit: 0,
+            lockedUnit: "",
+            lockedPeriod: "0",
+            lockedDays: 0,
+            releaseType: "0",
+            releasePercent: 0,
+            lockedFee: 0,
+            releaseAmount: 0,
+            releaseTimes: 0,
             miningDays: 0,
             miningDaysprofit: "",
             miningUnit: "",
@@ -244,12 +296,10 @@ import { getStore, removeStore, setStore } from '@/config/storage';
         picUrl: "",
         picUrlIcon: false,
         basicUrl: BASICURL,
-
         uploading: false,
         ifAdd: true,
         queryDetailId: null,
         lang: "CN",
-        basicUrl: BASICURL,
         config :{
           uploadUrl: `${BASICURL}admin/common/upload/oss/image`,
           uploadName: 'file',
@@ -261,17 +311,17 @@ import { getStore, removeStore, setStore } from '@/config/storage';
           uploadCallback: (data) => {
             this.uploading = false;
             if(!data.code){
-              this.$Message.success('上传成功!');
+              this.$Message.success(this.$t('addactivity.uploadsuccessful'));
               return data.data;
             }else{
-              this.$Message.error('上传失败!');
+              this.$Message.error(this.$t('addactivity.uploadfailed'));
             }
           },
           // 上传失败回调, 可选
           uploadFailed: (err) => {
             this.uploading = false;
             console.log(err)
-            this.$Message.error('上传失败!');
+            this.$Message.error(this.$t('addactivity.uploadfailed'));
           }
         }
       }
@@ -287,9 +337,9 @@ import { getStore, removeStore, setStore } from '@/config/storage';
           modifyActivity(this.activityForm)
           .then( res => {
             if (!res.code) {
-              this.$Message.success('操作成功!');
+              this.$Message.success(this.$t('addactivity.operationsuccessful'));
               this.$router.push('/activity/activity');
-            } else this.$Message.error('异常错误!');
+            } else this.$Message.error(this.$t('addactivity.abnormalerror'));
           });
         }else{
           this.activityForm.startTime = dtime(this.activityForm.startTime).format('YYYY-MM-DD HH:mm:ss');
@@ -297,9 +347,9 @@ import { getStore, removeStore, setStore } from '@/config/storage';
           addActivity(this.activityForm)
           .then( res => {
             if (!res.code) {
-              this.$Message.success('操作成功!');
+              this.$Message.success(this.$t('addactivity.operationsuccessful'));
               this.$router.push('/activity/activity');
-            } else this.$Message.error('异常错误!');
+            } else this.$Message.error(this.$t('addactivity.abnormalerror'));
           });
         }
       },
@@ -325,16 +375,16 @@ import { getStore, removeStore, setStore } from '@/config/storage';
       uploadSuccessedSmall(response, file, fileList) {
           this.activityForm.smallImageUrl = response.data;
           this.ifShowPercentCircle = false;
-          this.$Message.success('上传成功');
+          this.$Message.success(this.$t('addactivity.uploadsuccessful'));
       },
       uploadSuccessedBanner(response, file, fileList) {
           this.activityForm.bannerImageUrl = response.data;
           this.ifShowPercentCircle = false;
-          this.$Message.success('上传成功');
+          this.$Message.success(this.$t('addactivity.uploadsuccessful'));
       },
       uploadFailed(error, file, fileList) {
           this.ifShowPercentCircle = false;
-          this.$Message.error('上传失败');
+          this.$Message.error(this.$t('addactivity.uploadfailed'));
       }
     },
     created() {
@@ -381,7 +431,15 @@ import { getStore, removeStore, setStore } from '@/config/storage';
             this.activityForm.miningUnit = res.data.miningUnit;
             this.activityForm.miningInvite = res.data.miningInvite;
             this.activityForm.miningInvitelimit = res.data.miningInvitelimit;
-            this.activityForm.miningPeriod = res.data.miningPeriod;
+            this.activityForm.miningPeriod = String(res.data.miningPeriod);
+            this.activityForm.lockedUnit = res.data.lockedUnit;
+            this.activityForm.lockedPeriod = String(res.data.lockedPeriod);
+            this.activityForm.lockedDays = res.data.lockedDays;
+            this.activityForm.releaseType = String(res.data.releaseType);
+            this.activityForm.releasePercent = res.data.releasePercent;
+            this.activityForm.lockedFee = res.data.lockedFee;
+            this.activityForm.releaseAmount = res.data.releaseAmount;
+            this.activityForm.releaseTimes = res.data.releaseTimes;
 
             setStore('smeditor', res.data.content);
 

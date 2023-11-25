@@ -1,18 +1,17 @@
 package com.bizzan.bitrade.dao;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import com.bizzan.bitrade.constant.SysHelpClassification;
 import com.bizzan.bitrade.dao.base.BaseDao;
 import com.bizzan.bitrade.entity.SysHelp;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description
- * @date 2018/1/9 9:58
+ * @date 2019/1/9 9:58
  */
 public interface SysHelpDao extends BaseDao<SysHelp> {
     List<SysHelp> findAllBySysHelpClassification(SysHelpClassification sysHelpClassification);

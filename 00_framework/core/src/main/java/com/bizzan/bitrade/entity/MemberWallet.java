@@ -2,16 +2,15 @@ package com.bizzan.bitrade.entity;
 
 import com.bizzan.bitrade.constant.BooleanEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description 会员钱包
- * @date 2018/1/2 15:28
+ * @date 2019/1/2 15:28
  */
 @Entity
 @Data
@@ -40,7 +39,7 @@ public class MemberWallet {
      * 待释放总量
      */
     @Column(columnDefinition = "decimal(18,8) comment '待释放总量'")
-    private BigDecimal toReleased;
+    private BigDecimal toReleased = BigDecimal.ZERO;
 
     /**
      * 充值地址

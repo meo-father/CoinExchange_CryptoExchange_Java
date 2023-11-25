@@ -2,7 +2,6 @@ package com.bizzan.bitrade.entity.transform;
 
 import com.bizzan.bitrade.constant.BooleanEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,8 +9,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author GS
- * @date 2018年01月16日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月16日
  */
 @Builder
 @Data

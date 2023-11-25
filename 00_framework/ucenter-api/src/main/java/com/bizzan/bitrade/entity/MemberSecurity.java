@@ -2,15 +2,14 @@ package com.bizzan.bitrade.entity;
 
 import com.bizzan.bitrade.constant.BooleanEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
 
 /**
- * @author GS
- * @date 2018年01月15日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月15日
  */
 @Builder
 @Data
@@ -33,4 +32,5 @@ public class MemberSecurity {
     private String avatar;
     private BooleanEnum accountVerified;
     private Integer googleStatus;
+    private String areaCode;
 }

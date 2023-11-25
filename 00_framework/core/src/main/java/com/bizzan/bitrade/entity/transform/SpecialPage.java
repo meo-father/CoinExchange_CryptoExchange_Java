@@ -6,8 +6,8 @@ import java.util.List;
 
 /**
  *
- * @author GS
- * @date 2018年01月15日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月15日
  */
 @Data
 public class SpecialPage<E> {

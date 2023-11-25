@@ -1,7 +1,7 @@
 import axios from 'axios'
 import qs from 'qs'
 
-export const BASEURL = axios.defaults.baseURL = 'http://49.234.13.106:8801/';
+export const BASEURL = axios.defaults.baseURL = 'http://172.31.32.108:31175/';
 
 export const fetch = (url, params = {}) => {
     return new Promise((resolve, reject) => {
@@ -26,6 +26,23 @@ export const post = (url, data = {}) => {
             .catch(err => {
                 reject(err);
             })
+    })
+}
+
+export const postOut = (url, data = {}) => {
+    return new Promise((resolve, reject) => {
+        axios({
+            method: 'post',
+            url: url,
+            data: qs.stringify(data, { arrayFormat: 'repeat' }),
+            responseType: "blob"
+        })
+        .then(response => {
+            resolve(response.data)
+        })
+        .catch(err => {
+            reject(err);
+        })
     })
 }
 

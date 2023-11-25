@@ -1,11 +1,15 @@
 package com.bizzan.bitrade.pagination;
-import javax.persistence.criteria.*;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 逻辑条件表达式 用于复杂条件时使用，如但属性多对应值的OR查询等
- * @author lee
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  *
  */
 public class LogicalExpression implements Criterion {

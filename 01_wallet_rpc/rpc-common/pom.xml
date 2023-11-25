@@ -4,25 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>wallet-rpc</artifactId>
-        <groupId>com.bizzan.bc.wallet</groupId>
+        <groupId>com.bizzan.wallet</groupId>
         <version>1.2</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.bizzan.bc.wallet</groupId>
+    <modelVersion>4.0.0</modelVersion>
     <artifactId>rpc-common</artifactId>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <version>${project-version}</version>
 
     <dependencies>
         <dependency>
@@ -42,10 +30,8 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.spark.bc</groupId>
+            <groupId>com.bizzan.wallet</groupId>
             <artifactId>bitcoin-rpc</artifactId>
-            <scope>system</scope>
-			<systemPath>${project.basedir}/lib/bitcoin-rpc-1.2.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -62,7 +48,20 @@
         <dependency>
             <groupId>com.github.briandilley.jsonrpc4j</groupId>
             <artifactId>jsonrpc4j</artifactId>
-            <version>1.4.6</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

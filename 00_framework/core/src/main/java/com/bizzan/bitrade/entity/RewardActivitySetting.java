@@ -3,7 +3,6 @@ package com.bizzan.bitrade.entity;
 import com.bizzan.bitrade.constant.ActivityRewardType;
 import com.bizzan.bitrade.constant.BooleanEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -12,8 +11,8 @@ import java.util.Date;
 
 /**
  * 推荐奖励设置
- * @author GS
- * @date 2018年03月08日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年03月08日
  */
 @Data
 @Entity

@@ -5,7 +5,6 @@ import com.bizzan.bitrade.constant.AdvertiseType;
 import com.bizzan.bitrade.entity.Advertise;
 import com.bizzan.bitrade.entity.Country;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,8 +12,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * @author GS
- * @date 2018年01月10日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月10日
  */
 @Data
 @Builder

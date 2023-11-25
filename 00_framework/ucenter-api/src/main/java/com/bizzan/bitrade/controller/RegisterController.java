@@ -1,54 +1,47 @@
 package com.bizzan.bitrade.controller;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.dm.model.v20151123.*;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.http.MethodType;
+import com.aliyuncs.profile.*;
+import com.aliyuncs.regions.ProductDomain;
+import com.bizzan.bitrade.vendor.provider.EmailProvider;
+import freemarker.template.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.util.ByteSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.data.redis.core.*;
+import org.springframework.mail.javamail.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
+import org.springframework.util.*;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttribute;
-
-import com.bizzan.bitrade.constant.CommonStatus;
-import com.bizzan.bitrade.constant.MemberLevelEnum;
-import com.bizzan.bitrade.constant.SysConstant;
-import com.bizzan.bitrade.controller.sdk.NECaptchaVerifier;
-import com.bizzan.bitrade.controller.sdk.NESecretPair;
+import org.springframework.web.bind.annotation.*;
+import com.bizzan.bitrade.constant.*;
+import com.bizzan.bitrade.controller.sdk.*;
 import com.bizzan.bitrade.entity.*;
 import com.bizzan.bitrade.entity.transform.AuthMember;
 import com.bizzan.bitrade.event.MemberEvent;
-import com.bizzan.bitrade.service.CountryService;
-import com.bizzan.bitrade.service.LocaleMessageSourceService;
-import com.bizzan.bitrade.service.MemberService;
+import com.bizzan.bitrade.service.*;
 import com.bizzan.bitrade.util.*;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.bizzan.bitrade.constant.SysConstant.*;
+import static com.bizzan.bitrade.constant.SysConstant.EMAIL_REG_CODE_PREFIX;
 import static com.bizzan.bitrade.util.MessageResult.error;
 import static com.bizzan.bitrade.util.MessageResult.success;
 import static org.springframework.util.Assert.isTrue;
@@ -57,24 +50,12 @@ import static org.springframework.util.Assert.notNull;
 /**
  * 会员注册
  *
- * @author GS
- * @date 2017年12月29日
+ * @author Hevin E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月29日
  */
 @Controller
 @Slf4j
 public class RegisterController {
-
-    @Autowired
-    private JavaMailSender javaMailSender;
-
-    @Value("${spring.mail.username}")
-    private String from;
-    @Value("${spark.system.host}")
-    private String host;
-    @Value("${spark.system.name}")
-    private String company;
-
-
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -93,6 +74,9 @@ public class RegisterController {
     @Autowired
     private GeetestController gtestCon ;
 
+    @Autowired
+    private EmailProvider emailProvider;
+
     @Resource
     private LocaleMessageSourceService localeMessageSourceService;
 
@@ -105,6 +89,8 @@ public class RegisterController {
     private final NECaptchaVerifier verifier = new NECaptchaVerifier(captchaId, new NESecretPair(secretId, secretKey));
 
 
+
+
     /**
      * 注册支持的国家
      *
@@ -112,12 +98,24 @@ public class RegisterController {
      */
     @RequestMapping(value = "/support/country", method = RequestMethod.POST)
     @ResponseBody
-    public MessageResult allCountry() {
+    public MessageResult allCountry(
+            @RequestHeader(value = "lang") String headerLanguage
+    ) {
         MessageResult result = success();
         List<Country> list = countryService.getAllCountry();
+        if("zh_CN".equals(headerLanguage)){
+            list.stream().peek(e->{
+                e.setName(e.getZhName());
+            }).collect(Collectors.toList());
+        }else{
+            list.stream().peek(e->{
+                e.setName(e.getEnName());
+            }).collect(Collectors.toList());
+        }
         result.setData(list);
         return result;
     }
+
 
     /**
      * 检查用户名是否重复
@@ -145,7 +143,7 @@ public class RegisterController {
      * @return
      * @throws Exception
      */
-//    @RequestMapping(value = "/register/active")
+    @RequestMapping(value = "/register/active")
     @Transactional(rollbackFor = Exception.class)
     public String activate(String key, HttpServletRequest request) throws Exception {
         if (StringUtils.isEmpty(key)) {
@@ -179,15 +177,7 @@ public class RegisterController {
         //生成密码
         String password = Md5.md5Digest(loginByEmail.getPassword() + credentialsSalt).toLowerCase();
         Member member = new Member();
-        //新增超级合伙人 判断0  普通 默认普通用户   1 超级合伙人 ....
-        if(!StringUtils.isEmpty(loginByEmail.getSuperPartner())){
-            member.setSuperPartner(loginByEmail.getSuperPartner());
-            if (!"0".equals(loginByEmail.getSuperPartner())) {
-                //需要后台审核解禁
-                member.setStatus(CommonStatus.ILLEGAL);
-            }
 
-        }
         member.setMemberLevel(MemberLevelEnum.GENERAL);
         Location location = new Location();
         location.setCountry(loginByEmail.getCountry());
@@ -199,27 +189,28 @@ public class RegisterController {
         member.setPassword(password);
         member.setEmail(loginByEmail.getEmail());
         member.setSalt(credentialsSalt);
+        member.setAvatar("https://bizzan01.oss-cn-hongkong.aliyuncs.com/defaultavatar.png"); // 默认用户头像
         Member member1 = memberService.save(member);
+
         if (member1 != null) {
+            // Member为@entity注解类，与数据库直接映射，因此，此处setPromotionCode会直接同步到数据库
             member1.setPromotionCode(GeneratorUtil.getPromotionCode(member1.getId()));
-            memberEvent.onRegisterSuccess(member1, loginByEmail.getPromotion());
-            request.setAttribute("result", localeMessageSourceService.getMessage("ACTIVATION_SUCCESSFUL"));
-        } else {
-            request.setAttribute("result", localeMessageSourceService.getMessage("ACTIVATION_FAILS"));
+            memberEvent.onRegisterSuccess(member1, loginByEmail.getPromotion().trim());
+
         }
         return "registeredResult";
     }
 
     /**
-     * 邮箱注册 暂时注掉
+     * 邮箱注册
      *
      * @param loginByEmail
      * @param bindingResult
      * @return
      */
-//    @RequestMapping("/register/email")
+    @RequestMapping("/register/email")
     @ResponseBody
-    public MessageResult registerByEmail(@Valid LoginByEmail loginByEmail, BindingResult bindingResult) {
+    public MessageResult registerByEmail(@Valid LoginByEmail loginByEmail, BindingResult bindingResult) throws Exception {
         MessageResult result = BindingResultUtil.validate(bindingResult);
         if (result != null) {
             return result;
@@ -227,47 +218,77 @@ public class RegisterController {
         String email = loginByEmail.getEmail();
         isTrue(!memberService.emailIsExist(email), localeMessageSourceService.getMessage("EMAIL_ALREADY_BOUND"));
         isTrue(!memberService.usernameIsExist(loginByEmail.getUsername()), localeMessageSourceService.getMessage("USERNAME_ALREADY_EXISTS"));
-        isTrue(memberService.userPromotionCodeIsExist(loginByEmail.getPromotion()),localeMessageSourceService.getMessage("USER_PROMOTION_CODE_EXISTS"));
+        // isTrue(memberService.userPromotionCodeIsExist(loginByEmail.getPromotion()),localeMessageSourceService.getMessage("USER_PROMOTION_CODE_EXISTS"));
         ValueOperations valueOperations = redisTemplate.opsForValue();
-        if (valueOperations.get(email) != null) {
-            return error(localeMessageSourceService.getMessage("LOGIN_EMAIL_ALREADY_SEND"));
+
+        Object code =valueOperations.get(SysConstant.EMAIL_REG_CODE_PREFIX + email);
+        notNull(code, localeMessageSourceService.getMessage("VERIFICATION_CODE_NOT_EXISTS"));
+        if (!code.toString().equals(loginByEmail.getCode())) {
+            return error(localeMessageSourceService.getMessage("VERIFICATION_CODE_INCORRECT"));
+        } else {
+            valueOperations.getOperations().delete(SysConstant.EMAIL_REG_CODE_PREFIX + email);
         }
-        try {
-            log.info("send==================================");
-            sentEmail(valueOperations, loginByEmail, email);
-            log.info("success===============================");
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        //不可重复随机数
+        String loginNo = String.valueOf(idWorkByTwitter.nextId());
+        //盐
+        String credentialsSalt = ByteSource.Util.bytes(loginNo).toHex();
+        //生成密码
+        String password = Md5.md5Digest(loginByEmail.getPassword() + credentialsSalt).toLowerCase();
+        Member member = new Member();
+
+        member.setMemberLevel(MemberLevelEnum.GENERAL);
+        Location location = new Location();
+        //邮件注册 默认美国
+        location.setCountry("美国");
+        member.setLocation(location);
+        Country country = new Country();
+        country.setZhName("美国");
+        member.setCountry(country);
+        member.setUsername(loginByEmail.getUsername());
+        member.setPassword(password);
+        member.setEmail(loginByEmail.getEmail());
+        member.setSalt(credentialsSalt);
+        member.setAvatar("https://bizzan01.oss-cn-hongkong.aliyuncs.com/defaultavatar.png"); // 默认用户头像
+        Member member1 = memberService.save(member);
+
+        if (member1 != null) {
+            // Member为@entity注解类，与数据库直接映射，因此，此处setPromotionCode会直接同步到数据库
+            member1.setPromotionCode(GeneratorUtil.getPromotionCode(member1.getId()));
+            //保持下吧
+            memberService.updatePromotionCode(member1.getId(),member1.getPromotionCode());
+            memberEvent.onRegisterSuccess(member1, loginByEmail.getPromotion().trim());
+            return success(localeMessageSourceService.getMessage("REGISTRATION_SUCCESS"));
+        } else {
             return error(localeMessageSourceService.getMessage("REGISTRATION_FAILED"));
         }
-        return success(localeMessageSourceService.getMessage("SEND_LOGIN_EMAIL_SUCCESS"));
     }
 
-    @Async
-    public void sentEmail(ValueOperations valueOperations, LoginByEmail loginByEmail, String email) throws MessagingException, IOException, TemplateException {
-        //缓存邮箱和注册信息
-        String token = UUID.randomUUID().toString().replace("-", "");
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = null;
-        helper = new MimeMessageHelper(mimeMessage, true);
-        helper.setFrom(from);
-        helper.setTo(email);
-        helper.setSubject(company);
-        Map<String, Object> model = new HashMap<>(16);
-        model.put("username", loginByEmail.getUsername());
-        model.put("token", token);
-        model.put("host", host);
-        model.put("name", company);
-        Configuration cfg = new Configuration(Configuration.VERSION_2_3_26);
-        cfg.setClassForTemplateLoading(this.getClass(), "/templates");
-        Template template = cfg.getTemplate("activateEmail.ftl");
-        String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
-        helper.setText(html, true);
-        //发送邮件
-        javaMailSender.send(mimeMessage);
-        valueOperations.set(token, loginByEmail, 12, TimeUnit.HOURS);
-        valueOperations.set(email, "", 12, TimeUnit.HOURS);
-    }
+//    @Async
+//    public void sentEmail(ValueOperations valueOperations, LoginByEmail loginByEmail, String email) throws MessagingException, IOException, TemplateException {
+//        //缓存邮箱和注册信息
+//        String token = UUID.randomUUID().toString().replace("-", "");
+//        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+//        MimeMessageHelper helper = null;
+//        helper = new MimeMessageHelper(mimeMessage, true);
+//        helper.setFrom(from);
+//        helper.setTo(email);
+//        helper.setSubject(company);
+//        Map<String, Object> model = new HashMap<>(16);
+//        model.put("username", loginByEmail.getUsername());
+//        model.put("token", token);
+//        model.put("host", host);
+//        model.put("name", company);
+//        Configuration cfg = new Configuration(Configuration.VERSION_2_3_26);
+//        cfg.setClassForTemplateLoading(this.getClass(), "/templates");
+//        Template template = cfg.getTemplate("activateEmail.ftl");
+//        String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+//        helper.setText(html, true);
+//        //发送邮件
+//        javaMailSender.send(mimeMessage);
+//        valueOperations.set(token, loginByEmail, 12, TimeUnit.HOURS);
+//        valueOperations.set(email, "", 12, TimeUnit.HOURS);
+//    }
 
     /**
      * 手机注册
@@ -294,17 +315,18 @@ public class RegisterController {
         String ip = request.getHeader("X-Real-IP");
         String phone = loginByPhone.getPhone();
         ValueOperations valueOperations = redisTemplate.opsForValue();
-        Object code =valueOperations.get(SysConstant.PHONE_REG_CODE_PREFIX + phone);
+
         isTrue(!memberService.phoneIsExist(phone), localeMessageSourceService.getMessage("PHONE_ALREADY_EXISTS"));
         isTrue(!memberService.usernameIsExist(loginByPhone.getUsername()), localeMessageSourceService.getMessage("USERNAME_ALREADY_EXISTS"));
         if (StringUtils.hasText(loginByPhone.getPromotion().trim())) {
-        	isTrue(memberService.userPromotionCodeIsExist(loginByPhone.getPromotion()),localeMessageSourceService.getMessage("USER_PROMOTION_CODE_EXISTS"));        	
+            isTrue(memberService.userPromotionCodeIsExist(loginByPhone.getPromotion()),localeMessageSourceService.getMessage("USER_PROMOTION_CODE_EXISTS"));
         }
         //校验是否通过验证码 短信上行
-        //isTrue(verifier.verify(loginByPhone.getValidate(),""),localeMessageSourceService.getMessage("VERIFICATION_CODE_INCORRECT"));
+//         isTrue(verifier.verify(loginByPhone.getValidate(),""),localeMessageSourceService.getMessage("VERIFICATION_CODE_INCORRECT"));
         //腾讯防水注册校验
-        isTrue(gtestCon.watherProof(loginByPhone.getTicket(),loginByPhone.getRandStr(),ip),localeMessageSourceService.getMessage("VERIFICATION_PICTURE_NOT_CORRECT"));
-        // 换种校验方式
+        //isTrue(gtestCon.watherProof(loginByPhone.getTicket(),loginByPhone.getRandStr(),ip),localeMessageSourceService.getMessage("VERIFICATION_PICTURE_NOT_CORRECT"));
+        // 短信验证码检查
+        Object code =valueOperations.get(SysConstant.PHONE_REG_CODE_PREFIX + phone);
         notNull(code, localeMessageSourceService.getMessage("VERIFICATION_CODE_NOT_EXISTS"));
         if (!code.toString().equals(loginByPhone.getCode())) {
             return error(localeMessageSourceService.getMessage("VERIFICATION_CODE_INCORRECT"));
@@ -337,10 +359,10 @@ public class RegisterController {
         member.setPassword(password);
         member.setMobilePhone(phone);
         member.setSalt(credentialsSalt);
-        member.setAvatar("https://bizzan.oss-cn-hangzhou.aliyuncs.com/defaultavatar.png"); // 默认用户头像
+        member.setAvatar("https://bizzan01.oss-cn-hongkong.aliyuncs.com/defaultavatar.png"); // 默认用户头像
         Member member1 = memberService.save(member);
         if (member1 != null) {
-        	// Member为@entity注解类，与数据库直接映射，因此，此处setPromotionCode会直接同步到数据库
+            // Member为@entity注解类，与数据库直接映射，因此，此处setPromotionCode会直接同步到数据库
             member1.setPromotionCode(GeneratorUtil.getPromotionCode(member1.getId()));
             memberEvent.onRegisterSuccess(member1, loginByPhone.getPromotion().trim());
             return success(localeMessageSourceService.getMessage("REGISTRATION_SUCCESS"));
@@ -348,8 +370,6 @@ public class RegisterController {
             return error(localeMessageSourceService.getMessage("REGISTRATION_FAILED"));
         }
     }
-
-
 
     /**
      * 手机注册暂时关闭
@@ -397,7 +417,7 @@ public class RegisterController {
         isTrue(!memberService.phoneIsExist(phone), localeMessageSourceService.getMessage("PHONE_ALREADY_EXISTS"));
         isTrue(!memberService.usernameIsExist(loginByPhone.getUsername()), localeMessageSourceService.getMessage("USERNAME_ALREADY_EXISTS"));
         if (StringUtils.hasText(loginByPhone.getPromotion().trim())) {
-        	isTrue(memberService.userPromotionCodeIsExist(loginByPhone.getPromotion()),localeMessageSourceService.getMessage("USER_PROMOTION_CODE_EXISTS"));        	
+            isTrue(memberService.userPromotionCodeIsExist(loginByPhone.getPromotion()),localeMessageSourceService.getMessage("USER_PROMOTION_CODE_EXISTS"));
         }
 //        isTrue(memberService.userPromotionCodeIsExist(loginByPhone.getPromotion()),localeMessageSourceService.getMessage("USER_PROMOTION_CODE_EXISTS"));
         //校验是否通过验证码 短信上行
@@ -467,7 +487,9 @@ public class RegisterController {
             return error(localeMessageSourceService.getMessage("EMAIL_ALREADY_SEND"));
         }
         try {
-            sentEmailCode(valueOperations, email, code);
+            emailProvider.sendEmail(email, code,"Verification Code","bindCodeEmail.ftl");
+            valueOperations.set(EMAIL_BIND_CODE_PREFIX + email, code, 10, TimeUnit.MINUTES);
+
         } catch (Exception e) {
             e.printStackTrace();
             return error(localeMessageSourceService.getMessage("SEND_FAILED"));
@@ -475,27 +497,7 @@ public class RegisterController {
         return success(localeMessageSourceService.getMessage("SENT_SUCCESS_TEN"));
     }
 
-    @Async
-    public void sentEmailCode(ValueOperations valueOperations, String email, String code) throws MessagingException, IOException, TemplateException {
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = null;
-        helper = new MimeMessageHelper(mimeMessage, true);
-        helper.setFrom(from);
-        helper.setTo(email);
-        helper.setSubject(company);
-        Map<String, Object> model = new HashMap<>(16);
-        model.put("code", code);
-        Configuration cfg = new Configuration(Configuration.VERSION_2_3_26);
-        cfg.setClassForTemplateLoading(this.getClass(), "/templates");
-        Template template = cfg.getTemplate("bindCodeEmail.ftl");
-        String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
-        helper.setText(html, true);
 
-        //发送邮件
-        javaMailSender.send(mimeMessage);
-        log.info("send email for {},content:{}", email, html);
-        valueOperations.set(EMAIL_BIND_CODE_PREFIX + email, code, 10, TimeUnit.MINUTES);
-    }
 
     /**
      * 增加提币地址验证码
@@ -518,33 +520,17 @@ public class RegisterController {
             return error(localeMessageSourceService.getMessage("EMAIL_ALREADY_SEND"));
         }
         try {
-            sentEmailAddCode(valueOperations, email, code);
+            emailProvider.sendEmail(email, code,"Verification Code","addAddressCodeEmail.ftl");
+            valueOperations.set(ADD_ADDRESS_CODE_PREFIX + email, code, 10, TimeUnit.MINUTES);
+
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e.toString());
             return error(localeMessageSourceService.getMessage("SEND_FAILED"));
         }
         return success(localeMessageSourceService.getMessage("SENT_SUCCESS_TEN"));
     }
 
-    @Async
-    public void sentEmailAddCode(ValueOperations valueOperations, String email, String code) throws MessagingException, IOException, TemplateException {
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = null;
-        helper = new MimeMessageHelper(mimeMessage, true);
-        helper.setFrom(from);
-        helper.setTo(email);
-        helper.setSubject(company);
-        Map<String, Object> model = new HashMap<>(16);
-        model.put("code", code);
-        Configuration cfg = new Configuration(Configuration.VERSION_2_3_26);
-        cfg.setClassForTemplateLoading(this.getClass(), "/templates");
-        Template template = cfg.getTemplate("addAddressCodeEmail.ftl");
-        String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
-        helper.setText(html, true);
-        //发送邮件
-        javaMailSender.send(mimeMessage);
-        valueOperations.set(ADD_ADDRESS_CODE_PREFIX + email, code, 10, TimeUnit.MINUTES);
-    }
 
     @RequestMapping("/reset/email/code")
     @ResponseBody
@@ -558,32 +544,14 @@ public class RegisterController {
         }
         try {
             String code = String.valueOf(GeneratorUtil.getRandomNumber(100000, 999999));
-            sentResetPassword(valueOperations, account, code);
+            emailProvider.sendEmail(account, code,"Verification Code","resetPasswordCodeEmail.ftl");
+            valueOperations.set(RESET_PASSWORD_CODE_PREFIX + account, code, 10, TimeUnit.MINUTES);
+
         } catch (Exception e) {
             e.printStackTrace();
             return error(localeMessageSourceService.getMessage("SEND_FAILED"));
         }
         return success(localeMessageSourceService.getMessage("SENT_SUCCESS_TEN"));
-    }
-
-    @Async
-    public void sentResetPassword(ValueOperations valueOperations, String email, String code) throws MessagingException, IOException, TemplateException {
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = null;
-        helper = new MimeMessageHelper(mimeMessage, true);
-        helper.setFrom(from);
-        helper.setTo(email);
-        helper.setSubject(company);
-        Map<String, Object> model = new HashMap<>(16);
-        model.put("code", code);
-        Configuration cfg = new Configuration(Configuration.VERSION_2_3_26);
-        cfg.setClassForTemplateLoading(this.getClass(), "/templates");
-        Template template = cfg.getTemplate("resetPasswordCodeEmail.ftl");
-        String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
-        helper.setText(html, true);
-        //发送邮件
-        javaMailSender.send(mimeMessage);
-        valueOperations.set(RESET_PASSWORD_CODE_PREFIX + email, code, 10, TimeUnit.MINUTES);
     }
 
     /**
@@ -620,4 +588,84 @@ public class RegisterController {
         member.setPassword(newPassword);
         return success();
     }
+    /**
+     * 发送解绑旧邮箱验证码
+     *
+     * @param user
+     * @return
+     */
+    @RequestMapping(value = "/untie/email/code", method = RequestMethod.POST)
+    @ResponseBody
+    public MessageResult untieEmailCode(@SessionAttribute(SESSION_MEMBER) AuthMember user){
+        Member member = memberService.findOne(user.getId());
+        isTrue(member.getEmail()!=null, localeMessageSourceService.getMessage("NOT_BIND_EMAIL"));
+        ValueOperations valueOperations = redisTemplate.opsForValue();
+        Object cache = valueOperations.get(SysConstant.EMAIL_UNTIE_CODE_PREFIX + member.getEmail());
+        if(cache!=null){
+            return error(localeMessageSourceService.getMessage("EMAIL_ALREADY_SEND"));
+        }
+        String code = String.valueOf(GeneratorUtil.getRandomNumber(100000, 999999));
+        try {
+            emailProvider.sendEmail(member.getEmail(), code,"Verification Code","resetPasswordCodeEmail.ftl");
+            valueOperations.set(RESET_PASSWORD_CODE_PREFIX + member.getEmail(), code, 10, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return success();
+    }
+
+    /**
+     * 发送新邮箱验证码
+     *
+     * @param user
+     * @return
+     */
+    @RequestMapping(value = "/update/email/code", method = RequestMethod.POST)
+    @ResponseBody
+    public MessageResult updateEmailCode(@SessionAttribute(SESSION_MEMBER) AuthMember user,String email){
+        if(memberService.emailIsExist(email)){
+            return MessageResult.error(localeMessageSourceService.getMessage("REPEAT_EMAIL_REQUEST"));
+        }
+        Member member = memberService.findOne(user.getId());
+        ValueOperations valueOperations = redisTemplate.opsForValue();
+        isTrue(member.getEmail()!=null, localeMessageSourceService.getMessage("NOT_BIND_EMAIL"));
+        Object cache = valueOperations.get(SysConstant.EMAIL_UPDATE_CODE_PREFIX + email);
+        if(cache!=null){
+            return error(localeMessageSourceService.getMessage("EMAIL_ALREADY_SEND"));
+        }
+        String code = String.valueOf(GeneratorUtil.getRandomNumber(100000, 999999));
+        try {
+            emailProvider.sendEmail(email, code,"Verification Code","resetPasswordCodeEmail.ftl");
+            valueOperations.set(RESET_PASSWORD_CODE_PREFIX + email, code, 10, TimeUnit.MINUTES);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return success();
+    }
+
+    @RequestMapping("/reg/email/code")
+    @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
+    public MessageResult sendRegEmail(String email) {
+        Assert.isTrue(ValidateUtil.isEmail(email), localeMessageSourceService.getMessage("WRONG_EMAIL"));
+
+        Assert.isTrue(!memberService.emailIsExist(email), localeMessageSourceService.getMessage("EMAIL_ALREADY_BOUND"));
+        String code = String.valueOf(GeneratorUtil.getRandomNumber(100000, 999999));
+        ValueOperations valueOperations = redisTemplate.opsForValue();
+        if (valueOperations.get(EMAIL_REG_CODE_PREFIX + email) != null) {
+            return error(localeMessageSourceService.getMessage("EMAIL_ALREADY_SEND"));
+        }
+        try {
+            emailProvider.sendEmail(email, code,"Verification Code","bindCodeEmail.ftl");
+            valueOperations.set(EMAIL_REG_CODE_PREFIX + email, code, 10, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return error(localeMessageSourceService.getMessage("SEND_FAILED"));
+        }
+        return success(localeMessageSourceService.getMessage("SENT_SUCCESS_TEN"));
+    }
+
+
 }

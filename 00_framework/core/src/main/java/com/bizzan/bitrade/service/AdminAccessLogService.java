@@ -12,7 +12,6 @@ import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * @author GS
- * @date 2017年12月19日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月19日
  */
 @Service
 public class AdminAccessLogService extends BaseService {

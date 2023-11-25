@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * @Description:
- * @author: GuoShuai
- * @date: create in 16:47 2018/7/2
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date: create in 16:47 2019/7/2
  * @Modified:
  */
 @Configuration

@@ -16,26 +16,75 @@ import App from './App.vue';
 import Api from './config/api';
 import $ from '@js/jquery.min.js';
 var moment = require('moment');
+var momentTimezone = require('moment-timezone');
 
-Vue.use(iView);
+import ViewUI from 'view-design';
+import enUS from 'view-design/dist/locale/en-US';
+import zhCN from 'view-design/dist/locale/zh-CN';
+import zhTW from 'view-design/dist/locale/zh-TW';
+import jaJP from 'view-design/dist/locale/ja-JP';
+import koKR from 'view-design/dist/locale/ko-KR';
+import deDE from 'view-design/dist/locale/de-DE';
+import frFR from 'view-design/dist/locale/fr-FR';
+import itIT from 'view-design/dist/locale/it-IT';
+import esES from 'view-design/dist/locale/es-ES';
+import ruRU from 'view-design/dist/locale/ru-RU';
+import hiIN from 'view-design/dist/locale/hi-IN';
+
+import  en from './assets/lang/en.js';
+import  cn from './assets/lang/cn.js';
+import  hk from './assets/lang/hk.js';
+import  jp from './assets/lang/jp.js';
+import  ko from './assets/lang/ko.js';
+import  de from './assets/lang/de.js';
+import  fr from './assets/lang/fr.js';
+import  it from './assets/lang/it.js';
+import  es from './assets/lang/es.js';
+import  ru from './assets/lang/ru.js';
+import  hi from './assets/lang/hi.js';
+
+import { Swipe, SwipeItem } from 'vant'
+import 'vant/lib/swipe/style'
+import 'vant/lib/swipe-item/style'
+Vue.use(iView).use(Swipe).use(SwipeItem)
 Vue.use(VueClipboard);
 Vue.use(VueRouter);
 Vue.use(vueResource);
 Vue.use(VueI18n);
 
-Vue.prototype.rootHost = "https://www.xxxx.com"; //BIZZAN
-Vue.prototype.host = "https://api.xxxx.com"; //BIZZAN
+const i18n = new VueI18n({
+	locale: 'en_US',
+	messages: {
+		'zh_CN': Object.assign( zhCN, cn),
+		'en_US': Object.assign( enUS, en),
+		'zh_HK': Object.assign( zhTW, hk),
+		'ja_JP': Object.assign( jaJP, jp),
+		'ko_KR': Object.assign( koKR, ko),
+		'de_DE': Object.assign( deDE, de),
+		'fr_FR': Object.assign( frFR, fr),
+		'it_IT': Object.assign( itIT, it),
+		'es_ES': Object.assign( esES, es),
+		'ru_RU': Object.assign( ruRU, ru),
+		'hi_IN': Object.assign( hiIN, hi),
+	},
+	silentTranslationWarn: true
+});
+
+Vue.use(ViewUI, { i18n: (key, value) => i18n.t(key, value) });
+
+Vue.prototype.rootHost = "https://www.bizzan.pro"; //BIZZAN
+Vue.prototype.host = "http://api.bizzan.pro"; //BIZZAN
 
 Vue.prototype.api = Api;
 Vue.http.options.credentials = true;
 Vue.http.options.emulateJSON = true;
 Vue.http.options.headers = {
-    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-    'Content-Type': 'application/json;charset=utf-8'
+    'Content-Type': 'application/x-www-form-urlencoded;application/json;charset=UTF-8',
+    //'Content-Type': 'application/json;charset=utf-8'
 };
 
 const router = new VueRouter({
-    mode: 'history',
+    mode: 'hash',
     routes
 });
 
@@ -55,17 +104,18 @@ router.afterEach((to,from,next) => {
     iView.LoadingBar.finish();
 });
 
-const i18n = new VueI18n({
-    locale: 'zh',
-    messages: {
-        'zh': require('./assets/lang/zh.js'),
-        'en': require('./assets/lang/en.js')
-    }
-});
+
 
 Vue.http.interceptors.push((request, next) => {
     //登录成功后将后台返回的TOKEN在本地存下来,每次请求从sessionStorage中拿到存储的TOKEN值
     request.headers.set('x-auth-token', localStorage.getItem('TOKEN'));
+	let lang = localStorage.getItem('LANGUAGE');
+	if(lang!=null){
+        lang = lang.substr(1);
+        lang = lang.substr(0,lang.length-1);
+    }
+	request.headers.set('lang', lang);
+
     next((response) => {
         //登录极验证时需获取后台返回的TOKEN值
         var xAuthToken = response.headers.get('x-auth-token');
@@ -73,7 +123,7 @@ Vue.http.interceptors.push((request, next) => {
             localStorage.setItem('TOKEN', xAuthToken);
         }
 
-        if (response.body.code == '4000' || response.body.code == '3000') {
+        if (response.data.code == '4000' || response.data.code == '3000') {
             store.commit('setMember', null);
             router.push('/login');
             return false;
@@ -125,6 +175,93 @@ Vue.filter('toFloor', (number, scale) => {
 });
 Vue.prototype.toFloor = toFloor;
 
+Vue.prototype.getTimezone4K = function(){
+		var curlang = this.$store.getters.lang;
+		if(curlang=="en_US"){
+			return "America/Los_Angeles";
+		}
+		if(curlang=="ja_JP"){
+			return "Asia/Tokyo";
+		}
+		if(curlang=="ko_KR"){
+			return "Asia/Seoul";
+		}
+		if(curlang=="de_DE"){
+			return "Europe/Berlin";
+		}
+		if(curlang=="fr_FR"){
+			return "Europe/Paris";
+		}
+		if(curlang=="it_IT"){
+			return "Europe/Rome";
+		}
+		if(curlang=="es_ES"){
+			return "Europe/Madrid";
+		}
+		if(curlang=="zh_HK"){
+			return "Asia/Hong_Kong";
+		}
+		if(curlang=="zh_CN"){
+			return "Asia/Shanghai";
+		}
+		if(curlang=="hi_IN"){
+			return "Asia/India";
+		}
+		if(curlang=="ru_RU"){
+			return "Europe/Russia";
+		}
+		return curlang;
+};
+Vue.prototype.getLang4K = function(){
+		var curlang = this.$store.getters.lang;
+		if(curlang=="en_US"){
+			return "en";
+		}
+		if(curlang=="ja_JP"){
+			return "ja";
+		}
+		if(curlang=="ko_KR"){
+			return "ko";
+		}
+		if(curlang=="de_DE"){
+			return "de_DE";
+		}
+		if(curlang=="fr_FR"){
+			return "fr";
+		}
+		if(curlang=="it_IT"){
+			return "it";
+		}
+		if(curlang=="es_ES"){
+			return "es";
+		}
+		if(curlang=="zh_HK"){
+			return "zh_TW";
+		}
+		if(curlang=="zh_CN"){
+			return "zh";
+		}
+		if(curlang=="hi_IN"){
+			return "hi";
+		}
+		if(curlang=="ru_RU"){
+			return "ru";
+		}
+		return curlang;
+};
+Vue.prototype.timeFormat=function(tick) {
+      return momentTimezone(tick).tz(this.getTimezone4K()).format("HH:mm:ss");
+    };
+Vue.prototype.dateFormat=function(tick) {
+      return momentTimezone(tick).tz(this.getTimezone4K()).format("YYYY-MM-DD HH:mm:ss");
+    };
+Vue.prototype.dateFormatHM=function(tick) {
+      return momentTimezone(tick).tz(this.getTimezone4K()).format("YYYY-MM-DD HH:mm");
+    };
+Vue.prototype.dateFormatFromString=function(tick){
+	var timestamp = momentTimezone(tick).tz('Asia/Shanghai').valueOf();
+	return momentTimezone(timestamp).tz(this.getTimezone4K()).format("YYYY-MM-DD HH:mm:ss");
+};
 new Vue({
     el: '#app',
     router,

@@ -1,18 +1,17 @@
 package com.bizzan.bitrade.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.bizzan.bitrade.constant.Platform;
 import com.bizzan.bitrade.dao.AppRevisionDao;
 import com.bizzan.bitrade.entity.AppRevision;
 import com.bizzan.bitrade.service.Base.TopBaseService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @Title: ${file_name}
  * @Description:
- * @date 2018/4/2416:19
+ * @date 2019/4/2416:19
  */
 @Service
 public class AppRevisionService extends TopBaseService<AppRevision, AppRevisionDao> {

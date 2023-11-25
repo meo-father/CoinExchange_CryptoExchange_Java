@@ -1,5 +1,6 @@
 package com.bizzan.bitrade.core;
 
+import com.bizzan.bitrade.util.MessageResult;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthenticatedException;
@@ -7,11 +8,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.bizzan.bitrade.util.MessageResult;
-
 /**
- * @author Shaoxianjun
- * @date 2018年12月22日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月22日
  */
 @ControllerAdvice
 public class AdminMyControllerAdvice {

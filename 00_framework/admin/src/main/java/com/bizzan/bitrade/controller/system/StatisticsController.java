@@ -1,32 +1,26 @@
 package com.bizzan.bitrade.controller.system;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.bizzan.bitrade.annotation.AccessLog;
 import com.bizzan.bitrade.constant.AdminModule;
 import com.bizzan.bitrade.constant.OrderStatus;
 import com.bizzan.bitrade.controller.common.BaseAdminController;
-import com.bizzan.bitrade.dto.PageParam;
-import com.bizzan.bitrade.dto.Pagenation;
-import com.bizzan.bitrade.entity.OrderDetailAggregation;
-import com.bizzan.bitrade.entity.OrderTypeEnum;
 import com.bizzan.bitrade.entity.Statistics;
 import com.bizzan.bitrade.service.OrderDetailAggregationService;
 import com.bizzan.bitrade.service.StatisticsService;
 import com.bizzan.bitrade.util.DateUtil;
 import com.bizzan.bitrade.util.MessageResult;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author Shaoxianjun
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description
  * @date 2019/1/8 16:19
  */
@@ -40,9 +34,9 @@ public class StatisticsController extends BaseAdminController {
     private OrderDetailAggregationService orderDetailAggregationService ;
 
     /**
-     * @author GS
+     * @author Hevin  E-mail:bizzanhevin@gmail.com
      * @description 查询新增用户 曲线
-     * @date 2018/1/8 16:25
+     * @date 2019/1/8 16:25
      */
     @RequiresPermissions("system:statistics:member-statistics")
     @PostMapping("member-statistics")
@@ -60,9 +54,9 @@ public class StatisticsController extends BaseAdminController {
     }
 
     /**
-     * @author GS
+     * @author Hevin  E-mail:bizzanhevin@gmail.com
      * @description 委托量曲线
-     * @date 2018/1/9 13:52
+     * @date 2019/1/9 13:52
      */
     @RequiresPermissions("system:statistics:delegation-statistics")
     @PostMapping("delegation-statistics")
@@ -80,9 +74,9 @@ public class StatisticsController extends BaseAdminController {
     }
 
     /**
-     * @author GS
+     * @author Hevin  E-mail:bizzanhevin@gmail.com
      * @description 交易量 订单量
-     * @date 2018/1/9 14:50
+     * @date 2019/1/9 14:50
      */
     @RequiresPermissions("system:statistics:order-statistics")
     @PostMapping("order-statistics")

@@ -1,18 +1,17 @@
 package com.bizzan.bitrade.dao;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import com.bizzan.bitrade.dao.base.BaseDao;
 import com.bizzan.bitrade.dto.MemberBonusDTO;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 /**
  * @Description:
- * @author: GuoShuai
- * @date: create in 16:20 2018/6/30
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date: create in 16:20 2019/6/30
  * @Modified:
  */
 public interface MemberBonusDao extends BaseDao<MemberBonusDTO> {

@@ -1,16 +1,15 @@
 package com.bizzan.bitrade.dao;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import com.bizzan.bitrade.dao.base.BaseDao;
 import com.bizzan.bitrade.entity.DividendStartRecord;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 /**
- * @author GS
- * @date 2018年03月22日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年03月22日
  */
 public interface DividendStartRecordDao extends BaseDao<DividendStartRecord> {
 

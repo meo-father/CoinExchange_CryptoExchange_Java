@@ -1,11 +1,10 @@
 package com.bizzan.bitrade.entity;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
-import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.bizzan.bitrade.constant.BooleanEnum;
 import com.bizzan.bitrade.constant.CommonStatus;
+import lombok.Data;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -13,8 +12,8 @@ import java.math.BigDecimal;
 /**
  * OTC币种
  *
- * @author GS
- * @date 2018年01月09日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年01月09日
  */
 @Entity
 @Data

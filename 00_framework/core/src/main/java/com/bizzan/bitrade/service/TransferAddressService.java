@@ -1,21 +1,19 @@
 package com.bizzan.bitrade.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.bizzan.bitrade.constant.CommonStatus;
 import com.bizzan.bitrade.dao.CoinDao;
 import com.bizzan.bitrade.dao.TransferAddressDao;
 import com.bizzan.bitrade.entity.Coin;
 import com.bizzan.bitrade.entity.TransferAddress;
-import com.bizzan.bitrade.service.Base.BaseService;
 import com.bizzan.bitrade.service.Base.TopBaseService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
- * @author GS
- * @date 2018年02月27日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年02月27日
  */
 @Service
 public class TransferAddressService extends TopBaseService<TransferAddress,TransferAddressDao> {

@@ -2,7 +2,6 @@ package com.bizzan.bitrade.entity;
 
 import com.bizzan.bitrade.constant.AdminModule;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -12,8 +11,8 @@ import java.util.Date;
 /**
  * 后台用户访问操作日志
  *
- * @author GS
- * @date 2017年12月19日
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date 2020年12月19日
  */
 @Entity
 @Data

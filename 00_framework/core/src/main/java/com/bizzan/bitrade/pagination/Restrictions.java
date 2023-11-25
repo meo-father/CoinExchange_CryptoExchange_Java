@@ -1,6 +1,6 @@
 package com.bizzan.bitrade.pagination;
-import org.hibernate.criterion.MatchMode;
 
+import org.hibernate.criterion.MatchMode;
 import org.springframework.util.StringUtils;
 
 import java.util.Collection;
@@ -9,7 +9,7 @@ import java.util.Collection;
  * 条件构造器
  * 用于创建条件表达式
  * @Class Name Restrictions
- * @Author lee
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  */
 public class Restrictions {
 

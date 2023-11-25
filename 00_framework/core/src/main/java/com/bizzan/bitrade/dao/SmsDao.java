@@ -1,16 +1,13 @@
 package com.bizzan.bitrade.dao;
 
-import org.springframework.data.jpa.repository.Query;
-
 import com.bizzan.bitrade.dao.base.BaseDao;
 import com.bizzan.bitrade.dto.SmsDTO;
-
-import java.util.List;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * @Description:
- * @author: GuoShuai
- * @date: create in 9:47 2018/6/28
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
+ * @date: create in 9:47 2019/6/28
  * @Modified:
  */
 public interface SmsDao extends BaseDao<SmsDTO> {

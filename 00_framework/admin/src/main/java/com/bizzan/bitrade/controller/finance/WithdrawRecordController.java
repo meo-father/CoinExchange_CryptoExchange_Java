@@ -1,17 +1,18 @@
 package com.bizzan.bitrade.controller.finance;
 
-import static com.bizzan.bitrade.constant.BooleanEnum.IS_FALSE;
-import static com.bizzan.bitrade.constant.WithdrawStatus.FAIL;
-import static com.bizzan.bitrade.constant.WithdrawStatus.SUCCESS;
-import static com.bizzan.bitrade.constant.WithdrawStatus.WAITING;
-import static org.springframework.util.Assert.isTrue;
-import static org.springframework.util.Assert.notNull;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import com.bizzan.bitrade.annotation.AccessLog;
+import com.bizzan.bitrade.constant.*;
+import com.bizzan.bitrade.controller.common.BaseAdminController;
+import com.bizzan.bitrade.entity.*;
+import com.bizzan.bitrade.es.ESUtils;
+import com.bizzan.bitrade.model.screen.WithdrawRecordScreen;
+import com.bizzan.bitrade.service.*;
+import com.bizzan.bitrade.util.MessageResult;
+import com.bizzan.bitrade.vendor.provider.SMSProvider;
+import com.bizzan.bitrade.vo.WithdrawRecordVO;
+import com.querydsl.core.types.Predicate;
+import com.bizzan.bitrade.core.Encrypt;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,46 +21,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.*;
 
-import com.bizzan.bitrade.annotation.AccessLog;
-import com.bizzan.bitrade.constant.AdminModule;
-import com.bizzan.bitrade.constant.BooleanEnum;
-import com.bizzan.bitrade.constant.PageModel;
-import com.bizzan.bitrade.constant.SysConstant;
-import com.bizzan.bitrade.constant.TransactionType;
-import com.bizzan.bitrade.constant.WithdrawStatus;
-import com.bizzan.bitrade.controller.common.BaseAdminController;
-import com.bizzan.bitrade.entity.Admin;
-import com.bizzan.bitrade.entity.Member;
-import com.bizzan.bitrade.entity.MemberTransaction;
-import com.bizzan.bitrade.entity.MemberWallet;
-import com.bizzan.bitrade.entity.QMember;
-import com.bizzan.bitrade.entity.QWithdrawRecord;
-import com.bizzan.bitrade.entity.WithdrawRecord;
-import com.bizzan.bitrade.es.ESUtils;
-import com.bizzan.bitrade.model.screen.WithdrawRecordScreen;
-import com.bizzan.bitrade.service.LocaleMessageSourceService;
-import com.bizzan.bitrade.service.MemberService;
-import com.bizzan.bitrade.service.MemberTransactionService;
-import com.bizzan.bitrade.service.MemberWalletService;
-import com.bizzan.bitrade.service.WithdrawRecordService;
-import com.bizzan.bitrade.util.MessageResult;
-import com.bizzan.bitrade.vendor.provider.SMSProvider;
-import com.bizzan.bitrade.vo.WithdrawRecordVO;
-import com.querydsl.core.types.Predicate;
-import com.sparkframework.security.Encrypt;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
+import static com.bizzan.bitrade.constant.BooleanEnum.IS_FALSE;
+import static com.bizzan.bitrade.constant.WithdrawStatus.*;
+import static org.springframework.util.Assert.isTrue;
+import static org.springframework.util.Assert.notNull;
 
 /**
- * @author Shaoxianjun
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description 提现
  * @date 2019/2/25 11:22
  */
@@ -289,4 +264,66 @@ public class WithdrawRecordController extends BaseAdminController {
         return success();
     }
 
+    /**
+     * 查询代理商邀请用户提现记录
+     * @param pageModel
+     * @param screen
+     * @param memberId
+     * @return
+     */
+    @RequiresPermissions("finance:withdraw-record:superwithdraw-page-query")
+    @PostMapping(value = "/superwithdraw-page-query")
+    @AccessLog(module = AdminModule.FINANCE, operation = "查询代理商邀请用户提现记录WithdrawRecordController")
+    @Transactional(rollbackFor = Exception.class)
+    public MessageResult pageQuerySuper(
+            PageModel pageModel,
+            WithdrawRecordScreen screen,
+            Long memberId) {
+
+        Member checkMember = memberService.findOne(memberId);
+        if(!checkMember.getSuperPartner().equals("1")) {
+            return error("您不是代理商！");
+        }
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(QWithdrawRecord.withdrawRecord.memberId.eq(QMember.member.id));
+        predicates.add(QMember.member.inviterId.eq(checkMember.getId()));
+
+        if (screen.getMemberId() != null) {
+            predicates.add(QWithdrawRecord.withdrawRecord.memberId.eq(screen.getMemberId()));
+        }
+
+        if ( !StringUtils.isEmpty(screen.getMobilePhone())){
+            Member member = memberService.findByPhone(screen.getMobilePhone());
+            predicates.add(QWithdrawRecord.withdrawRecord.memberId.eq(member.getId()));
+        }
+
+        if ( !StringUtils.isEmpty(screen.getOrderSn())){
+            predicates.add(QWithdrawRecord.withdrawRecord.transactionNumber.eq(screen.getOrderSn()));
+        }
+
+        if (screen.getStatus() != null) {
+            predicates.add(QWithdrawRecord.withdrawRecord.status.eq(screen.getStatus()));
+        }
+
+        if (screen.getIsAuto() != null) {
+            predicates.add(QWithdrawRecord.withdrawRecord.isAuto.eq(screen.getIsAuto()));
+        }
+
+        if (!StringUtils.isEmpty(screen.getAddress())) {
+            predicates.add(QWithdrawRecord.withdrawRecord.address.eq(screen.getAddress()));
+        }
+
+        if (!StringUtils.isEmpty(screen.getUnit())) {
+            predicates.add(QWithdrawRecord.withdrawRecord.coin.unit.equalsIgnoreCase(screen.getUnit()));
+        }
+
+        if (!StringUtils.isEmpty(screen.getAccount())) {
+            predicates.add(QMember.member.username.like("%" + screen.getAccount() + "%")
+                    .or(QMember.member.realName.like("%" + screen.getAccount() + "%")));
+        }
+
+        Page<WithdrawRecordVO> pageListMapResult = withdrawRecordService.joinFind(predicates, pageModel);
+        return success(pageListMapResult);
+    }
 }

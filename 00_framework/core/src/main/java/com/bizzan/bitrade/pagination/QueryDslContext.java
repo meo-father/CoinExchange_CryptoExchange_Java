@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author GS
+ * @author Hevin  E-mail:bizzanhevin@gmail.com
  * @description
- * @date 2018/3/7 13:10
+ * @date 2019/3/7 13:10
  */
 public class QueryDslContext {
     private List<Expression> expressions;
