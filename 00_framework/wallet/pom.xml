@@ -136,9 +136,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <username>milo</username>
+                    <username>test</username>
                     <password>GDUmilo1234567</password>
-                    <repository>hub.bjshxg.com/${project.parent.artifactId}/${project.artifactId}</repository>
+                    <repository>${project.parent.artifactId}/${project.artifactId}</repository>
                     <tag>${project.version}</tag>
                     <buildArgs>
                         <JAR_FILE>
