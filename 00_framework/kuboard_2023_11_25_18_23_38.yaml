@@ -1,0 +1,1382 @@
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: admin
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: gateway
+    k8s.kuboard.cn/name: admin
+  annotations:
+    k8s.kuboard.cn/displayName: admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: gateway
+      k8s.kuboard.cn/name: admin
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: gateway
+        k8s.kuboard.cn/name: admin
+      annotations:
+        kubectl.kubernetes.io/restartedAt: '2023-11-23T15:58:41+08:00'
+    spec:
+      containers:
+        - name: admin
+          image: 'hub.bjshxg.com/bitrade-parent/admin:1.0'
+          ports:
+            - containerPort: 6010
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: local
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: chat
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: chat
+  annotations:
+    k8s.kuboard.cn/displayName: chat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: svc
+      k8s.kuboard.cn/name: chat
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: svc
+        k8s.kuboard.cn/name: chat
+    spec:
+      containers:
+        - name: chat
+          image: 'hub.bjshxg.com/bitrade-parent/chat:1.0'
+          ports:
+            - containerPort: 6008
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: local
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cloud
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: cloud
+  annotations:
+    k8s.kuboard.cn/displayName: cloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: svc
+      k8s.kuboard.cn/name: cloud
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: svc
+        k8s.kuboard.cn/name: cloud
+    spec:
+      containers:
+        - name: cloud
+          image: 'hub.bjshxg.com/bitrade-parent/cloud:1.0'
+          ports:
+            - containerPort: 7000
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: local
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: exchange
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: exchange
+  annotations:
+    k8s.kuboard.cn/displayName: exchange
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: svc
+      k8s.kuboard.cn/name: exchange
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: svc
+        k8s.kuboard.cn/name: exchange
+    spec:
+      containers:
+        - name: exchange
+          image: 'hub.bjshxg.com/bitrade-parent/exchange:1.0'
+          ports:
+            - containerPort: 6005
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: local
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: exchange-api
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: exchange-api
+  annotations:
+    k8s.kuboard.cn/displayName: exchange-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: gateway
+      k8s.kuboard.cn/name: exchange-api
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: gateway
+        k8s.kuboard.cn/name: exchange-api
+    spec:
+      containers:
+        - name: exchange-api
+          image: 'hub.bjshxg.com/bitrade-parent/exchange-api:1.0'
+          ports:
+            - containerPort: 6003
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: local
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: market
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: market
+  annotations:
+    k8s.kuboard.cn/displayName: market
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: svc
+      k8s.kuboard.cn/name: market
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: svc
+        k8s.kuboard.cn/name: market
+    spec:
+      containers:
+        - name: market
+          image: 'hub.bjshxg.com/bitrade-parent/market:1.0'
+          ports:
+            - containerPort: 6004
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: local
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: nginx
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: gateway
+    k8s.kuboard.cn/name: nginx
+  annotations:
+    k8s.kuboard.cn/displayName: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: gateway
+      k8s.kuboard.cn/name: nginx
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: gateway
+        k8s.kuboard.cn/name: nginx
+      annotations:
+        kubectl.kubernetes.io/restartedAt: '2023-11-24T09:46:55+08:00'
+    spec:
+      volumes:
+        - name: volume-t6n4s
+          configMap:
+            name: nginx-conf
+            defaultMode: 420
+        - name: volume-f3eta
+          persistentVolumeClaim:
+            claimName: nignx-pvc
+      containers:
+        - name: nginx
+          image: 'hub.bjshxg.com/local-server/nginx:1.22'
+          resources: {}
+          volumeMounts:
+            - name: volume-t6n4s
+              mountPath: /etc/nginx/conf.d
+            - name: volume-f3eta
+              mountPath: /data
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: local
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: otc-api
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: otc-api
+  annotations:
+    k8s.kuboard.cn/displayName: otc-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: gateway
+      k8s.kuboard.cn/name: otc-api
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: gateway
+        k8s.kuboard.cn/name: otc-api
+    spec:
+      containers:
+        - name: otc-api
+          image: 'hub.bjshxg.com/bitrade-parent/otc-api:1.0'
+          ports:
+            - containerPort: 6006
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: local
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: rabbitmq
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: cloud
+    k8s.kuboard.cn/name: rabbitmq
+  annotations:
+    k8s.kuboard.cn/displayName: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: cloud
+      k8s.kuboard.cn/name: rabbitmq
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: cloud
+        k8s.kuboard.cn/name: rabbitmq
+    spec:
+      volumes:
+        - name: volume-x6ep5
+          persistentVolumeClaim:
+            claimName: local-rabbitmq-pvc
+      containers:
+        - name: rabbitmq
+          image: 'hub.bjshxg.com/local-server/rabbitmq:3.9-management'
+          resources: {}
+          volumeMounts:
+            - name: volume-x6ep5
+              mountPath: /data
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: local
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: ucenter-api
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: ucenter-api
+  annotations:
+    k8s.kuboard.cn/displayName: ucenter-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: svc
+      k8s.kuboard.cn/name: ucenter-api
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: svc
+        k8s.kuboard.cn/name: ucenter-api
+    spec:
+      containers:
+        - name: ucenter-api
+          image: 'hub.bjshxg.com/bitrade-parent/ucenter-api:1.0'
+          ports:
+            - containerPort: 6001
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: wallet
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: wallet
+  annotations:
+    k8s.kuboard.cn/displayName: wallet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: svc
+      k8s.kuboard.cn/name: wallet
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: svc
+        k8s.kuboard.cn/name: wallet
+    spec:
+      containers:
+        - name: wallet
+          image: 'hub.bjshxg.com/bitrade-parent/wallet:1.0'
+          ports:
+            - containerPort: 6009
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: kafka
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/name: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: kafka
+    spec:
+      containers:
+        - name: k8s-kafka
+          image: 'hub.bjshxg.com/local-server/kubernetes-kafka:3.6.0'
+          ports:
+            - name: client
+              containerPort: 9092
+              protocol: TCP
+          env:
+            - name: KAFKA_HEAP_OPTS
+              value: '-Xmx512M -Xms512M'
+            - name: KAFKA_OPTS
+              value: '-Dlogging.level=INFO'
+            - name: KAFKA_BROKER_ID
+              value: '0'
+            - name: KAFKA_CFG_ZOOKEEPER_CONNECT
+              value: >-
+                zk-0.zk-hs.local-server.svc.cluster.local:2181,zk-1.zk-hs.local-server.svc.cluster.local:2181,zk-2.zk-hs.local-server.svc.cluster.local:2181
+            - name: KAFKA_CFG_LISTENERS
+              value: 'PLAINTEXT://:9092'
+            - name: KAFKA_CFG_ADVERTISED_LISTENERS
+              value: 'PLAINTEXT://172.31.32.106:30000'
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+          volumeMounts:
+            - name: kafkadata
+              mountPath: /var/lib/kafka
+          livenessProbe:
+            exec:
+              command:
+                - test
+                - '-e'
+                - /tmp/health
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: client
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+            periodSeconds: 20
+            successThreshold: 1
+            failureThreshold: 3
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - '-c'
+                  - touch /tmp/health
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  volumeClaimTemplates:
+    - kind: PersistentVolumeClaim
+      apiVersion: v1
+      metadata:
+        name: kafkadata
+        creationTimestamp: null
+      spec:
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: local-server-107-dns
+        volumeMode: Filesystem
+      status:
+        phase: Pending
+  serviceName: kafka-cs
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0
+  revisionHistoryLimit: 10
+
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: mongodb
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: db
+    k8s.kuboard.cn/name: mongodb
+  annotations:
+    k8s.kuboard.cn/displayName: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: db
+      k8s.kuboard.cn/name: mongodb
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: db
+        k8s.kuboard.cn/name: mongodb
+    spec:
+      volumes:
+        - name: volume-2fwxb
+          persistentVolumeClaim:
+            claimName: local-mongodb-pvc
+      containers:
+        - name: mongodb
+          image: 'hub.bjshxg.com/local-server/mongo:5.0.22'
+          ports:
+            - name: mongodb
+              containerPort: 27017
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - name: volume-2fwxb
+              mountPath: /data
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: local
+      schedulerName: default-scheduler
+  serviceName: mongodb
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0
+  revisionHistoryLimit: 10
+
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: mysql
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: db
+    k8s.kuboard.cn/name: mysql
+  annotations:
+    k8s.kuboard.cn/displayName: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: db
+      k8s.kuboard.cn/name: mysql
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: db
+        k8s.kuboard.cn/name: mysql
+    spec:
+      volumes:
+        - name: volume-x4zym
+          persistentVolumeClaim:
+            claimName: local-server-mysql
+      containers:
+        - name: mysql
+          image: 'hub.bjshxg.com/local-server/mysql:5.7'
+          ports:
+            - name: mysql
+              containerPort: 3306
+              protocol: TCP
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: a123456
+          resources: {}
+          volumeMounts:
+            - name: volume-x4zym
+              mountPath: /data
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: local
+      schedulerName: default-scheduler
+  serviceName: mysql
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0
+  revisionHistoryLimit: 10
+
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: redis
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: cloud
+    k8s.kuboard.cn/name: redis
+  annotations:
+    k8s.kuboard.cn/displayName: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: cloud
+      k8s.kuboard.cn/name: redis
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: cloud
+        k8s.kuboard.cn/name: redis
+    spec:
+      volumes:
+        - name: volume-zicfi
+          persistentVolumeClaim:
+            claimName: local-redis-pvc
+      containers:
+        - name: redis
+          image: 'hub.bjshxg.com/local-server/redis:5.0.2-alpine'
+          command:
+            - redis-server
+            - '--appendonly'
+            - 'yes'
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - name: volume-zicfi
+              mountPath: /data
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: local
+      schedulerName: default-scheduler
+  serviceName: redis
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0
+  revisionHistoryLimit: 10
+
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: zk
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/name: zk
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: zk
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: zk
+    spec:
+      containers:
+        - name: kubernetes-zookeeper
+          image: 'hub.bjshxg.com/local-server/kubernetes-zookeeper:1.0-3.4.10'
+          command:
+            - sh
+            - '-c'
+            - >-
+              start-zookeeper --servers=3 --data_dir=/var/lib/zookeeper/data
+              --data_log_dir=/var/lib/zookeeper/data/log
+              --conf_dir=/opt/zookeeper/conf --client_port=2181
+              --election_port=3888 --server_port=2888 --tick_time=2000
+              --init_limit=10 --sync_limit=5 --heap=512M --max_client_cnxns=60
+              --snap_retain_count=3 --purge_interval=12
+              --max_session_timeout=40000 --min_session_timeout=4000
+              --log_level=INFO
+          ports:
+            - name: client
+              containerPort: 2181
+              protocol: TCP
+            - name: server
+              containerPort: 2888
+              protocol: TCP
+            - name: leader-election
+              containerPort: 3888
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+          volumeMounts:
+            - name: datadir
+              mountPath: /var/lib/zookeeper
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - '-c'
+                - zookeeper-ready 2181
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - '-c'
+                - zookeeper-ready 2181
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: local
+      schedulerName: default-scheduler
+  volumeClaimTemplates:
+    - kind: PersistentVolumeClaim
+      apiVersion: v1
+      metadata:
+        name: datadir
+        creationTimestamp: null
+      spec:
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: local-server-107-dns
+        volumeMode: Filesystem
+      status:
+        phase: Pending
+  serviceName: zk-hs
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0
+  revisionHistoryLimit: 10
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: admin
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: gateway
+    k8s.kuboard.cn/name: admin
+spec:
+  ports:
+    - name: bpwfy8
+      protocol: TCP
+      port: 6010
+      targetPort: 6010
+      nodePort: 30864
+  selector:
+    k8s.kuboard.cn/layer: gateway
+    k8s.kuboard.cn/name: admin
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: chat
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: chat
+spec:
+  ports:
+    - name: syjwyx
+      protocol: TCP
+      port: 6008
+      targetPort: 6008
+  selector:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: chat
+  type: ClusterIP
+  sessionAffinity: None
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: cloud
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: cloud
+spec:
+  ports:
+    - name: 6qw8ja
+      protocol: TCP
+      port: 7000
+      targetPort: 7000
+      nodePort: 30535
+  selector:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: cloud
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: exchange
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: exchange
+spec:
+  ports:
+    - name: w4zbfh
+      protocol: TCP
+      port: 6005
+      targetPort: 6005
+      nodePort: 32329
+  selector:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: exchange
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: exchange-api
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: exchange-api
+spec:
+  ports:
+    - name: jnfkbb
+      protocol: TCP
+      port: 6003
+      targetPort: 6003
+      nodePort: 31471
+  selector:
+    k8s.kuboard.cn/layer: gateway
+    k8s.kuboard.cn/name: exchange-api
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: kafka-external-0
+  namespace: local-server
+spec:
+  ports:
+    - name: y8hnme
+      protocol: TCP
+      port: 9092
+      targetPort: 9092
+      nodePort: 30000
+  selector:
+    app: kafka
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: market
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: market
+spec:
+  ports:
+    - name: 5namp8
+      protocol: TCP
+      port: 6004
+      targetPort: 6004
+  selector:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: market
+  type: ClusterIP
+  sessionAffinity: None
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mongodb
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: db
+    k8s.kuboard.cn/name: mongodb
+spec:
+  ports:
+    - name: ydjswd
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
+      nodePort: 30481
+  selector:
+    k8s.kuboard.cn/layer: db
+    k8s.kuboard.cn/name: mongodb
+  type: NodePort
+  sessionAffinity: ClientIP
+  externalTrafficPolicy: Cluster
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mysql
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: db
+    k8s.kuboard.cn/name: mysql
+spec:
+  ports:
+    - name: 62d4jx
+      protocol: TCP
+      port: 3306
+      targetPort: 3306
+      nodePort: 30217
+  selector:
+    k8s.kuboard.cn/layer: db
+    k8s.kuboard.cn/name: mysql
+  type: NodePort
+  sessionAffinity: ClientIP
+  externalTrafficPolicy: Cluster
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: gateway
+    k8s.kuboard.cn/name: nginx
+spec:
+  ports:
+    - name: fzyxsn
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: e5nqhk
+      protocol: TCP
+      port: 443
+      targetPort: 443
+  selector:
+    k8s.kuboard.cn/layer: gateway
+    k8s.kuboard.cn/name: nginx
+  type: ClusterIP
+  sessionAffinity: None
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx-out
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/name: nginx
+spec:
+  ports:
+    - name: d222ke
+      protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 31175
+    - name: h2jjna
+      protocol: TCP
+      port: 443
+      targetPort: 443
+      nodePort: 32578
+  selector:
+    k8s.kuboard.cn/name: nginx
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: otc-api
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: otc-api
+spec:
+  ports:
+    - name: cecefm
+      protocol: TCP
+      port: 6006
+      targetPort: 6006
+  selector:
+    k8s.kuboard.cn/layer: gateway
+    k8s.kuboard.cn/name: otc-api
+  type: ClusterIP
+  sessionAffinity: None
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: rabbitmq
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: cloud
+    k8s.kuboard.cn/name: rabbitmq
+spec:
+  ports:
+    - name: nzxwrr
+      protocol: TCP
+      port: 5671
+      targetPort: 5672
+      nodePort: 32220
+    - name: zpnnas
+      protocol: TCP
+      port: 15671
+      targetPort: 15672
+      nodePort: 32274
+  selector:
+    k8s.kuboard.cn/layer: cloud
+    k8s.kuboard.cn/name: rabbitmq
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: redis
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: cloud
+    k8s.kuboard.cn/name: redis
+spec:
+  ports:
+    - name: zhq3ny
+      protocol: TCP
+      port: 6379
+      targetPort: 6379
+      nodePort: 30095
+  selector:
+    k8s.kuboard.cn/layer: cloud
+    k8s.kuboard.cn/name: redis
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: ucenter-api
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: ucenter-api
+spec:
+  ports:
+    - name: dy8ez4
+      protocol: TCP
+      port: 6001
+      targetPort: 6001
+  selector:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: ucenter-api
+  type: ClusterIP
+  sessionAffinity: None
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: wallet
+  namespace: local-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: wallet
+spec:
+  ports:
+    - name: 6xtpy6
+      protocol: TCP
+      port: 6009
+      targetPort: 6009
+  selector:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: wallet
+  type: ClusterIP
+  sessionAffinity: None
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: zk-cs
+  namespace: local-server
+  labels:
+    app: zk
+spec:
+  ports:
+    - name: client
+      protocol: TCP
+      port: 2181
+      targetPort: 2181
+      nodePort: 30338
+  selector:
+    app: zk
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: zk-hs
+  namespace: local-server
+  labels:
+    app: zk
+spec:
+  ports:
+    - name: server
+      protocol: TCP
+      port: 2888
+      targetPort: 2888
+    - name: leader-election
+      protocol: TCP
+      port: 3888
+      targetPort: 3888
+  selector:
+    app: zk
+  clusterIP: None
+  clusterIPs:
+    - None
+  type: ClusterIP
+  sessionAffinity: None
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-conf
+  namespace: local-server
+data:
+  default.conf: "server {\n        listen       80;\n        server_name  localhost;\n\n        #charset koi8-r;\n\n        #access_log  logs/host.access.log  main;\n\n        location / {\n            root   html;\n            index  index.html index.htm;\n        }\n\t\t\n\t\tlocation /market {\n\t\t\tclient_max_body_size    5m;\n\t\t\tproxy_pass http://market:6004;\n\t\t\tproxy_set_header Host $http_host;\n\t\t\tproxy_set_header X-Real-IP $remote_addr;\n\t\t\tproxy_set_header X-Scheme $scheme;\n\t\t\tproxy_set_header Upgrade $http_upgrade;\n\t\t\tproxy_set_header Connection \"upgrade\";\n\t\t}\n\t\tlocation /exchange {\n\t\t\tclient_max_body_size    5m;\n\t\t\tproxy_pass http://exchange-api:6003;\n\t\t\tproxy_set_header Host $host;\n\t\t\tproxy_set_header X-Real-IP $remote_addr;\n\t\t}\n\t\tlocation /uc {\n\t\t\tclient_max_body_size    5m;\n\t\t\tproxy_pass http://ucenter-api:6001;\n\t\t\tproxy_set_header Host $host;\n\t\t\tproxy_set_header X-Real-IP $remote_addr;\n\t\t}\n\t\tlocation /admin {\n\t\t\tclient_max_body_size    5m;\n\t\t\tproxy_pass http://admin:6010;\n\t\t\tproxy_set_header Host $host;\n\t\t\tproxy_set_header X-Real-IP $remote_addr;\n\t\t}\n\t\tlocation /chat {\n\t\t\tclient_max_body_size    5m;\n\t\t\tproxy_pass http://chat:6008;\n\t\t\tproxy_set_header Host $host;\n\t\t\tproxy_set_header Upgrade $http_upgrade;\n\t\t\tproxy_set_header Connection \"upgrade\";\n\t\t\tproxy_set_header X-Real-IP $remote_addr;\n\t\t}\n\t\t\n        #error_page  404              /404.html;\n\n        # redirect server error pages to the static page /50x.html\n        #\n        error_page   500 502 503 504  /50x.html;\n        location = /50x.html {\n            root   html;\n        }\n\n        # proxy the PHP scripts to Apache listening on 127.0.0.1:80\n        #\n        #location ~ \\.php$ {\n        #    proxy_pass   http://127.0.0.1;\n        #}\n\n        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000\n        #\n        #location ~ \\.php$ {\n        #    root           html;\n        #    fastcgi_pass   127.0.0.1:9000;\n        #    fastcgi_index  index.php;\n        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;\n        #    include        fastcgi_params;\n        #}\n\n        # deny access to .htaccess files, if Apache's document root\n        # concurs with nginx's one\n        #\n        #location ~ /\\.ht {\n        #    deny  all;\n        #}\n    }"
+
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: local
+  namespace: local-server
+immutable: false
+data:
+  .dockerconfigjson: >-
+    eyJhdXRocyI6eyJodHRwOi8vaHViLmJqc2h4Zy5jb20iOnsidXNlcm5hbWUiOiJtaWxvIiwicGFzc3dvcmQiOiJHRFVtaWxvMTIzNDU2NyIsImF1dGgiOiJiV2xzYnpwSFJGVnRhV3h2TVRJek5EVTJOdz09In19fQ==
+type: kubernetes.io/dockerconfigjson
+
