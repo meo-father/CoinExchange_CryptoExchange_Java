@@ -144,7 +144,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <username>test</username>
+                    <username>milo</username>
                     <password>GDUmilo1234567</password>
                     <repository>${project.parent.artifactId}/${project.artifactId}</repository>
                     <tag>${project.version}</tag>
