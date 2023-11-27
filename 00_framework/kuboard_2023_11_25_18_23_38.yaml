@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: admin
-          image: 'hub.bjshxg.com/bitrade-parent/admin:1.0'
+          image: '/bitrade-parent/admin:1.0'
           ports:
             - containerPort: 6010
               protocol: TCP
@@ -76,7 +76,7 @@ spec:
     spec:
       containers:
         - name: chat
-          image: 'hub.bjshxg.com/bitrade-parent/chat:1.0'
+          image: '/bitrade-parent/chat:1.0'
           ports:
             - containerPort: 6008
               protocol: TCP
@@ -125,7 +125,7 @@ spec:
     spec:
       containers:
         - name: cloud
-          image: 'hub.bjshxg.com/bitrade-parent/cloud:1.0'
+          image: '/bitrade-parent/cloud:1.0'
           ports:
             - containerPort: 7000
               protocol: TCP
@@ -174,7 +174,7 @@ spec:
     spec:
       containers:
         - name: exchange
-          image: 'hub.bjshxg.com/bitrade-parent/exchange:1.0'
+          image: '/bitrade-parent/exchange:1.0'
           ports:
             - containerPort: 6005
               protocol: TCP
@@ -223,7 +223,7 @@ spec:
     spec:
       containers:
         - name: exchange-api
-          image: 'hub.bjshxg.com/bitrade-parent/exchange-api:1.0'
+          image: '/bitrade-parent/exchange-api:1.0'
           ports:
             - containerPort: 6003
               protocol: TCP
@@ -272,7 +272,7 @@ spec:
     spec:
       containers:
         - name: market
-          image: 'hub.bjshxg.com/bitrade-parent/market:1.0'
+          image: '/bitrade-parent/market:1.0'
           ports:
             - containerPort: 6004
               protocol: TCP
@@ -331,7 +331,7 @@ spec:
             claimName: nignx-pvc
       containers:
         - name: nginx
-          image: 'hub.bjshxg.com/local-server/nginx:1.22'
+          image: '/local-server/nginx:1.22'
           resources: {}
           volumeMounts:
             - name: volume-t6n4s
@@ -382,7 +382,7 @@ spec:
     spec:
       containers:
         - name: otc-api
-          image: 'hub.bjshxg.com/bitrade-parent/otc-api:1.0'
+          image: '/bitrade-parent/otc-api:1.0'
           ports:
             - containerPort: 6006
               protocol: TCP
@@ -435,7 +435,7 @@ spec:
             claimName: local-rabbitmq-pvc
       containers:
         - name: rabbitmq
-          image: 'hub.bjshxg.com/local-server/rabbitmq:3.9-management'
+          image: '/local-server/rabbitmq:3.9-management'
           resources: {}
           volumeMounts:
             - name: volume-x6ep5
@@ -484,7 +484,7 @@ spec:
     spec:
       containers:
         - name: ucenter-api
-          image: 'hub.bjshxg.com/bitrade-parent/ucenter-api:1.0'
+          image: '/bitrade-parent/ucenter-api:1.0'
           ports:
             - containerPort: 6001
               protocol: TCP
@@ -531,7 +531,7 @@ spec:
     spec:
       containers:
         - name: wallet
-          image: 'hub.bjshxg.com/bitrade-parent/wallet:1.0'
+          image: '/bitrade-parent/wallet:1.0'
           ports:
             - containerPort: 6009
               protocol: TCP
@@ -573,7 +573,7 @@ spec:
     spec:
       containers:
         - name: k8s-kafka
-          image: 'hub.bjshxg.com/local-server/kubernetes-kafka:3.6.0'
+          image: '/local-server/kubernetes-kafka:3.6.0'
           ports:
             - name: client
               containerPort: 9092
@@ -687,7 +687,7 @@ spec:
             claimName: local-mongodb-pvc
       containers:
         - name: mongodb
-          image: 'hub.bjshxg.com/local-server/mongo:5.0.22'
+          image: '/local-server/mongo:5.0.22'
           ports:
             - name: mongodb
               containerPort: 27017
@@ -744,7 +744,7 @@ spec:
             claimName: local-server-mysql
       containers:
         - name: mysql
-          image: 'hub.bjshxg.com/local-server/mysql:5.7'
+          image: '/local-server/mysql:5.7'
           ports:
             - name: mysql
               containerPort: 3306
@@ -804,7 +804,7 @@ spec:
             claimName: local-redis-pvc
       containers:
         - name: redis
-          image: 'hub.bjshxg.com/local-server/redis:5.0.2-alpine'
+          image: '/local-server/redis:5.0.2-alpine'
           command:
             - redis-server
             - '--appendonly'
@@ -856,7 +856,7 @@ spec:
     spec:
       containers:
         - name: kubernetes-zookeeper
-          image: 'hub.bjshxg.com/local-server/kubernetes-zookeeper:1.0-3.4.10'
+          image: '/local-server/kubernetes-zookeeper:1.0-3.4.10'
           command:
             - sh
             - '-c'
