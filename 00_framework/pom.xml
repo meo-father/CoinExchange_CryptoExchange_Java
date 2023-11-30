@@ -85,6 +85,7 @@
 		<guava_version>21.0</guava_version>
 		<protostuff_version>1.5.9</protostuff_version>
 		<ehcache_version>2.6.11</ehcache_version>
+		<repository_docker_bub>hub.bjshxg.com/</repository_docker_bub>
 	</properties>
 
 	<dependencyManagement>

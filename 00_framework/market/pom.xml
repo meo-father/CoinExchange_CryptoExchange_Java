@@ -169,15 +169,15 @@
 					</execution>
 				</executions>
 				<configuration>
-					<username>milo</username>
-					<password>GDUmilo1234567</password>
-					<repository>${project.parent.artifactId}/${project.artifactId}</repository>
+					<useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+					<repository>${repository_docker_bub}${project.parent.artifactId}/${project.artifactId}</repository>
 					<tag>${project.version}</tag>
 					<buildArgs>
 						<JAR_FILE>
 							target/${project.build.finalName}.jar
 						</JAR_FILE>
 					</buildArgs>
+
 				</configuration>
 			</plugin>
 			<plugin>
